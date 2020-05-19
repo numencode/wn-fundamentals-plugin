@@ -15,11 +15,8 @@ class Plugin extends PluginBase
         ];
     }
 
-    public function registerComponents()
+    public function register()
     {
-    }
-
-    public function registerSettings()
-    {
+        require_once __DIR__ . '/helpers.php';
     }
 }
