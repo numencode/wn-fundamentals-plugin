@@ -42,7 +42,7 @@ such as creating, updating and deleting data.
 ## Publishable
 
 Publishable trait can be used on models that allow content to be published or hidden from the website.
-Model entity must use the Publishable trait and the table must include field is_published.
+Model entity must use the Publishable trait and the table must include boolean field `is_published`.
 
 **Usage in Model**
 
@@ -55,13 +55,41 @@ Model entity must use the Publishable trait and the table must include field is_
 
 ## Relationable
 
-Relationable trait enables `repeater` to be used as relations via Relation behavior.
+Relationable trait enables `repeater` to be used as relations editor via Relation behavior.
 
-**Usage in Model**
+For the purpose of demonstration, let's say we created two models: `Category` and `Item`. 
+`Category` can have multiple items which we want to display and edit via the repeater.
 
-    class Acme extends Model
+`Category` model must use `Relationable` trait and it needs two defined properties:
+`$hasMany` and `$relationable`.
+
+Here's the mockup for the `Category` model:
+
+    class Category extends Model
     {
         use \NumenCode\Fundamentals\Traits\Relationable;
-        
+    
+        ...
+    
+        public $hasMany = [
+            'items' => [Item::class, 'key' => 'category_id'],
+        ];
+
+        public $relationable = [
+            'items_list' => 'items',
+        ];
+    
         ...
     }
+
+Finally, `repeater` for items must be defined in `\models\category\fields.yaml` as such:
+
+    fields:
+        ...
+        items_list:
+            prompt: Add new item
+            span: full
+            type: repeater
+            cssClass: 'repeater-collapsible repeater-open'
+            form: $/models/item/fields.yaml
+        ...

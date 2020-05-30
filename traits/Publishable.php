@@ -1,16 +1,16 @@
 <?php namespace NumenCode\Fundamentals\Traits;
 
-use NumenCode\Fundamentals\Scopes\PublishScope;
+use NumenCode\Fundamentals\Scopes\PublishableScope;
 
 trait Publishable
 {
-    public static function bootIsPublished()
+    public static function bootPublishable()
     {
-        static::addGlobalScope(new PublishScope);
+        static::addGlobalScope(new PublishableScope);
     }
 
     public function isPublished()
     {
-        return PublishScope::isForced() ? true : $this->is_published;
+        return PublishableScope::isForced() ? true : $this->is_published;
     }
 }

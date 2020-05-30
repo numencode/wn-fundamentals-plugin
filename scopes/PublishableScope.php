@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Database\Eloquent\Builder;
 
-class PublishScope implements Scope
+class PublishableScope implements Scope
 {
     protected static $forcePublished = false;
 
