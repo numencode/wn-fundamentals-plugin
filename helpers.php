@@ -4,7 +4,7 @@ use System\Classes\PluginManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Debug\Dumper;
 
-if (!function_exists('nc_partial'))
+if (!function_exists('numencode_partial'))
 {
     /**
      * Returns the path to the NumenCode partial file.
@@ -13,7 +13,7 @@ if (!function_exists('nc_partial'))
      * @param array $partialData
      * @return string
      */
-    function nc_partial($_fileName, $partialData = [])
+    function numencode_partial($_fileName, $partialData = [])
     {
         extract($partialData, EXTR_OVERWRITE);
 

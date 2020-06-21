@@ -3,13 +3,15 @@
 return [
     'plugin'    => [
         'name'        => 'Fundamentals',
-        'description' => 'Fundamentals plugin for October CMS'
+        'description' => 'Numencode Fundamentals plugin for October CMS.'
     ],
     'field'     => [
         'title'                => 'Title',
         'subtitle'             => 'Subtitle',
         'description'          => 'Description',
         'content'              => 'Content',
+        'type'                 => 'Type',
+        'group'                => 'Group',
         'picture'              => 'Picture',
         'link'                 => 'Link',
         'link_title'           => 'Link title',

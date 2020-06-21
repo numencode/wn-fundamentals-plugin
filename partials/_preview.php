@@ -11,29 +11,33 @@
 
     <?php if(empty($sidebar)): ?>
 
-        <?php Block::put('body') ?>
-            <?= Form::open(['class' => 'layout']) ?>
-                <div class="layout-row">
-                    <?= $controller->formRender() ?>
-                </div>
-                <?= numencode_partial('__create_buttons.php', compact('url')) ?>
-            <?= Form::close() ?>
-        <?php Block::endPut() ?>
+        <div class="form-preview">
+            <?= $controller->formRenderPreview() ?>
+        </div>
+        <p>
+            <a href="<?= $url ?>" class="btn btn-default oc-icon-chevron-left">
+                <?= e(trans('backend::lang.form.return_to_list')) ?>
+            </a>
+        </p>
 
     <?php else: ?>
 
         <?php Block::put('form-contents') ?>
             <div class="layout-row min-size">
-                <?= $controller->formRenderOutsideFields() ?>
+                <?= $controller->formRender(['section' => 'outside', 'preview' => true]) ?>
             </div>
             <div class="layout-row">
-                <?= $controller->formRenderPrimaryTabs() ?>
+                <?= $controller->formRender(['section' => 'primary', 'preview' => true]) ?>
             </div>
-            <?= numencode_partial('__create_buttons.php', compact('url')) ?>
+            <p>
+                <a href="<?= $url ?>" class="btn btn-default oc-icon-chevron-left">
+                    <?= e(trans('backend::lang.form.return_to_list')) ?>
+                </a>
+            </p>
         <?php Block::endPut() ?>
 
         <?php Block::put('form-sidebar') ?>
-            <div class="hide-tabs"><?= $controller->formRenderSecondaryTabs() ?></div>
+            <div class="hide-tabs"><?= $controller->formRender(['section' => 'secondary', 'preview' => true]); ?></div>
         <?php Block::endPut() ?>
 
         <?php Block::put('body') ?>

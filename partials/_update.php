@@ -1,4 +1,3 @@
-<?php $urlParam  = empty($urlParam) && !empty($controller->activeFilterItem) ?  $controller->activeFilterItem : null ?>
 <?php $sidebar = empty($sidebar) && !empty($controller->bodyClass) && $controller->bodyClass == 'compact-container' ? true : !empty($sidebar); ?>
 
 <?php Block::put('breadcrumb') ?>
@@ -7,8 +6,6 @@
         <li><?= e($controller->pageTitle) ?></li>
     </ul>
 <?php Block::endPut() ?>
-
-<?php $url = $url . (!empty($urlParam) ? '/index/' . $urlParam : '') ?>
 
 <?php if (!$controller->fatalError): ?>
 
@@ -19,7 +16,7 @@
                 <div class="layout-row">
                     <?= $controller->formRender() ?>
                 </div>
-                <?= nc_partial('__update_buttons.php', compact('url', 'controller')) ?>
+                <?= numencode_partial('__update_buttons.php', compact('url', 'controller')) ?>
             <?= Form::close() ?>
         <?php Block::endPut() ?>
 
@@ -32,7 +29,7 @@
             <div class="layout-row">
                 <?= $controller->formRenderPrimaryTabs() ?>
             </div>
-            <?= nc_partial('__update_buttons.php', compact('url', 'controller')) ?>
+            <?= numencode_partial('__update_buttons.php', compact('url', 'controller')) ?>
         <?php Block::endPut() ?>
 
         <?php Block::put('form-sidebar') ?>
