@@ -2,6 +2,10 @@
 
 This plugin contains some fundamental functionalities that facilitate application development.
 
+## Backend overrides
+
+A backend dashboard override system is incorporated in the plugin and includes a user-friendly Settings page.
+
 ## Common translations
 
 Fundamentals plugin includes some common language translations which can be used elsewhere.
@@ -14,7 +18,7 @@ such as creating, updating and deleting data.
 **1. First you must use it in the Plugin's boot method**
 
     use NumenCode\Fundamentals\Classes\CmsPermissions;
-    
+
     class Plugin extends PluginBase
     {
         public function boot()
@@ -22,7 +26,7 @@ such as creating, updating and deleting data.
             CmsPermissions::revokeDelete('owners', AcmeController::class);
             CmsPermissions::revokeUpdate(['owners', 'publishers'], CustomController::class);
         }
-        
+
         ...
     }
 
@@ -49,7 +53,7 @@ Model entity must use the Publishable trait and the table must include boolean f
     class Acme extends Model
     {
         use \NumenCode\Fundamentals\Traits\Publishable;
-        
+
         ...
     }
 
@@ -57,7 +61,7 @@ Model entity must use the Publishable trait and the table must include boolean f
 
 Relationable trait enables `repeater` to be used as relations editor via Relation behavior.
 
-For the purpose of demonstration, let's say we created two models: `Category` and `Item`. 
+For the purpose of demonstration, let's say we created two models: `Category` and `Item`.
 `Category` can have multiple items which we want to display and edit via the repeater.
 
 `Category` model must use `Relationable` trait and it needs two defined properties:
@@ -68,9 +72,9 @@ Here's the mockup for the `Category` model:
     class Category extends Model
     {
         use \NumenCode\Fundamentals\Traits\Relationable;
-    
+
         ...
-    
+
         public $hasMany = [
             'items' => [Item::class, 'key' => 'category_id'],
         ];
@@ -78,7 +82,7 @@ Here's the mockup for the `Category` model:
         public $relationable = [
             'items_list' => 'items',
         ];
-    
+
         ...
     }
 
