@@ -1,12 +1,14 @@
 (function ($) {
 
-    var initialExecution = true;
+    let initialExecution = true;
 
-    function init() {
+    function init()
+    {
         //
     }
 
-    function render() {
+    function render()
+    {
         //
 
         initialExecution = false;

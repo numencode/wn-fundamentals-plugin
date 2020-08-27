@@ -1,5 +1,5 @@
 {
-  "name": "numencode/fundamentals-plugin",
-  "type": "october-plugin",
-  "description": "Fundamentals plugin for October CMS"
+    "name": "numencode/fundamentals-plugin",
+    "type": "october-plugin",
+    "description": "Fundamentals plugin for October CMS"
 }

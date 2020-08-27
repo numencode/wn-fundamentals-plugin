@@ -2,6 +2,7 @@
 
 use System\Classes\PluginBase;
 use NumenCode\Fundamentals\Bootstrap\BackendOverride;
+use NumenCode\Fundamentals\Extensions\TwigExtensions;
 
 class Plugin extends PluginBase
 {
@@ -24,5 +25,13 @@ class Plugin extends PluginBase
     public function register()
     {
         require_once __DIR__ . '/helpers.php';
+    }
+
+    public function registerMarkupTags()
+    {
+        return [
+            'filters'   => TwigExtensions::filters(),
+            'functions' => TwigExtensions::functions(),
+        ];
     }
 }

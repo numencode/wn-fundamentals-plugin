@@ -4,7 +4,7 @@ This plugin contains some fundamental functionalities that facilitate applicatio
 
 ## Backend overrides
 
-A backend dashboard override system is incorporated in the plugin and includes a user-friendly Settings page.
+A backend dashboard override system is incorporated in the plugin and includes a user-friendly "Settings" page.
 
 ## Common translations
 
@@ -97,3 +97,31 @@ Finally, `repeater` for items must be defined in `\models\category\fields.yaml` 
             cssClass: 'repeater-collapsible repeater-open'
             form: $/models/item/fields.yaml
         ...
+
+## Twig extensions
+
+Multiple Twig extensions are available in order to provide a better development experience.
+Extensions are divided into two scopes, filters and functions, which can all be used across the Twig template files.
+
+### Filters
+
+| Command | Description | Usage |
+| --- | --- | --- |
+| resize | Resize image and create a thumbnail cache file | 'picture.jpg'&#124;media&#124;resize('600x400.crop') |
+| url_path | Parse a URL and return its components | 'file.pdf'&#124;url_path |
+
+### Functions
+
+| Command | Description | Usage |
+| --- | --- | --- |
+| app            | TBD | TBD |
+| asset_hash     | TBD | TBD |
+| class_basename | TBD | TBD |
+| collect        | TBD | TBD |
+| config         | TBD | TBD |
+| d              | TBD | TBD |
+| dd             | TBD | TBD |
+| require        | TBD | TBD |
+| trans          | TBD | TBD |
+| trim           | TBD | TBD |
+| url_params     | TBD | TBD |
