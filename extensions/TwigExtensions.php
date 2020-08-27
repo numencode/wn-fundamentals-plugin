@@ -1,6 +1,7 @@
 <?php namespace NumenCode\Fundamentals\Extensions;
 
 use Cache;
+use Detection\MobileDetect;
 use Cms\Classes\Controller;
 use NumenCode\Fundamentals\Classes\ImageResize;
 
@@ -41,6 +42,12 @@ class TwigExtensions
             },
             'dd'             => function () {
                 dd(...func_get_args());
+            },
+            'detect'         => function () {
+                return new MobileDetect;
+            },
+            'device_type'    => function () {
+                return (new MobileDetect)->isMobile() ? 'mobile' : 'desktop';
             },
             'require'        => function ($path) {
                 return file_get_contents(base_path($path));

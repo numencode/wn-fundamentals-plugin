@@ -121,6 +121,8 @@ Extensions are divided into two scopes, filters and functions, which can all be 
 | config         | TBD | TBD |
 | d              | TBD | TBD |
 | dd             | TBD | TBD |
+| detect         | TBD | TBD |
+| device_type    | TBD | TBD |
 | require        | TBD | TBD |
 | trans          | TBD | TBD |
 | trim           | TBD | TBD |

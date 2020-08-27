@@ -1,5 +1,8 @@
 {
     "name": "numencode/fundamentals-plugin",
     "type": "october-plugin",
-    "description": "Fundamentals plugin for October CMS"
+    "description": "Fundamentals plugin for October CMS",
+    "require": {
+        "mobiledetect/mobiledetectlib": "^2.8"
+    }
 }
