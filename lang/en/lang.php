@@ -3,9 +3,10 @@
 return [
     'plugin'    => [
         'name'        => 'Fundamentals',
-        'description' => 'NumenCode fundamentals for October CMS.'
+        'description' => 'NumenCode fundamentals for October CMS.',
     ],
     'field'     => [
+        'id'                   => 'ID',
         'title'                => 'Title',
         'subtitle'             => 'Subtitle',
         'description'          => 'Description',
@@ -17,6 +18,7 @@ return [
         'link_title'           => 'Link title',
         'is_published'         => 'Published?',
         'is_published_comment' => 'Unpublished items can only be viewed by administrators.',
+        'sort_order'           => 'Sort order',
     ],
     'timestamp' => [
         'created_at' => 'Created at',
