@@ -11,6 +11,9 @@ class TwigExtensions
     {
         return [
             'resize'   => [new ImageResize, 'makeResizeUrl'],
+            'str_pad'  => function ($number, $pad_length, $pad_string) {
+                return str_pad($number, $pad_length, $pad_string, STR_PAD_LEFT);
+            },
             'url_path' => function ($value) {
                 return parse_url($value, PHP_URL_PATH);
             },

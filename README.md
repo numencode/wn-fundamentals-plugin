@@ -15,7 +15,7 @@ Fundamentals plugin includes some common language translations which can be used
 CmsPermissions class can be used to allow or revoke specific user groups from running certain actions
 such as creating, updating and deleting data.
 
-**1. First you must use it in the Plugin's boot method**
+**1. Permission must be configured in the Plugin's boot() method**
 
     use NumenCode\Fundamentals\Classes\CmsPermissions;
 
@@ -30,7 +30,7 @@ such as creating, updating and deleting data.
         ...
     }
 
-**2. Then you can use it in eg. template**
+**2. After you can use it in a template for an example**
 
     <?php if(\NumenCode\Fundamentals\Classes\CmsPermissions::canDelete($controller)): ?>
         <button
@@ -110,23 +110,24 @@ Extensions are divided into two scopes, filters and functions, which can all be 
 
 | Command | Description | Usage |
 | --- | --- | --- |
-| resize | Resize image and create a thumbnail cache file | 'picture.jpg'&#124;media&#124;resize('600x400.crop') |
+| resize   | Resize an image and create a thumbnail cache file | 'picture.jpg'&#124;media&#124;resize('600x400.crop') |
+| str_pad  | Pad a string to a certain length with another string on the left side | 'file.pdf'&#124;str_pad(4, '0') |
 | url_path | Parse a URL and return its components | 'file.pdf'&#124;url_path |
 
 ### Functions
 
 | Command | Description | Usage |
 | --- | --- | --- |
-| app            | TBD | TBD |
-| asset_hash     | TBD | TBD |
-| class_basename | TBD | TBD |
-| collect        | TBD | TBD |
-| config         | TBD | TBD |
-| d              | TBD | TBD |
-| dd             | TBD | TBD |
-| detect         | TBD | TBD |
-| device_type    | TBD | TBD |
-| require        | TBD | TBD |
-| trans          | TBD | TBD |
-| trim           | TBD | TBD |
-| url_params     | TBD | TBD |
+| app            | Get the available container instance | app() |
+| asset_hash     | Store the unique value in the cache forever which can be used as an asset version | asset_hash() |
+| class_basename | Get the class "basename" of the given object / class | class_basename('\\Acme\\SomeClassName') |
+| collect        | Creates a collection from the given value | collect($someStringOrArray) |
+| config         | Get / set the specified configuration value | config('app.some_setting') |
+| d              | Dumps the passed variables and does not end the script | d($variable) |
+| dd             | Dumps the passed variables and ends the script | dd($variable) |
+| detect         | Detect mobile devices (including tablets) | dd(detect()) |
+| device_type    | Returns either 'mobile' or 'desktop' code, based on a detected device | device_type() |
+| require        | Uses file_get_contents() to read the entire file into a string | require('filename.txt') |
+| trans          | Translate the given string | trans('Some random sentence') |
+| trim           | Strip whitespace (or other characters) from the beginning and end of a string | trim(' Some random sentence ') |
+| url_params     | Returns the current routing parameters | dd(url_params()) |

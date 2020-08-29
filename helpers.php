@@ -57,7 +57,7 @@ if (!function_exists('validate_request'))
 if (!function_exists('select_options'))
 {
     /**
-     * Create options for select element
+     * Creates options for the select element.
      *
      * @param array $options
      * @return string
@@ -77,7 +77,7 @@ if (!function_exists('select_options'))
 if (!function_exists('array_insert'))
 {
     /**
-     * Insert a new element to a position inside an array
+     * Inserts a new element to a position inside an array.
      *
      * @param $array
      * @param $beforeElement
@@ -93,6 +93,7 @@ if (!function_exists('array_insert'))
             return array_merge($first, $data, $second);
         } else {
             $beforeElement = array_search($beforeElement, array_keys($array));
+
             return array_merge(
                 array_slice($array, 0, $beforeElement),
                 $data,
@@ -105,7 +106,7 @@ if (!function_exists('array_insert'))
 if (!function_exists('recursive_array_search'))
 {
     /**
-     * Search the array recursively for a given value and return the corresponding keys if successful.
+     * Searches the array recursively for a given value and returns the corresponding keys if successful.
      *
      * @param  string $needle
      * @param  array $haystack
@@ -117,6 +118,7 @@ if (!function_exists('recursive_array_search'))
         foreach ($haystack as $key => $value) {
             if (is_array($value)) {
                 $sub = recursive_array_search($needle, $value, array_merge($keys, [$key]));
+
                 if (count($sub)) {
                     return $sub;
                 }
@@ -132,7 +134,7 @@ if (!function_exists('recursive_array_search'))
 if (!function_exists('round_global'))
 {
     /**
-     * Round the number to a number of decimals defined i a global setting
+     * Rounds the number to a number of decimals defined in a global setting.
      *
      * @param mixed $number
      * @return float
@@ -145,7 +147,7 @@ if (!function_exists('round_global'))
 
 if (!function_exists('array_merge_reference')) {
     /**
-     * Merges elements from passed arrays into one array and keeps a reference to the original arrays
+     * Merges elements from passed arrays into one array and keeps a reference to the original arrays.
      *
      * @param array[] $args
      * @return array
@@ -166,7 +168,7 @@ if (!function_exists('array_merge_reference')) {
 
 if (!function_exists('plugin_exists')) {
     /**
-     * Check if plugin exists and is enabled.
+     * Checks if plugin exists and is enabled.
      *
      * @param string $plugin
      * @return bool
@@ -179,7 +181,7 @@ if (!function_exists('plugin_exists')) {
 
 if (!function_exists('extend_class')) {
     /**
-     * Extend a class with a behavior.
+     * Extends a class with a behavior.
      *
      * @param string $class
      * @param $extension
@@ -213,7 +215,7 @@ if (!function_exists('dumpbug'))
 if (!function_exists('diebug'))
 {
     /**
-     * Dies and dumps a simple debug backtrace.
+     * Dumps a simple debug backtrace and ends a script.
      */
     function diebug()
     {
@@ -221,38 +223,30 @@ if (!function_exists('diebug'))
     }
 }
 
-if (!function_exists('ddd'))
-{
-    /**
-     * Quick fix for not rendering dd in browser's network tab
-     */
-    function ddd(...$args){
-        http_response_code(500);
-        call_user_func_array('dd', $args);
-    }
-}
-
 if (!function_exists('dd_query'))
 {
     $_global_query_count = 0;
     /**
-     * Dump the next database query.
+     * Dumps the next database query.
      *
      * @return void
      */
     function dd_query($count = 1)
     {
-        DB::listen(function($query) use ($count)
-        {
+        DB::listen(function ($query) use ($count) {
             global $_global_query_count;
 
-            while(strpos($query->sql, '?')) {
+            while (strpos($query->sql, '?')) {
                 $query->sql = preg_replace('/\?/', '"' . array_shift($query->bindings) . '"', $query->sql, 1);
             }
 
             $output = '(' . $query->time . ' ms) ' . $query->sql;
 
-            if(++$_global_query_count == $count) dd($output); else d($output);
+            if (++$_global_query_count == $count) {
+                dd($output);
+            } else {
+                d($output);
+            }
         });
     }
 }
@@ -260,7 +254,7 @@ if (!function_exists('dd_query'))
 if (!function_exists('d'))
 {
     /**
-     * Dump the passed variables and end the script.
+     * Dumps the passed variables and does not end the script.
      *
      * @param  mixed
      * @return void
@@ -271,10 +265,24 @@ if (!function_exists('d'))
     }
 }
 
+if (!function_exists('ddd'))
+{
+    /**
+     * Quick fix for not rendering dd() in the browser's network tab.
+     *
+     * @param mixed ...$args
+     */
+    function ddd(...$args)
+    {
+        http_response_code(500);
+        call_user_func_array('dd', $args);
+    }
+}
+
 if (!function_exists('ddt'))
 {
     /**
-     * Dies and dumps a simple debug backtrace. Useful for console debugging.
+     * Dumps a simple debug backtrace and ends the script. Useful for console debugging.
      *
      * @param int $skip Number of last nodes to skip from the output
      * @param bool $die Die after printing the trace
@@ -288,6 +296,7 @@ if (!function_exists('ddt'))
             if (!isset($_stack['file'])) {
                 $_stack['file'] = '[PHP Kernel]';
             }
+
             if (!isset($_stack['line'])) {
                 $_stack['line'] = '';
             }
@@ -295,10 +304,13 @@ if (!function_exists('ddt'))
             if ($skip <= 0) {
                 $output .= "{$_stack["file"]} : {$_stack["line"]} - {$_stack["function"]}" . PHP_EOL;
             }
+
             $skip--;
         }
 
-        if($die) die($output);
+        if ($die) {
+            die($output);
+        }
 
         d($output);
     }
