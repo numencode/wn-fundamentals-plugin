@@ -83,6 +83,8 @@ Here's the mockup for the `Category` model:
 
         public static function boot()
         {
+            parent::boot();
+
             static::extend(function ($model) {
                 $model->addDynamicProperty('relationable', ['items_list' => 'items']);
             });
