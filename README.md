@@ -43,7 +43,7 @@ such as creating, updating and deleting data.
     <?php endif; ?>
 
 
-## Publishable
+## Publishable Trait
 
 Publishable trait can be used on models that allow content to be published or hidden from the website.
 Model entity must use the Publishable trait and the table must include boolean field `is_published`.
@@ -57,33 +57,36 @@ Model entity must use the Publishable trait and the table must include boolean f
         ...
     }
 
-## Relationable
+## Relationable Behavior
 
-Relationable trait enables `repeater` to be used as relations editor via Relation behavior.
+Relationable behavior enables `repeater` to be used as relations editor via Relation behavior.
 
 For the purpose of demonstration, let's say we created two models: `Category` and `Item`.
 `Category` can have multiple items which we want to display and edit via the repeater.
 
-`Category` model must use `Relationable` trait and it needs two defined properties:
-`$hasMany` and `$relationable`.
+`Category` model must:
+ - implement `Relationable` behavior
+ - define `$hasMany` property (for items)
+ - extend a model with a dynamic property `$relationable`
 
 Here's the mockup for the `Category` model:
 
     class Category extends Model
     {
-        use \NumenCode\Fundamentals\Traits\Relationable;
-
-        ...
+        public $implement = [
+            '@NumenCode.Fundamentals.Behaviors.Relationable',
+        ];
 
         public $hasMany = [
             'items' => [Item::class, 'key' => 'category_id'],
         ];
 
-        public $relationable = [
-            'items_list' => 'items',
-        ];
-
-        ...
+        public static function boot()
+        {
+            static::extend(function ($model) {
+                $model->addDynamicProperty('relationable', ['items_list' => 'items']);
+            });
+        }
     }
 
 Finally, `repeater` for items must be defined in `\models\category\fields.yaml` as such:

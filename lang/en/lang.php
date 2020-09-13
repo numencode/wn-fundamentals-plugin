@@ -18,7 +18,9 @@ return [
         'link_title'           => 'Link title',
         'is_published'         => 'Published?',
         'is_published_comment' => 'Unpublished items can only be viewed by administrators.',
+        'slug'                 => 'Slug',
         'sort_order'           => 'Sort order',
+        'media'                => 'Media',
     ],
     'timestamp' => [
         'created_at' => 'Created at',
