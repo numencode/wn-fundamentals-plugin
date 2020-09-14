@@ -11,6 +11,6 @@ trait Publishable
 
     public function isPublished()
     {
-        return PublishableScope::isForced() ? true : $this->is_published;
+        return $this->is_published;
     }
 }

@@ -57,15 +57,15 @@ Model entity must use the Publishable trait and the table must include boolean f
         ...
     }
 
-## Relationable Behavior
+## RelationableModel Behavior
 
-Relationable behavior enables `repeater` to be used as relations editor via Relation behavior.
+RelationableModel behavior enables `repeater` to be used as relations editor via relation behavior.
 
 For the purpose of demonstration, let's say we created two models: `Category` and `Item`.
 `Category` can have multiple items which we want to display and edit via the repeater.
 
 `Category` model must:
- - implement the `Relationable` behavior
+ - implement the `RelationableModel` behavior
  - define the `$hasMany` relationship for the items
  - define the `$relationable` property (where key is a relationable property name and value is the relationship)
 
@@ -74,7 +74,7 @@ Here's the mockup for the `Category` model:
     class Category extends Model
     {
         public $implement = [
-            '@NumenCode.Fundamentals.Behaviors.Relationable',
+            '@NumenCode.Fundamentals.Behaviors.RelationableModel',
         ];
 
         public $hasMany = [
