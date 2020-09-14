@@ -4,7 +4,6 @@ use October\Rain\Extension\ExtensionBase;
 use October\Rain\Database\Traits\Sortable;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ValidationException;
-use October\Rain\Exception\ApplicationException;
 
 class Relationable extends ExtensionBase
 {
@@ -18,12 +17,14 @@ class Relationable extends ExtensionBase
     {
         $this->model = $model;
 
-        if (isset($this->model->getDynamicProperties()['relationable'])) {
-            $this->relationable = array_merge($this->relationable, $this->model->getDynamicProperties()['relationable']);
+        if (isset($this->model->relationable) && is_array($this->model->relationable)) {
+            $this->relationable = $this->model->relationable;
+        } elseif (isset($this->model->getDynamicProperties()['relationable'])) {
+            $this->relationable = $this->model->getDynamicProperties()['relationable'];
         }
 
         foreach ($this->relationable as $title => $attribute) {
-            $this->model->addDynamicMethod('get' . ucfirst(camel_case($title)) . 'Attribute', function() use ($title) {
+            $this->model->addDynamicMethod('get' . ucfirst(camel_case($title)) . 'Attribute', function () use ($title) {
                 if ($relation = $this->getRelationable($title)) {
                     return $this->model->$relation->toArray();
                 }
@@ -57,6 +58,7 @@ class Relationable extends ExtensionBase
 
                 // Custom validation methods
                 $validationMethod = 'validate' . ucfirst(camel_case($field));
+
                 if (method_exists($this, $validationMethod)) {
                     if ($error = $this->$validationMethod($this->repeaterRelations[$relation])) {
                         throw new ValidationException([$field => $error]);
@@ -68,11 +70,6 @@ class Relationable extends ExtensionBase
         $this->model->bindEvent('model.afterSave', function () {
             $this->saveRelationable();
         });
-    }
-
-    public function addRelationable($relationable)
-    {
-        $this->relationable = $relationable;
     }
 
     public function toArray()
@@ -88,10 +85,6 @@ class Relationable extends ExtensionBase
 
     public function getRelationable($key)
     {
-        if (!isset($this->relationable) || !is_array($this->relationable)) {
-            throw new ApplicationException('Missing $relationable property');
-        }
-
         foreach ($this->relationable as $field => $relation) {
             if ($key == $field) {
                 return $relation;

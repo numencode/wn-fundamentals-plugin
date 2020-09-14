@@ -65,9 +65,9 @@ For the purpose of demonstration, let's say we created two models: `Category` an
 `Category` can have multiple items which we want to display and edit via the repeater.
 
 `Category` model must:
- - implement `Relationable` behavior
- - define `$hasMany` property (for items)
- - extend a model with a dynamic property `$relationable`
+ - implement the `Relationable` behavior
+ - define the `$hasMany` relationship for the items
+ - define the `$relationable` property (where key is a relationable property name and value is the relationship)
 
 Here's the mockup for the `Category` model:
 
@@ -81,17 +81,12 @@ Here's the mockup for the `Category` model:
             'items' => [Item::class, 'key' => 'category_id'],
         ];
 
-        public static function boot()
-        {
-            parent::boot();
-
-            static::extend(function ($model) {
-                $model->addDynamicProperty('relationable', ['items_list' => 'items']);
-            });
-        }
+        public $relationable = [
+            'items_list' => 'items',
+        ];
     }
 
-Finally, `repeater` for items must be defined in `\models\category\fields.yaml` as such:
+Finally, `repeater` for the items must be defined in `\models\category\fields.yaml` as such:
 
     fields:
         ...
