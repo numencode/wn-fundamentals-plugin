@@ -7,17 +7,6 @@ use NumenCode\Fundamentals\Extensions\TwigExtensions;
 
 class Plugin extends PluginBase
 {
-    public function pluginDetails()
-    {
-        return [
-            'name'        => 'numencode.fundamentals::lang.plugin.name',
-            'description' => 'numencode.fundamentals::lang.plugin.description',
-            'author'      => 'Blaz Orazem',
-            'icon'        => 'oc-icon-cogs',
-            'homepage'    => 'https://github.com/numencode/fundamentals-plugin',
-        ];
-    }
-
     public function boot()
     {
         (new ConfigOverride())->init();

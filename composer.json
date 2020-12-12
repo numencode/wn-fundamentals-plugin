@@ -1,8 +1,11 @@
 {
     "name": "numencode/fundamentals-plugin",
     "type": "october-plugin",
-    "description": "Fundamentals plugin for October CMS",
+    "description": "NumenCode Fundamentals plugin for October CMS",
     "require": {
         "mobiledetect/mobiledetectlib": "^2.8"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^5.2"
     }
 }

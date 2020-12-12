@@ -2,10 +2,9 @@
 
 use System\Classes\PluginManager;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Debug\Dumper;
+use Symfony\Component\VarDumper\VarDumper;
 
-if (!function_exists('numencode_partial'))
-{
+if (!function_exists('numencode_partial')) {
     /**
      * Returns the path to the NumenCode partial file.
      *
@@ -13,7 +12,7 @@ if (!function_exists('numencode_partial'))
      * @param array $partialData
      * @return string
      */
-    function numencode_partial($_fileName, $partialData = [])
+    function numencode_partial(string $_fileName, $partialData = [])
     {
         extract($partialData, EXTR_OVERWRITE);
 
@@ -25,13 +24,13 @@ if (!function_exists('numencode_partial'))
     }
 }
 
-if (!function_exists('validate_request'))
-{
+if (!function_exists('validate_request')) {
     /**
      * Validates current request and flashes errors to the session.
      * Returns true if the request is valid or false if it's not.
      *
      * @param array $rules
+     * @param array $messages
      * @return bool
      */
     function validate_request(array $rules, $messages = [])
@@ -54,8 +53,7 @@ if (!function_exists('validate_request'))
     }
 }
 
-if (!function_exists('select_options'))
-{
+if (!function_exists('select_options')) {
     /**
      * Creates options for the select element.
      *
@@ -66,7 +64,7 @@ if (!function_exists('select_options'))
     {
         $result = [];
 
-        foreach($options as $key => $value) {
+        foreach ($options as $key => $value) {
             $result[] = '<option value="' . $key . '">' . $value . '</option>';
         }
 
@@ -74,74 +72,58 @@ if (!function_exists('select_options'))
     }
 }
 
-if (!function_exists('array_insert'))
-{
+if (!function_exists('array_insert')) {
     /**
      * Inserts a new element to a position inside an array.
      *
-     * @param $array
+     * @param array $haystack
      * @param $beforeElement
      * @param $data
      * @return array
      */
-    function array_insert($array, $beforeElement, $data)
+    function array_insert(array $haystack, $beforeElement, $data)
     {
         if (is_int($beforeElement)) {
-            $first = $array;
+            $first = $haystack;
             $second = array_splice($first, $beforeElement);
 
             return array_merge($first, $data, $second);
         } else {
-            $beforeElement = array_search($beforeElement, array_keys($array));
+            $beforeElement = array_search($beforeElement, array_keys($haystack));
 
             return array_merge(
-                array_slice($array, 0, $beforeElement),
+                array_slice($haystack, 0, $beforeElement),
                 $data,
-                array_slice($array, $beforeElement)
+                array_slice($haystack, $beforeElement)
             );
         }
     }
 }
 
-if (!function_exists('recursive_array_search'))
-{
+if (!function_exists('array_move_element_before')) {
     /**
-     * Searches the array recursively for a given value and returns the corresponding keys if successful.
+     * Move a specific array element before another array element in an
+     * associated array by halving the array at the desired position
+     * and squeezing the element-to-be-moved into the gap created.
      *
-     * @param  string $needle
-     * @param  array $haystack
-     * @param array $keys
+     * @param array $haystack The array.
+     * @param string $needle The searched element key.
+     * @param string $move The element key that should be moved before the needle.
+     *
      * @return array
      */
-    function recursive_array_search($needle, $haystack, $keys = [])
+    function array_move_element_before(array $haystack, string $needle, string $move)
     {
-        foreach ($haystack as $key => $value) {
-            if (is_array($value)) {
-                $sub = recursive_array_search($needle, $value, array_merge($keys, [$key]));
-
-                if (count($sub)) {
-                    return $sub;
-                }
-            } elseif ($value === $needle) {
-                return array_merge($keys, [$key]);
-            }
+        if (!isset($haystack[$needle], $haystack[$move])) {
+            return $haystack;
         }
 
-        return [];
-    }
-}
+        $element = [$move => $haystack[$move]];
+        $start = array_splice($haystack, 0, array_search($needle, array_keys($haystack)));
 
-if (!function_exists('round_global'))
-{
-    /**
-     * Rounds the number to a number of decimals defined in a global setting.
-     *
-     * @param mixed $number
-     * @return float
-     */
-    function round_global($number)
-    {
-        return round($number, config('app.round_decimals', 2));
+        unset($start[$move]);
+
+        return $start + $element + $haystack;
     }
 }
 
@@ -166,6 +148,46 @@ if (!function_exists('array_merge_reference')) {
     }
 }
 
+if (!function_exists('recursive_array_search')) {
+    /**
+     * Searches the array recursively for a given value and returns the corresponding keys if successful.
+     *
+     * @param string $needle
+     * @param array $haystack
+     * @param array $keys
+     * @return array
+     */
+    function recursive_array_search(string $needle, array $haystack, $keys = [])
+    {
+        foreach ($haystack as $key => $value) {
+            if (is_array($value)) {
+                $sub = recursive_array_search($needle, $value, array_merge($keys, [$key]));
+
+                if (count($sub)) {
+                    return $sub;
+                }
+            } elseif ($value === $needle) {
+                return array_merge($keys, [$key]);
+            }
+        }
+
+        return [];
+    }
+}
+
+if (!function_exists('round_global')) {
+    /**
+     * Rounds the number to a number of decimals defined in a global setting.
+     *
+     * @param mixed $number
+     * @return float
+     */
+    function round_global($number)
+    {
+        return round($number, config('app.round_decimals', 2));
+    }
+}
+
 if (!function_exists('plugin_exists')) {
     /**
      * Checks if plugin exists and is enabled.
@@ -173,7 +195,7 @@ if (!function_exists('plugin_exists')) {
      * @param string $plugin
      * @return bool
      */
-    function plugin_exists($plugin)
+    function plugin_exists(string $plugin)
     {
         return array_key_exists($plugin, PluginManager::instance()->getPlugins());
     }
@@ -186,7 +208,7 @@ if (!function_exists('extend_class')) {
      * @param string $class
      * @param $extension
      */
-    function extend_class($class, $extension)
+    function extend_class(string $class, $extension)
     {
         $class::extend(function ($object) use ($extension) {
             $object->extendClassWith($extension);
@@ -194,26 +216,28 @@ if (!function_exists('extend_class')) {
     }
 }
 
-if (!function_exists('dumpbug'))
-{
+if (!function_exists('dumpbug')) {
     /**
      * Dumps a simple debug backtrace.
      */
     function dumpbug()
     {
         $vars = func_get_args();
+
         echo '<pre>';
-        foreach($vars as $var) {
+
+        foreach ($vars as $var) {
             echo '<strong>(' . gettype($var) . ')</strong> ';
             print_r($var);
         }
+
         echo '</pre>';
+
         return;
     }
 }
 
-if (!function_exists('diebug'))
-{
+if (!function_exists('diebug')) {
     /**
      * Dumps a simple debug backtrace and ends a script.
      */
@@ -223,12 +247,12 @@ if (!function_exists('diebug'))
     }
 }
 
-if (!function_exists('dd_query'))
-{
+if (!function_exists('dd_query')) {
     $_global_query_count = 0;
     /**
      * Dumps the next database query.
      *
+     * @param int $count
      * @return void
      */
     function dd_query($count = 1)
@@ -251,22 +275,22 @@ if (!function_exists('dd_query'))
     }
 }
 
-if (!function_exists('d'))
-{
+if (!function_exists('d')) {
     /**
      * Dumps the passed variables and does not end the script.
      *
-     * @param  mixed
+     * @param mixed
      * @return void
      */
     function d()
     {
-        array_map(function($x) { (new Dumper)->dump($x); }, func_get_args());
+        array_map(function ($x) {
+            (new VarDumper)->dump($x);
+        }, func_get_args());
     }
 }
 
-if (!function_exists('ddd'))
-{
+if (!function_exists('ddd')) {
     /**
      * Quick fix for not rendering dd() in the browser's network tab.
      *
@@ -279,13 +303,12 @@ if (!function_exists('ddd'))
     }
 }
 
-if (!function_exists('ddt'))
-{
+if (!function_exists('ddt')) {
     /**
      * Dumps a simple debug backtrace and ends the script. Useful for console debugging.
      *
-     * @param int $skip Number of last nodes to skip from the output
-     * @param bool $die Die after printing the trace
+     * @param int $skip Number of last nodes to skip from the output.
+     * @param bool $die Die after printing the trace.
      */
     function ddt($skip = 0, $die = true)
     {

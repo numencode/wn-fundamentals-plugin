@@ -128,3 +128,17 @@ Extensions are divided into two scopes, filters and functions, which can all be 
 | trans          | Translate the given string | trans('Some random sentence') |
 | trim           | Strip whitespace (or other characters) from the beginning and end of a string | trim(' Some random sentence ') |
 | url_params     | Returns the current routing parameters | dd(url_params()) |
+
+# Author
+
+**NumenCode Fundamentals plugin** was created by and is maintained by [Blaz Orazem](https://www.orazem.si/).
+
+Please write an email to [info@numencode.com](mailto:info@numencode.com) about all the things concerning this project.
+
+Follow [@blazorazem](https://twitter.com/blazorazem) on Twitter.
+
+# License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+[![MIT License](https://img.shields.io/github/license/numencode/fundamentals-plugin?label=License&color=blue&style=flat-square&cacheSeconds=600)](https://github.com/numencode/fundamentals-plugin/blob/master/LICENSE.md)
