@@ -4,6 +4,8 @@ use System\Classes\PluginBase;
 use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
 use NumenCode\Fundamentals\Bootstrap\BackendOverride;
 use NumenCode\Fundamentals\Extensions\TwigExtensions;
+use NumenCode\Fundamentals\Console\ProjectPullCommand;
+use NumenCode\Fundamentals\Console\ProjectDeployCommand;
 
 class Plugin extends PluginBase
 {
@@ -16,6 +18,9 @@ class Plugin extends PluginBase
     public function register()
     {
         require_once __DIR__ . '/helpers.php';
+
+        $this->registerConsoleCommand('numencode.project_pull', ProjectPullCommand::class);
+        $this->registerConsoleCommand('numencode.project_deploy', ProjectDeployCommand::class);
     }
 
     public function registerMarkupTags()

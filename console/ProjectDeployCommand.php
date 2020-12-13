@@ -1,0 +1,152 @@
+<?php namespace NumenCode\Fundamentals\Console;
+
+class ProjectDeployCommand extends RemoteCommand
+{
+    protected $signature = 'project:deploy
+        {server : The name of the remote server}
+        {--f|--fast : Fast deploy (without clearing the cache)}
+        {--c|--composer : Force Composer install}
+        {--s|--symlink : Symlink public directory}
+        {--m|--migrate : Run migrations}';
+
+    protected $description = 'Deploy OctoberCMS project to a remote server.';
+
+    public function handle()
+    {
+        if (!$this->sshConnect()) {
+            return;
+        }
+
+        if (!$this->checkForChanges(true)) {
+            return;
+        }
+
+        $success = $this->option('fast') ? $this->fastDeploy() : $this->deploy();
+
+        if (!$success) {
+            $this->error('PROJECT DEPLOY FAILED');
+        } else {
+            $this->info('PROJECT DEPLOY SUCCESSFUL');
+        }
+    }
+
+    protected function deploy()
+    {
+        $this->info('PUTTING THE APPLICATION INTO MAINTENANCE MODE:');
+        $this->sshRunAndPrint(['php artisan down']);
+
+        sleep(1);
+
+        $this->info('FLUSHING THE APPLICATION CACHE:');
+        $this->sshRunAndPrint($this->clearCommands());
+
+        $success = $this->fastDeploy();
+
+        $this->info('REBUILDING THE APPLICATION CACHE:');
+        $this->sshRunAndPrint($this->clearCommands());
+
+        $this->info('BRINGING THE APPLICATION OUT OF MAINTENANCE MODE:');
+        $this->sshRunAndPrint(['php artisan up']);
+
+        return $success;
+    }
+
+    protected function fastDeploy()
+    {
+        if (!empty($this->server['permissions']['root_user'])) {
+            $this->info('TAKING OWNERSHIP:');
+            $this->sshRunAndPrint(['sudo chown ' . $this->server['permissions']['root_user'] . ' -R .']);
+        }
+
+        if (array_get($this->server, 'master_branch', 'master') === false) {
+            return $this->pullDeploy();
+        } else {
+            return $this->mergeDeploy();
+        }
+    }
+
+    public function pullDeploy()
+    {
+        $this->info('DEPLOYING THE PROJECT (PULL):');
+
+        $result = $this->sshRunAndPrint(['git pull']);
+
+        if (str_contains($result, 'CONFLICT')) {
+            $this->error('Conflicts detected. Reverting...');
+            $this->sshRunAndPrint(['git reset --hard']);
+
+            return false;
+        }
+
+        $this->afterDeploy($result);
+
+        return true;
+    }
+
+    public function mergeDeploy()
+    {
+        $this->info('DEPLOYING THE PROJECT (MERGE):');
+
+        $result = $this->sshRunAndPrint([
+            'git fetch',
+            'git merge origin/' . array_get($this->server, 'master_branch', 'master'),
+        ]);
+
+        if (str_contains($result, 'CONFLICT')) {
+            $this->error('Conflicts detected. Reverting...');
+            $this->sshRunAndPrint(['git reset --hard']);
+
+            return false;
+        }
+
+        $this->sshRunAndPrint(['git push origin ' . $this->server['branch']]);
+
+        $this->afterDeploy($result);
+
+        return true;
+    }
+
+    public function afterDeploy($result)
+    {
+        if ($this->option('composer') || str_contains($result, 'composer.lock')) {
+            $this->sshRunAndPrint($this->composerCommands());
+        }
+
+        if ($this->option('migrate')) {
+            $this->sshRunAndPrint($this->migrateCommands());
+        }
+
+        if (!empty($this->server['permissions']['www_user']) && !empty($this->server['permissions']['www_folders'])) {
+            $folders = explode(',', $this->server['permissions']['www_folders']);
+
+            $this->info('DISTRIBUTING OWNERSHIP:');
+
+            foreach ($folders as $folder) {
+                $this->sshRunAndPrint(['sudo chown ' . $this->server['permissions']['www_user'] . ' ' . $folder . ' -R']);
+            }
+        }
+    }
+
+    protected function clearCommands()
+    {
+        return [
+            'php artisan route:clear',
+            'php artisan config:clear',
+            'php artisan cache:clear',
+        ];
+    }
+
+    protected function migrateCommands()
+    {
+        return [
+            'php artisan october:up',
+        ];
+    }
+
+    protected function composerCommands()
+    {
+        return [
+            'composer install --no-dev',
+        ];
+    }
+}
