@@ -3,7 +3,8 @@
     "type": "october-plugin",
     "description": "NumenCode Fundamentals plugin for October CMS",
     "require": {
-        "mobiledetect/mobiledetectlib": "^2.8"
+        "mobiledetect/mobiledetectlib": "^2.8",
+        "laravelcollective/remote": "^6.2"
     },
     "require-dev": {
         "symfony/var-dumper": "^5.2"
