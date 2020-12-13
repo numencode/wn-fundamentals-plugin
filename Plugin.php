@@ -1,6 +1,7 @@
 <?php namespace NumenCode\Fundamentals;
 
 use System\Classes\PluginBase;
+use NumenCode\Fundamentals\Console\DataPullCommand;
 use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
 use NumenCode\Fundamentals\Bootstrap\BackendOverride;
 use NumenCode\Fundamentals\Extensions\TwigExtensions;
@@ -21,6 +22,7 @@ class Plugin extends PluginBase
 
         $this->registerConsoleCommand('numencode.project_pull', ProjectPullCommand::class);
         $this->registerConsoleCommand('numencode.project_deploy', ProjectDeployCommand::class);
+        $this->registerConsoleCommand('numencode.data_pull', DataPullCommand::class);
     }
 
     public function registerMarkupTags()
