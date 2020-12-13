@@ -5,10 +5,9 @@ class ProjectPullCommand extends RemoteCommand
     protected $signature = 'project:pull
         {server : The name of the remote server}
         {--p|--pull : Execute git pull command before git push}
-        {--m|--nomerge : Do not merge changes automatically}
-        ';
+        {--m|--nomerge : Do not merge changes automatically}';
 
-    protected $description = 'Pull changes to OctoberCMS project from a remote server.';
+    protected $description = 'Pull changes into the project from a remote server.';
 
     protected $server = null;
 

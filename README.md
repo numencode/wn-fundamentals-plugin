@@ -39,33 +39,64 @@ Commands for the easier remote deployment are included.
 
 ### Prerequisites
 
-A new config file must be created under `\config\remote.php`.
-File content must contain remote connections in an orderly manner:
+A new config file must be created under `\config\remote.php`. File content must contain remote connections in a manner:
 
-    'connections' => [
-        'production' => [
-            'key'              => env('REMOTE_PRODUCTION_KEY'),
-            'path'             => env('REMOTE_PRODUCTION_PATH'),
-            'branch'           => env('REMOTE_PRODUCTION_BRANCH', 'prod'),
-            'host'             => env('REMOTE_PRODUCTION_HOST'),
-            'username'         => env('REMOTE_PRODUCTION_USERNAME'),
-            'keyphrase'        => env('REMOTE_PRODUCTION_KEYPHRASE', ''),
-            'timeout'          => 600,
-            'permissions'      => [
-                'root_user'   => env('REMOTE_PRODUCTION_ROOT_USER'),
-                'www_user'    => env('REMOTE_PRODUCTION_WWW_USER'),
-                'www_folders' => env('REMOTE_PRODUCTION_WWW_FOLDERS'),
+    return [
+
+        /*
+        |--------------------------------------------------------------------------
+        | Remote connections
+        |--------------------------------------------------------------------------
+        |
+        | This file is for storing the credentials for the remote server connections.
+        |
+        */
+
+        'connections' => [
+            'production' => [
+                'key'              => env('REMOTE_PRODUCTION_KEY'),
+                'path'             => env('REMOTE_PRODUCTION_PATH'),
+                'branch'           => env('REMOTE_PRODUCTION_BRANCH', 'prod'),
+                // 'master_branch'    => env('REMOTE_PRODUCTION_MASTER_BRANCH'),
+                'host'             => env('REMOTE_PRODUCTION_HOST'),
+                'username'         => env('REMOTE_PRODUCTION_USERNAME'),
+                'keyphrase'        => env('REMOTE_PRODUCTION_KEYPHRASE', ''),
+                'timeout'          => 600,
+                'permissions'      => [
+                    'root_user'   => env('REMOTE_PRODUCTION_ROOT_USER'),
+                    'www_user'    => env('REMOTE_PRODUCTION_WWW_USER'),
+                    'www_folders' => env('REMOTE_PRODUCTION_WWW_FOLDERS'),
+                ],
             ],
         ],
+
     ],
+
+Setting `master_branch` is optional and should be uncommented only if the main branch is named differently from `master`.
 
 ### Pull changes from the remote server
 
-TBD.
+Pull changes into the project from a remote server with command:
+`php artisan project:pull production`
+- where `production` is remote server name specified in the config file
+
+The command supports some optional arguments:
+`php artisan project:pull production -pull -nomerge`
+- where `-pull` or `-p` is optional argument which executes git pull command before git push
+- where `-nomerge` or `-m` is optional argument which does not merge changes automatically
 
 ### Deploy changes to a remote server
 
-TBD.
+Deploy project to a remote server with command:
+`php artisan project:deploy production`
+- where `production` is remote server name specified in the config file
+
+The command supports some optional arguments:
+`php artisan project:deploy production -fast -composer -migrate -sudo`
+- where `-fast` or `-f` is optional argument which deploys without clearing the cache
+- where `-composer` or `-c` is optional argument which forces Composer install
+- where `-migrate` or `-m` is optional argument which runs migrations (`php artisan october:up`)
+- where `-sudo` or `-su` is optional argument which forces the super user (`sudo`) usage
 
 ## CMS permissions
 

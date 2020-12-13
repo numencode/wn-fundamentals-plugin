@@ -6,10 +6,12 @@ class ProjectDeployCommand extends RemoteCommand
         {server : The name of the remote server}
         {--f|--fast : Fast deploy (without clearing the cache)}
         {--c|--composer : Force Composer install}
-        {--s|--symlink : Symlink public directory}
-        {--m|--migrate : Run migrations}';
+        {--m|--migrate : Run migrations}
+        {--su|--sudo : Force super user (sudo)}';
 
-    protected $description = 'Deploy OctoberCMS project to a remote server.';
+    protected $description = 'Deploy project to a remote server.';
+
+    protected $sudo;
 
     public function handle()
     {
@@ -19,6 +21,10 @@ class ProjectDeployCommand extends RemoteCommand
 
         if (!$this->checkForChanges(true)) {
             return;
+        }
+
+        if ($this->option('sudo')) {
+            $this->sudo = 'sudo ';
         }
 
         $success = $this->option('fast') ? $this->fastDeploy() : $this->deploy();
@@ -33,7 +39,7 @@ class ProjectDeployCommand extends RemoteCommand
     protected function deploy()
     {
         $this->info('PUTTING THE APPLICATION INTO MAINTENANCE MODE:');
-        $this->sshRunAndPrint(['php artisan down']);
+        $this->sshRunAndPrint([$this->sudo . 'php artisan down']);
 
         sleep(1);
 
@@ -46,7 +52,7 @@ class ProjectDeployCommand extends RemoteCommand
         $this->sshRunAndPrint($this->clearCommands());
 
         $this->info('BRINGING THE APPLICATION OUT OF MAINTENANCE MODE:');
-        $this->sshRunAndPrint(['php artisan up']);
+        $this->sshRunAndPrint([$this->sudo . 'php artisan up']);
 
         return $success;
     }
@@ -55,7 +61,7 @@ class ProjectDeployCommand extends RemoteCommand
     {
         if (!empty($this->server['permissions']['root_user'])) {
             $this->info('TAKING OWNERSHIP:');
-            $this->sshRunAndPrint(['sudo chown ' . $this->server['permissions']['root_user'] . ' -R .']);
+            $this->sshRunAndPrint([$this->sudo . 'chown ' . $this->server['permissions']['root_user'] . ' -R .']);
         }
 
         if (array_get($this->server, 'master_branch', 'master') === false) {
@@ -122,7 +128,7 @@ class ProjectDeployCommand extends RemoteCommand
             $this->info('DISTRIBUTING OWNERSHIP:');
 
             foreach ($folders as $folder) {
-                $this->sshRunAndPrint(['sudo chown ' . $this->server['permissions']['www_user'] . ' ' . $folder . ' -R']);
+                $this->sshRunAndPrint([$this->sudo . 'sudo chown ' . $this->server['permissions']['www_user'] . ' ' . $folder . ' -R']);
             }
         }
     }
@@ -130,23 +136,23 @@ class ProjectDeployCommand extends RemoteCommand
     protected function clearCommands()
     {
         return [
-            'php artisan route:clear',
-            'php artisan config:clear',
-            'php artisan cache:clear',
+            $this->sudo . 'php artisan route:clear',
+            $this->sudo . 'php artisan config:clear',
+            $this->sudo . 'php artisan cache:clear',
         ];
     }
 
     protected function migrateCommands()
     {
         return [
-            'php artisan october:up',
+            $this->sudo . 'php artisan october:up',
         ];
     }
 
     protected function composerCommands()
     {
         return [
-            'composer install --no-dev',
+            $this->sudo . 'composer install --no-dev',
         ];
     }
 }
