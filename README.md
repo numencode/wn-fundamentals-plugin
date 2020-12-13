@@ -10,6 +10,63 @@ A backend dashboard override system is incorporated in the plugin and includes a
 
 Fundamentals plugin includes some common language translations which can be used elsewhere.
 
+## Helper functions
+
+Some helper functions are included in the plugin and can be used elsewhere in the application.
+
+| Function | Description |
+| --- | --- |
+| numencode_partial         | Returns the path to the NumenCode partial file. |
+| validate_request          | Validates current request and flashes errors to the session. Returns true if the request is valid or false if it's not. |
+| select_options            | Creates options for the select element. |
+| array_insert              | Inserts a new element into a specific position inside an array. |
+| array_move_element_before | Moves a specific array element before another array element in an associated array by halving the array at the desired position and squeezing the element-to-be-moved into the gap created. |
+| array_merge_reference     | Merges elements from passed arrays into one array and keeps a reference to the original arrays. |
+| array_search_recursive    | Searches the array recursively for a given value and returns the corresponding keys if successful. |
+| round_global              | Rounds the number to a number of decimals defined in a global setting. |
+| plugin_exists             | Checks if plugin exists and is enabled. |
+| extend_class              | Extends a class with a behavior. |
+| dumpbug                   | Dumps a simple debug backtrace. |
+| diebug                    | Dumps a simple debug backtrace and ends a script. |
+| dd_query                  | Dumps the next database query. |
+| d                         | Dumps the passed variables and does not end the script. |
+| ddd                       | Quick fix for not rendering dd() in the browser's network tab. |
+| ddt                       | Dumps a simple debug backtrace and ends the script. Useful for console debugging. |
+
+## Remote commands
+
+Commands for the easier remote deployment are included.
+
+### Prerequisites
+
+A new config file must be created under `\config\remote.php`.
+File content must contain remote connections in an orderly manner:
+
+    'connections' => [
+        'production' => [
+            'key'              => env('REMOTE_PRODUCTION_KEY'),
+            'path'             => env('REMOTE_PRODUCTION_PATH'),
+            'branch'           => env('REMOTE_PRODUCTION_BRANCH', 'prod'),
+            'host'             => env('REMOTE_PRODUCTION_HOST'),
+            'username'         => env('REMOTE_PRODUCTION_USERNAME'),
+            'keyphrase'        => env('REMOTE_PRODUCTION_KEYPHRASE', ''),
+            'timeout'          => 600,
+            'permissions'      => [
+                'root_user'   => env('REMOTE_PRODUCTION_ROOT_USER'),
+                'www_user'    => env('REMOTE_PRODUCTION_WWW_USER'),
+                'www_folders' => env('REMOTE_PRODUCTION_WWW_FOLDERS'),
+            ],
+        ],
+    ],
+
+### Pull changes from the remote server
+
+TBD.
+
+### Deploy changes to a remote server
+
+TBD.
+
 ## CMS permissions
 
 CmsPermissions class can be used to allow or revoke specific user groups from running certain actions

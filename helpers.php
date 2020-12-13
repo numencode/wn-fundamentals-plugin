@@ -74,7 +74,7 @@ if (!function_exists('select_options')) {
 
 if (!function_exists('array_insert')) {
     /**
-     * Inserts a new element to a position inside an array.
+     * Inserts a new element into a specific position inside an array.
      *
      * @param array $haystack
      * @param $beforeElement
@@ -102,7 +102,7 @@ if (!function_exists('array_insert')) {
 
 if (!function_exists('array_move_element_before')) {
     /**
-     * Move a specific array element before another array element in an
+     * Moves a specific array element before another array element in an
      * associated array by halving the array at the desired position
      * and squeezing the element-to-be-moved into the gap created.
      *
@@ -148,7 +148,7 @@ if (!function_exists('array_merge_reference')) {
     }
 }
 
-if (!function_exists('recursive_array_search')) {
+if (!function_exists('array_search_recursive')) {
     /**
      * Searches the array recursively for a given value and returns the corresponding keys if successful.
      *
@@ -157,7 +157,7 @@ if (!function_exists('recursive_array_search')) {
      * @param array $keys
      * @return array
      */
-    function recursive_array_search(string $needle, array $haystack, $keys = [])
+    function array_search_recursive(string $needle, array $haystack, $keys = [])
     {
         foreach ($haystack as $key => $value) {
             if (is_array($value)) {
@@ -249,6 +249,7 @@ if (!function_exists('diebug')) {
 
 if (!function_exists('dd_query')) {
     $_global_query_count = 0;
+
     /**
      * Dumps the next database query.
      *
