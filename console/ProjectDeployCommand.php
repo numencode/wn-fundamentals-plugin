@@ -7,7 +7,7 @@ class ProjectDeployCommand extends RemoteCommand
         {--f|--fast : Fast deploy (without clearing the cache)}
         {--c|--composer : Force Composer install}
         {--m|--migrate : Run migrations}
-        {--su|--sudo : Force super user (sudo)}';
+        {--x|--sudo : Force super user (sudo)}';
 
     protected $description = 'Deploy project to a remote server.';
 
@@ -152,7 +152,7 @@ class ProjectDeployCommand extends RemoteCommand
     protected function composerCommands()
     {
         return [
-            $this->sudo . 'composer install --no-dev',
+            'composer install --no-dev',
         ];
     }
 }

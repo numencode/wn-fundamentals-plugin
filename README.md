@@ -81,9 +81,9 @@ Pull changes into the project from a remote server with command:
 - where `production` is remote server name specified in the config file
 
 The command supports some optional arguments:
-`php artisan project:pull production -pull -nomerge`
-- where `-pull` or `-p` is optional argument which executes git pull command before git push
-- where `-nomerge` or `-m` is optional argument which does not merge changes automatically
+`php artisan project:pull production --pull --nomerge`
+- where `--pull` or `-p` is optional argument which executes git pull command before git push
+- where `--nomerge` or `-m` is optional argument which does not merge changes automatically
 
 ### Deploy changes to a remote server
 
@@ -92,11 +92,11 @@ Deploy project to a remote server with command:
 - where `production` is remote server name specified in the config file
 
 The command supports some optional arguments:
-`php artisan project:deploy production -fast -composer -migrate -sudo`
-- where `-fast` or `-f` is optional argument which deploys without clearing the cache
-- where `-composer` or `-c` is optional argument which forces Composer install
-- where `-migrate` or `-m` is optional argument which runs migrations (`php artisan october:up`)
-- where `-sudo` or `-su` is optional argument which forces the super user (`sudo`) usage
+`php artisan project:deploy production --fast --composer --migrate --sudo`
+- where `--fast` or `-f` is optional argument which deploys without clearing the cache
+- where `--composer` or `-c` is optional argument which forces Composer install
+- where `--migrate` or `-m` is optional argument which runs migrations (`php artisan october:up`)
+- where `--sudo` or `-x` is optional argument which forces the super user (`sudo`) usage
 
 ## CMS permissions
 
