@@ -29,6 +29,8 @@ class ProjectDeployCommand extends RemoteCommand
 
         $success = $this->option('fast') ? $this->fastDeploy() : $this->deploy();
 
+        $this->takeOwnership();
+
         if (!$success) {
             $this->error('PROJECT DEPLOY FAILED');
         } else {
@@ -122,14 +124,21 @@ class ProjectDeployCommand extends RemoteCommand
             $this->sshRunAndPrint($this->migrateCommands());
         }
 
-        if (!empty($this->server['permissions']['www_user']) && !empty($this->server['permissions']['www_folders'])) {
-            $folders = explode(',', $this->server['permissions']['www_folders']);
+        $this->takeOwnership();
+    }
 
-            $this->info('DISTRIBUTING OWNERSHIP:');
+    protected function takeOwnership()
+    {
+        if (empty($this->server['permissions']['www_user']) || empty($this->server['permissions']['www_folders'])) {
+            return;
+        }
 
-            foreach ($folders as $folder) {
-                $this->sshRunAndPrint([$this->sudo . 'sudo chown ' . $this->server['permissions']['www_user'] . ' ' . $folder . ' -R']);
-            }
+        $folders = explode(',', $this->server['permissions']['www_folders']);
+
+        $this->info('DISTRIBUTING OWNERSHIP:');
+
+        foreach ($folders as $folder) {
+            $this->sshRunAndPrint([$this->sudo . 'sudo chown ' . $this->server['permissions']['www_user'] . ' ' . $folder . ' -R']);
         }
     }
 

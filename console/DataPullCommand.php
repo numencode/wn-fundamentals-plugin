@@ -20,28 +20,34 @@ class DataPullCommand extends RemoteCommand
         $dbPass = config('database.connections.mysql.password');
         $dbName = config('database.connections.mysql.database');
 
+        $remoteUser = $this->server['username'];
+        $remoteHost = $this->server['host'];
+        $remotePath = $this->server['path'];
+
         $remoteDbName = $this->server['database']['name'];
         $remoteDbUser = $this->server['database']['username'];
         $remoteDbPass = $this->server['database']['password'];
         $remoteDbTables = implode(' ', $this->server['database']['tables']);
 
-        $this->info('CREATING MySQL DUMP:');
-        $this->sshRunAndPrint([
-            "mysqldump -u{$remoteDbUser} -p{$remoteDbPass} --no-create-info --replace {$remoteDbName} {$remoteDbTables} > database.sql",
-        ]);
+        $this->info('- PROCESS STARTED -' . PHP_EOL);
 
-        $this->info('COMMITTING THE CHANGES:');
-        $this->sshRunAndPrint([
-            'git add database.sql',
-            'git commit -m "Database dump"',
-            'git push origin ' . $this->server['branch'],
-        ]);
+        $this->info('Creating database dump file...');
+        $this->sshRun(["mysqldump -u{$remoteDbUser} -p{$remoteDbPass} --no-create-info --replace {$remoteDbName} {$remoteDbTables} > database.sql"]);
+        $this->info('Database dump file created.' . PHP_EOL);
 
-        $this->info(shell_exec('git fetch'));
-        $this->info(shell_exec('git merge origin/' . $this->server['branch']));
+        $this->info('Transferring database from the remote server...');
+        $this->info(shell_exec("scp {$remoteUser}@{$remoteHost}:{$remotePath}/database.sql database.sql"));
+        $this->info('Database transferred successfully.' . PHP_EOL);
 
+        $this->info('Importing data...');
         $this->info(shell_exec("mysql -u{$dbUser} -p{$dbPass} {$dbName} < database.sql"));
+        $this->info('Data imported successfully.' . PHP_EOL);
 
-        $this->info('ALL DONE!');
+        $this->info('Cleaning the database dump files...');
+        $this->sshRun(['rm -f database.sql']);
+        $this->info(shell_exec('rm -f database.sql'));
+        $this->info('Cleanup completed successfully.' . PHP_EOL);
+
+        $this->info('- PROCESS COMPLETED -');
     }
 }
