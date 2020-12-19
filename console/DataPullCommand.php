@@ -2,7 +2,9 @@
 
 class DataPullCommand extends RemoteCommand
 {
-    protected $signature = 'data:pull {server : The name of the remote server}';
+    protected $signature = 'data:pull
+        {server : The name of the remote server}
+        {--m|--noimport : Do not import data automatically}';
 
     protected $description = 'Create MySQL dump on a remote server and restore it on local server.';
 
@@ -39,13 +41,19 @@ class DataPullCommand extends RemoteCommand
         $this->info(shell_exec("scp {$remoteUser}@{$remoteHost}:{$remotePath}/database.sql database.sql"));
         $this->info('Database transferred successfully.' . PHP_EOL);
 
-        $this->info('Importing data...');
-        $this->info(shell_exec("mysql -u{$dbUser} -p{$dbPass} {$dbName} < database.sql"));
-        $this->info('Data imported successfully.' . PHP_EOL);
+        if (!$this->option('noimport')) {
+            $this->info('Importing data...');
+            $this->info(shell_exec("mysql -u{$dbUser} -p{$dbPass} {$dbName} < database.sql"));
+            $this->info('Data imported successfully.' . PHP_EOL);
+        }
 
         $this->info('Cleaning the database dump files...');
         $this->sshRun(['rm -f database.sql']);
-        $this->info(shell_exec('rm -f database.sql'));
+
+        if (!$this->option('noimport')) {
+            $this->info(shell_exec('rm -f database.sql'));
+        }
+
         $this->info('Cleanup completed successfully.' . PHP_EOL);
 
         $this->info('- PROCESS COMPLETED -');
