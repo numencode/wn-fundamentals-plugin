@@ -8,13 +8,13 @@ class MediaBackupCommand extends Command
 {
     use ProgressBar;
 
-    protected $signature = 'media:backup {cloud? : The name of the cloud storage (default: dropbox)}';
+    protected $signature = 'media:backup {cloud : The name of the cloud storage}';
 
     protected $description = 'Backup (upload) media files to the cloud storage.';
 
     public function handle()
     {
-        $cloudStorage = Storage::disk($this->argument('cloud') ?: 'dropbox');
+        $cloudStorage = Storage::disk($this->argument('cloud'));
 
         $files = array_filter(Storage::allFiles(), function ($file) {
             return basename($file) != '.gitignore' && !stristr($file, '/thumb/');
@@ -23,8 +23,7 @@ class MediaBackupCommand extends Command
         $bar = 1;
 
         $this->line('');
-
-        $this->info('Uploading ' . count($files) . ' files to the cloud storage...');
+        $this->question('Uploading ' . count($files) . ' files to the cloud storage...');
 
         foreach ($files as $file) {
             $this->progressBar($bar, count($files));
@@ -37,6 +36,6 @@ class MediaBackupCommand extends Command
             $cloudStorage->put($file, Storage::get($file));
         }
 
-        $this->info('All files successfully uploaded to the cloud storage.');
+        $this->alert('All files successfully uploaded to the cloud storage.');
     }
 }

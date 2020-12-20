@@ -9,6 +9,7 @@ use NumenCode\Fundamentals\Bootstrap\BackendOverride;
 use NumenCode\Fundamentals\Extensions\TwigExtensions;
 use NumenCode\Fundamentals\Console\MediaBackupCommand;
 use NumenCode\Fundamentals\Console\ProjectPullCommand;
+use NumenCode\Fundamentals\Console\ProjectBackupCommand;
 use NumenCode\Fundamentals\Console\ProjectDeployCommand;
 
 class Plugin extends PluginBase
@@ -28,6 +29,7 @@ class Plugin extends PluginBase
         $this->registerConsoleCommand('numencode.media_pull', MediaPullCommand::class);
         $this->registerConsoleCommand('numencode.media_backup', MediaBackupCommand::class);
         $this->registerConsoleCommand('numencode.project_pull', ProjectPullCommand::class);
+        $this->registerConsoleCommand('numencode.project_backup', ProjectBackupCommand::class);
         $this->registerConsoleCommand('numencode.project_deploy', ProjectDeployCommand::class);
     }
 

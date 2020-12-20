@@ -31,7 +31,7 @@ class ProjectDeployCommand extends RemoteCommand
 
         $success = $this->option('fast') ? $this->fastDeploy() : $this->deploy();
 
-        $this->takeOwnership();
+        $this->handleOwnership();
 
         if (!$success) {
             $this->error('Project deployment FAILED. Check error logs to see what went wrong.' . PHP_EOL);
@@ -127,10 +127,10 @@ class ProjectDeployCommand extends RemoteCommand
             $this->sshRunAndPrint($this->migrateCommands());
         }
 
-        $this->takeOwnership();
+        $this->handleOwnership();
     }
 
-    protected function takeOwnership()
+    protected function handleOwnership()
     {
         if (empty($this->server['permissions']['www_user']) || empty($this->server['permissions']['www_folders'])) {
             return;
