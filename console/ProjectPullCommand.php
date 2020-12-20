@@ -18,6 +18,7 @@ class ProjectPullCommand extends RemoteCommand
         $this->line('');
 
         if ($this->checkForChanges()) {
+            $this->line('');
             $this->alert('No changes on a remote server.');
 
             return;
