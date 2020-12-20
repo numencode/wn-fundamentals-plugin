@@ -4,14 +4,13 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use NumenCode\Fundamentals\Traits\ProgressBar;
 
-class MediaCloudCommand extends Command
+class MediaBackupCommand extends Command
 {
     use ProgressBar;
 
-    protected $signature = 'media:cloud
-        {cloud? : The name of the cloud storage (default: dropbox)}';
+    protected $signature = 'media:backup {cloud? : The name of the cloud storage (default: dropbox)}';
 
-    protected $description = 'Upload media files to the cloud storage.';
+    protected $description = 'Backup (upload) media files to the cloud storage.';
 
     public function handle()
     {

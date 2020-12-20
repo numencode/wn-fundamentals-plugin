@@ -12,7 +12,7 @@ class MediaPullCommand extends RemoteCommand
         {cloud? : The name of the cloud storage (default: dropbox)}
         {--x|--sudo : Force super user (sudo)}';
 
-    protected $description = 'Download media from cloud to the local storage.';
+    protected $description = 'Download media files from the cloud storage to the local storage.';
 
     protected $sudo;
 
@@ -28,7 +28,7 @@ class MediaPullCommand extends RemoteCommand
 
         $cloud = $this->argument('cloud') ?: 'dropbox';
 
-        $result = $this->sshRunAndPrint([$this->sudo . 'php artisan media:cloud ' . $cloud]);
+        $result = $this->sshRunAndPrint([$this->sudo . 'php artisan media:backup ' . $cloud]);
 
         if (!str_contains($result, 'files successfully uploaded')) {
             $this->error('An error occurred while uploading files to the cloud storage.');

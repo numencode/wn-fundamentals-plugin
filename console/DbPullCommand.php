@@ -1,12 +1,12 @@
 <?php namespace NumenCode\Fundamentals\Console;
 
-class DataPullCommand extends RemoteCommand
+class DbPullCommand extends RemoteCommand
 {
-    protected $signature = 'data:pull
+    protected $signature = 'db:pull
         {server : The name of the remote server}
         {--m|--noimport : Do not import data automatically}';
 
-    protected $description = 'Create database dump on a remote server and import it on a local server.';
+    protected $description = 'Create database dump on a remote server and import it on a local environment.';
 
     public function handle()
     {

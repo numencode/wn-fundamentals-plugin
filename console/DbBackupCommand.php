@@ -4,10 +4,9 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
-class DataBackupCommand extends Command
+class DbBackupCommand extends Command
 {
-    protected $signature = 'data:backup
-        {cloud? : The name of the cloud storage (default: dropbox)}';
+    protected $signature = 'db:backup {cloud? : The name of the cloud storage (default: dropbox)}';
 
     protected $description = 'Create database backup and upload it to the cloud storage.';
 
@@ -38,7 +37,7 @@ class DataBackupCommand extends Command
             }
 
             $this->question('Uploading database dump file to the cloud storage...');
-            $cloudStorage->put(static::BACKUP_DIRECTORY . '/' . $backupName, $backupName);
+            $cloudStorage->put(static::BACKUP_DIRECTORY . '/' . $backupName, file_get_contents($backupName));
             $this->info('Database dump file successfully uploaded.');
 
             $this->line('');
