@@ -63,7 +63,7 @@ class RemoteCommand extends Command
 
         if ($deploy) {
             $this->sshRunAndPrint(['git status']);
-            $this->error('Remote changes detected. Aborting the deploy process.');
+            $this->error('Remote changes detected. Aborting deployment process.');
             $this->info('Please run a command: php artisan project:pull ' . $this->argument('server'));
         }
 
