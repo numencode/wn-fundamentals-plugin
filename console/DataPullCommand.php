@@ -14,9 +14,10 @@ class DataPullCommand extends RemoteCommand
             return;
         }
 
-        $dbUser = config('database.connections.mysql.username');
-        $dbPass = config('database.connections.mysql.password');
-        $dbName = config('database.connections.mysql.database');
+        $connection = config('database.default');
+        $dbUser = config("database.connections.{$connection}.username");
+        $dbPass = config("database.connections.{$connection}.password");
+        $dbName = config("database.connections.{$connection}.database");
 
         $remoteUser = $this->server['username'];
         $remoteHost = $this->server['host'];
