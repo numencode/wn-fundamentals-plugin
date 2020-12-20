@@ -9,10 +9,6 @@ class ProjectPullCommand extends RemoteCommand
 
     protected $description = 'Pull changes into the project from a remote server.';
 
-    protected $server = null;
-
-    protected $connection = null;
-
     public function handle()
     {
         if (!$this->sshConnect()) {

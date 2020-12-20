@@ -6,11 +6,7 @@ class DataPullCommand extends RemoteCommand
         {server : The name of the remote server}
         {--m|--noimport : Do not import data automatically}';
 
-    protected $description = 'Create MySQL dump on a remote server and restore it on local server.';
-
-    protected $server = null;
-
-    protected $connection = null;
+    protected $description = 'Create database dump on a remote server and import it on a local server.';
 
     public function handle()
     {
