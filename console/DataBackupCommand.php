@@ -27,7 +27,8 @@ class DataBackupCommand extends Command
         $backupName = Carbon::now()->format('Y-m-d_H-i-s') . '.sql.gz';
 
         $this->info(shell_exec("mysqldump -u{$dbUser} -p{$dbPass} {$dbName} | gzip > {$backupName}"));
-        $this->info('Database dump file created.' . PHP_EOL);
+        $this->info('Database dump file successfully created.');
+        $this->line('');
 
         if ($this->argument('cloud')) {
             $cloudStorage = Storage::disk($this->argument('cloud'));
@@ -36,12 +37,15 @@ class DataBackupCommand extends Command
                 $cloudStorage->makeDirectory(static::BACKUP_DIRECTORY);
             }
 
-            $this->question('Uploading database backup to the cloud storage...');
-
+            $this->question('Uploading database dump file to the cloud storage...');
             $cloudStorage->put(static::BACKUP_DIRECTORY . '/' . $backupName, $backupName);
+            $this->info('Database dump file successfully uploaded.');
+
+            $this->line('');
 
             $this->question('Deleting the database dump file...');
             $this->info(shell_exec("rm -f {$backupName}"));
+            $this->info('Database dump file successfully deleted.');
         }
 
         $this->alert('Database backup was successfully created.');

@@ -32,16 +32,20 @@ class DataPullCommand extends RemoteCommand
 
         $this->question('Creating database dump file...');
         $this->sshRun(["mysqldump -u{$remoteDbUser} -p{$remoteDbPass} --no-create-info --replace {$remoteDbName} {$remoteDbTables} > database.sql"]);
-        $this->info(PHP_EOL . 'Database dump file created.' . PHP_EOL);
+        $this->line('');
+        $this->info('Database dump file created.');
+        $this->line('');
 
         $this->question('Transferring database dump file from the remote server...');
         $this->info(shell_exec("scp {$remoteUser}@{$remoteHost}:{$remotePath}/database.sql database.sql"));
-        $this->info('Database dump file transferred successfully.' . PHP_EOL);
+        $this->info('Database dump file transferred successfully.');
+        $this->line('');
 
         if (!$this->option('noimport')) {
             $this->question('Importing data...');
             $this->info(shell_exec("mysql -u{$dbUser} -p{$dbPass} {$dbName} < database.sql"));
-            $this->info('Data imported successfully.' . PHP_EOL);
+            $this->info('Data imported successfully.');
+            $this->line('');
         }
 
         $this->question('Cleaning the database dump files...');
@@ -51,7 +55,8 @@ class DataPullCommand extends RemoteCommand
             $this->info(shell_exec('rm -f database.sql'));
         }
 
-        $this->info('Cleanup completed successfully.' . PHP_EOL);
+        $this->info('Cleanup completed successfully.');
+        $this->line('');
 
         $this->alert('Database was successfully updated.');
     }

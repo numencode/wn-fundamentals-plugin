@@ -64,8 +64,9 @@ class ProjectDeployCommand extends RemoteCommand
     protected function fastDeploy()
     {
         if (!empty($this->server['permissions']['root_user'])) {
-            $this->question('Handling file ownership.' . PHP_EOL);
+            $this->question('Handling file ownership.');
             $this->sshRunAndPrint([$this->sudo . 'chown ' . $this->server['permissions']['root_user'] . ' -R .']);
+            $this->line('');
         }
 
         if (array_get($this->server, 'master_branch', 'master') === false) {
@@ -137,7 +138,8 @@ class ProjectDeployCommand extends RemoteCommand
 
         $folders = explode(',', $this->server['permissions']['www_folders']);
 
-        $this->question('Handling file ownership.' . PHP_EOL);
+        $this->question('Handling file ownership.');
+        $this->line('');
 
         foreach ($folders as $folder) {
             $this->sshRunAndPrint([$this->sudo . 'sudo chown ' . $this->server['permissions']['www_user'] . ' ' . $folder . ' -R']);
