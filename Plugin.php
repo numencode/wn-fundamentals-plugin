@@ -4,6 +4,7 @@ use System\Classes\PluginBase;
 use NumenCode\Fundamentals\Console\DataPullCommand;
 use NumenCode\Fundamentals\Console\MediaPullCommand;
 use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
+use NumenCode\Fundamentals\Console\MediaCloudCommand;
 use NumenCode\Fundamentals\Bootstrap\BackendOverride;
 use NumenCode\Fundamentals\Extensions\TwigExtensions;
 use NumenCode\Fundamentals\Console\ProjectPullCommand;
@@ -23,6 +24,7 @@ class Plugin extends PluginBase
 
         $this->registerConsoleCommand('numencode.data_pull', DataPullCommand::class);
         $this->registerConsoleCommand('numencode.media_pull', MediaPullCommand::class);
+        $this->registerConsoleCommand('numencode.media_cloud', MediaCloudCommand::class);
         $this->registerConsoleCommand('numencode.project_pull', ProjectPullCommand::class);
         $this->registerConsoleCommand('numencode.project_deploy', ProjectDeployCommand::class);
     }

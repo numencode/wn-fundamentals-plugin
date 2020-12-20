@@ -1,13 +1,8 @@
 <?php namespace NumenCode\Fundamentals\Console;
 
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Storage;
-
 class MediaPullCommand extends RemoteCommand
 {
-    protected $signature = 'media:pull
-        {server : The name of the remote server}
-        {cloud? : The name of the cloud (default: dropbox)}';
+    protected $signature = 'media:pull {server : The name of the remote server}';
 
     protected $description = 'Push media from remote server to cloud and pull it on local server.';
 
@@ -17,5 +12,6 @@ class MediaPullCommand extends RemoteCommand
             return;
         }
 
+        $this->sshRunAndPrint(['sudo php artisan media:cloud dropbox']);
     }
 }
