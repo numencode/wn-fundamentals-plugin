@@ -37,23 +37,29 @@ class MediaPullCommand extends RemoteCommand
         }
 
         $localStorage = Storage::disk('local');
-        $cloudStorage = Storage::disk($this->argument('cloud') ?: 'dropbox');
+        $cloudStorage = Storage::disk($cloud);
         $files = $cloudStorage->allFiles();
         $bar = 1;
 
-        $this->info('Downloading ' . count($files) . ' files from the cloud storage...');
+        $this->line('');
+
+        $this->question('Downloading ' . count($files) . ' files from the cloud storage...');
 
         foreach ($files as $file) {
             $this->progressBar($bar, count($files));
             $bar++;
 
-            if ($localStorage->exists($file) && ($localStorage->size($file) == $cloudStorage->size($file))) {
-                continue;
+            if ($localStorage->exists($file)) {
+                if ($localStorage->size($file) == $cloudStorage->size($file)) {
+                    continue;
+                }
             }
 
-            $localStorage->put($file, $localStorage->get($file));
+            $localStorage->put($file, $cloudStorage->get($file));
         }
 
-        $this->info('All files successfully downloaded to the local storage.');
+        $this->line('');
+
+        $this->alert('All files successfully downloaded to the local storage.');
     }
 }

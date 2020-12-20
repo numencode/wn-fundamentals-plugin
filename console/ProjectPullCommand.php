@@ -15,36 +15,38 @@ class ProjectPullCommand extends RemoteCommand
             return;
         }
 
+        $this->line('');
+
         if ($this->checkForChanges()) {
-            $this->info('NO CHANGES ON A REMOTE SERVER.');
+            $this->alert('No changes on a remote server.');
 
             return;
         }
 
-        $this->info('COMMITTING THE CHANGES:');
+        $this->question('Committing the changes:');
         $this->sshRunAndPrint([
             'git add --all',
             'git commit -m "Server changes"',
         ]);
 
         if ($this->option('pull')) {
-            $this->info('PULLING NEW CHANGES:');
+            $this->question('Pulling new changes:');
             $this->sshRunAndPrint([
                 'git pull',
             ]);
         }
 
-        $this->info('PUSHING THE CHANGES:');
+        $this->question('Pushing the changes:');
         $this->sshRunAndPrint([
             'git push origin ' . $this->server['branch'],
         ]);
 
         if (!$this->option('nomerge')) {
-            $this->info('MERGING THE CHANGES:');
+            $this->question('Merging the changes:');
             $this->info(shell_exec('git fetch'));
             $this->info(shell_exec('git merge origin/' . $this->server['branch']));
         }
 
-        $this->info('ALL DONE!');
+        $this->alert('Changes were successfully pulled into the project.');
     }
 }

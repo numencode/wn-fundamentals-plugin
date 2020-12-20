@@ -23,6 +23,8 @@ class MediaCloudCommand extends Command
 
         $bar = 1;
 
+        $this->line('');
+
         $this->info('Uploading ' . count($files) . ' files to the cloud storage...');
 
         foreach ($files as $file) {

@@ -3,8 +3,8 @@
 trait ProgressBar
 {
     /**
-     * Progress bar can be used to display the progress status in the CLI
-     * while iterating through an array, when running some console command.
+     * Progress bar can be used to display the progress status in the CLI while
+     * iterating through an array, when running a certain console command.
      *
      * Usage example:
      *

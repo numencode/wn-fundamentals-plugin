@@ -27,33 +27,35 @@ class ProjectDeployCommand extends RemoteCommand
             $this->sudo = 'sudo ';
         }
 
+        $this->line('');
+
         $success = $this->option('fast') ? $this->fastDeploy() : $this->deploy();
 
         $this->takeOwnership();
 
         if (!$success) {
-            $this->error('PROJECT DEPLOY FAILED');
+            $this->error('Project deployment FAILED. Check error logs to see what went wrong.' . PHP_EOL);
         } else {
-            $this->info('PROJECT DEPLOY SUCCESSFUL');
+            $this->alert('Project was successfully deployed.');
         }
     }
 
     protected function deploy()
     {
-        $this->info('PUTTING THE APPLICATION INTO MAINTENANCE MODE:');
+        $this->question('Putting the application into maintenance mode:');
         $this->sshRunAndPrint([$this->sudo . 'php artisan down']);
 
         sleep(1);
 
-        $this->info('FLUSHING THE APPLICATION CACHE:');
+        $this->question('Flushing the application cache:');
         $this->sshRunAndPrint($this->clearCommands());
 
         $success = $this->fastDeploy();
 
-        $this->info('REBUILDING THE APPLICATION CACHE:');
+        $this->question('Rebuilding the application cache:');
         $this->sshRunAndPrint($this->clearCommands());
 
-        $this->info('BRINGING THE APPLICATION OUT OF MAINTENANCE MODE:');
+        $this->question('Bringing the application out of the maintenance mode:');
         $this->sshRunAndPrint([$this->sudo . 'php artisan up']);
 
         return $success;
@@ -62,7 +64,7 @@ class ProjectDeployCommand extends RemoteCommand
     protected function fastDeploy()
     {
         if (!empty($this->server['permissions']['root_user'])) {
-            $this->info('TAKING OWNERSHIP:');
+            $this->question('Handling file ownership.' . PHP_EOL);
             $this->sshRunAndPrint([$this->sudo . 'chown ' . $this->server['permissions']['root_user'] . ' -R .']);
         }
 
@@ -75,12 +77,12 @@ class ProjectDeployCommand extends RemoteCommand
 
     public function pullDeploy()
     {
-        $this->info('DEPLOYING THE PROJECT (PULL):');
+        $this->question('Deploying the project (pull mode):');
 
         $result = $this->sshRunAndPrint(['git pull']);
 
         if (str_contains($result, 'CONFLICT')) {
-            $this->error('Conflicts detected. Reverting...');
+            $this->error('Conflicts detected. Reverting changes...');
             $this->sshRunAndPrint(['git reset --hard']);
 
             return false;
@@ -93,7 +95,7 @@ class ProjectDeployCommand extends RemoteCommand
 
     public function mergeDeploy()
     {
-        $this->info('DEPLOYING THE PROJECT (MERGE):');
+        $this->question('Deploying the project (merge mode):');
 
         $result = $this->sshRunAndPrint([
             'git fetch',
@@ -135,7 +137,7 @@ class ProjectDeployCommand extends RemoteCommand
 
         $folders = explode(',', $this->server['permissions']['www_folders']);
 
-        $this->info('DISTRIBUTING OWNERSHIP:');
+        $this->question('Handling file ownership.' . PHP_EOL);
 
         foreach ($folders as $folder) {
             $this->sshRunAndPrint([$this->sudo . 'sudo chown ' . $this->server['permissions']['www_user'] . ' ' . $folder . ' -R']);

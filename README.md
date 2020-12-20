@@ -33,9 +33,10 @@ Some helper functions are included in the plugin and can be used elsewhere in th
 | ddd                       | Quick fix for not rendering dd() in the browser's network tab. |
 | ddt                       | Dumps a simple debug backtrace and ends the script. Useful for console debugging. |
 
-## Remote commands
+## Console commands
 
-Commands for the easier remote deployment are included.
+Various console commands are included, which provide a better experience with remote deployment, cloud storage for
+media files, database updating, backups and much more.
 
 ### Prerequisites
 
@@ -55,7 +56,7 @@ A new config file must be created under `\config\remote.php`. File content must 
         'connections' => [
             'production' => [
                 'key'              => env('REMOTE_PRODUCTION_KEY'),
-                'path'             => env('REMOTE_PRODUCTION_PATH'),
+                'path'             => rtrim(env('REMOTE_PRODUCTION_PATH'), '/'),
                 'branch'           => env('REMOTE_PRODUCTION_BRANCH', 'prod'),
                 // 'master_branch'    => env('REMOTE_PRODUCTION_MASTER_BRANCH'),
                 'host'             => env('REMOTE_PRODUCTION_HOST'),
@@ -66,6 +67,15 @@ A new config file must be created under `\config\remote.php`. File content must 
                     'root_user'   => env('REMOTE_PRODUCTION_ROOT_USER'),
                     'www_user'    => env('REMOTE_PRODUCTION_WWW_USER'),
                     'www_folders' => env('REMOTE_PRODUCTION_WWW_FOLDERS'),
+                ],
+                'database'         => [
+                    'name'     => env('REMOTE_DB_DATABASE'),
+                    'username' => env('REMOTE_DB_USERNAME'),
+                    'password' => env('REMOTE_DB_PASSWORD'),
+                    'tables'   => [
+                        'rainlab_blog_posts',
+                        'rainlab_blog_categories',
+                    ],
                 ],
             ],
         ],
@@ -97,6 +107,18 @@ The command supports some optional arguments:
 - where `--composer` or `-c` is optional argument which forces Composer install
 - where `--migrate` or `-m` is optional argument which runs migrations (`php artisan october:up`)
 - where `--sudo` or `-x` is optional argument which forces the super user (`sudo`) usage
+
+### Update a local database with the data from the production server
+
+TBD.
+
+### Upload media files to the cloud storage
+
+TBD.
+
+### Download media files from the cloud storage
+
+TBD.
 
 ## CMS permissions
 
@@ -131,10 +153,17 @@ such as creating, updating and deleting data.
     <?php endif; ?>
 
 
-## Publishable Trait
+## Traits
 
-Publishable trait can be used on models that allow content to be published or hidden from the website.
-Model entity must use the Publishable trait and the table must include boolean field `is_published`.
+### Progress bar
+
+Progress bar can be used to display the progress status in the CLI while iterating through an array,
+when running a certain console command.
+
+### Publishable
+
+A publishable trait can be used on models that allow content to be published or hidden from the website.
+Model entity must use the Publishable trait, and the table must include boolean field `is_published`.
 
 **Usage in Model**
 
@@ -145,7 +174,9 @@ Model entity must use the Publishable trait and the table must include boolean f
         ...
     }
 
-## RelationableModel Behavior
+## Behaviours
+
+### RelationableModel Behavior
 
 RelationableModel behavior enables `repeater` to be used as relations editor via relation behavior.
 
