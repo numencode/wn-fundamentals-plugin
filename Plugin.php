@@ -12,6 +12,7 @@ use NumenCode\Fundamentals\Console\ProjectPullCommand;
 use NumenCode\Fundamentals\Console\ProjectBackupCommand;
 use NumenCode\Fundamentals\Console\ProjectCommitCommand;
 use NumenCode\Fundamentals\Console\ProjectDeployCommand;
+use NumenCode\Fundamentals\Bootstrap\OverrideFormWidgets;
 
 class Plugin extends PluginBase
 {
@@ -41,5 +42,10 @@ class Plugin extends PluginBase
             'filters'   => TwigExtensions::filters(),
             'functions' => TwigExtensions::functions(),
         ];
+    }
+
+    public function registerFormWidgets()
+    {
+        (new OverrideFormWidgets())->init();
     }
 }
