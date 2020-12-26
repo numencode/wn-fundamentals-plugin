@@ -7,6 +7,7 @@ return [
     ],
     'field'     => [
         'id'                   => 'ID',
+        'section'              => 'Section',
         'title'                => 'Title',
         'subtitle'             => 'Subtitle',
         'description'          => 'Description',
@@ -41,5 +42,8 @@ return [
         'delete' => 'Delete item',
         'update' => 'Update item',
         'count'  => 'No. of items',
+    ],
+    'form'      => [
+        'translatable' => 'Translatable mask',
     ],
 ];

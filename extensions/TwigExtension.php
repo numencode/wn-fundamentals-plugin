@@ -5,7 +5,7 @@ use Detection\MobileDetect;
 use Cms\Classes\Controller;
 use NumenCode\Fundamentals\Classes\ImageResize;
 
-class TwigExtensions
+class TwigExtension
 {
     public static function filters()
     {

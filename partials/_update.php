@@ -1,6 +1,7 @@
 <?php $sidebar = empty($sidebar) && !empty($controller->bodyClass) && $controller->bodyClass == 'compact-container' ? true : !empty($sidebar); ?>
 
 <?php Block::put('breadcrumb') ?>
+    <?= numencode_partial('__translate.php', compact('controller')) ?>
     <ul>
         <li><a href="<?= $url ?>"><?= trans($controller->asExtension('ListController')->getConfig()->title) ?></a></li>
         <li><?= e($controller->pageTitle) ?></li>

@@ -1,6 +1,6 @@
-/************************
-  COLUMN VIEW (SETTINGS)
-*************************/
+/**************************************
+    COLUMN VIEW (SETTINGS)
+**************************************/
 .column-container {
     -webkit-column-count: 3;
     column-count: 3;
@@ -15,5 +15,141 @@
     @media all and (max-width:767px){
         -webkit-column-count: 1;
         column-count: 1;
+    }
+}
+
+/**************************************
+    TRANSLATABLE
+**************************************/
+.translatable-selector {
+    @media (min-width: 1100px) {
+        float: right;
+        white-space: nowrap;
+        height: 44px;
+    }
+    @media (max-width: 1100px) {
+        padding-bottom: 6px;
+        text-align: center;
+    }
+    padding-right: 6px;
+    &>* {
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+    }
+    label {
+        color: #2a3e51;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+    }
+    .form-group-sm {
+        position: relative;
+        top: 7px;
+    }
+    .check-group, >label {
+        position: relative;
+        top: 3px;
+    }
+    .select2-container--default {
+        min-width: 120px !important;
+        .select2-selection {
+            background-color: rgba(255, 255, 255, .5) !important;
+        }
+    }
+    .custom-checkbox label {
+        padding-left: 20px;
+        margin-right: 6px;
+        font-size: 12px;
+    }
+    .translatable-label {
+        border-left: 1px solid #d1d6d9;
+        padding-left: 12px;
+        margin-left: 12px;
+    }
+    @media (max-width: 1200px) {
+        .translatable-label {
+            display: none;
+        }
+    }
+    .translatable-mask {
+        display: inline-block;
+        .inline-items {
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+        }
+        .translatable-label {
+            position: relative;
+            top: 3px;
+        }
+    }
+}
+
+/**************************************
+    COLLAPSIBLE SECTIONS
+**************************************/
+.repeater-collapsible {
+    .field-section {
+        background: #f2f2f2;
+        margin: -15px -15px 0;
+        padding: 15px;
+        border-bottom: 2px solid #d4d8da !important;
+        box-shadow: inset 0 1px 0 rgba(209, 214, 217, 0.25), 0 1px 0 rgba(255, 255, 255, .5);
+
+        > h4:before {
+            float: left;
+        }
+        h4 {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+            transition: color .3s;
+        }
+        &:hover h4 {
+            color: #2a3e51;
+        }
+    }
+    .collapsed .field-section {
+        margin-bottom: -15px;
+        border-bottom: 1px solid #d4d8da !important;
+    }
+    .collapsible-controls {
+        margin-bottom: 5px;
+        .btn-link {
+            text-decoration: none !important;
+        }
+    }
+    .form-group.collapsed {
+        padding: 0;
+        margin-bottom: -1px;
+    }
+    .field-repeater-item.is-collapsible {
+        padding: 0 !important;
+        border: none !important;
+        min-height: 0px !important;
+        background: none !important;
+        margin-bottom: 0px !important;
+
+        > .repeater-item-remove button.close {
+            top: 3px;
+            right: 10px;
+            position: relative;
+        }
+        > .field-repeater-form {
+            border: 1px solid #d1d6d9;
+            padding: 15px;
+            margin-bottom: -1px;
+            position: relative;
+        }
+        &:first-child > .field-repeater-form {
+            border-radius: 3px 3px 0 0;
+        }
+        &:last-child > .field-repeater-form {
+            border-radius: 0 0 3px 3px;
+        }
+    }
+}
+.field-repeater {
+    .repeater-item-collapse,
+    .repeater-item-collapsed-title {
+        display: none;
     }
 }

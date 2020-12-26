@@ -25,7 +25,7 @@ class RepeaterForm extends Form
         parent::addFields($fields, $addToArea);
 
         foreach ($this->allFields as $name => $field) {
-            if (! $field instanceof RepeaterFormField) {
+            if (!$field instanceof RepeaterFormField) {
                 $this->allFields[$name] = new RepeaterFormField($field);
             }
         }

@@ -1,18 +1,21 @@
 <?php namespace NumenCode\Fundamentals;
 
+use ReflectionProperty;
 use System\Classes\PluginBase;
+use RainLab\Translate\Classes\EventRegistry;
 use NumenCode\Fundamentals\Console\DbPullCommand;
 use NumenCode\Fundamentals\Console\DbBackupCommand;
-use NumenCode\Fundamentals\Console\MediaPullCommand;
 use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
+use NumenCode\Fundamentals\Console\MediaPullCommand;
+use NumenCode\Fundamentals\Extensions\TwigExtension;
 use NumenCode\Fundamentals\Bootstrap\BackendOverride;
-use NumenCode\Fundamentals\Extensions\TwigExtensions;
 use NumenCode\Fundamentals\Console\MediaBackupCommand;
 use NumenCode\Fundamentals\Console\ProjectPullCommand;
 use NumenCode\Fundamentals\Console\ProjectBackupCommand;
 use NumenCode\Fundamentals\Console\ProjectCommitCommand;
 use NumenCode\Fundamentals\Console\ProjectDeployCommand;
 use NumenCode\Fundamentals\Bootstrap\OverrideFormWidgets;
+use NumenCode\Fundamentals\Extensions\EventRegistryExtension;
 
 class Plugin extends PluginBase
 {
@@ -24,8 +27,18 @@ class Plugin extends PluginBase
 
     public function register()
     {
-        require_once __DIR__ . '/helpers.php';
+        $this->registerHelpers();
+        $this->registerConsoleCommands();
+        $this->registerTranslatable();
+    }
 
+    protected function registerHelpers()
+    {
+        require_once __DIR__ . '/helpers.php';
+    }
+
+    protected function registerConsoleCommands()
+    {
         $this->registerConsoleCommand('numencode.db_pull', DbPullCommand::class);
         $this->registerConsoleCommand('numencode.db_backup', DbBackupCommand::class);
         $this->registerConsoleCommand('numencode.media_pull', MediaPullCommand::class);
@@ -36,16 +49,32 @@ class Plugin extends PluginBase
         $this->registerConsoleCommand('numencode.project_deploy', ProjectDeployCommand::class);
     }
 
+    protected function registerTranslatable()
+    {
+        if (plugin_exists('RainLab.Translate')) {
+            $reflection = new ReflectionProperty(EventRegistry::class, 'instance');
+            $reflection->setAccessible(true);
+            $reflection->setValue(null, EventRegistryExtension::instance());
+        }
+    }
+
     public function registerMarkupTags()
     {
         return [
-            'filters'   => TwigExtensions::filters(),
-            'functions' => TwigExtensions::functions(),
+            'filters'   => TwigExtension::filters(),
+            'functions' => TwigExtension::functions(),
         ];
     }
 
     public function registerFormWidgets()
     {
         (new OverrideFormWidgets())->init();
+
+        return [
+            'NumenCode\Fundamentals\FormWidgets\TranslatableHelper' => [
+                'label' => 'numencode.fundamentals::lang.form.translatable',
+                'code'  => 'translatable',
+            ],
+        ];
     }
 }

@@ -19,7 +19,7 @@
             class="btn btn-default">
             <?= e(trans('backend::lang.form.save_and_close')) ?>
         </button>
-        <?php if(\NumenCode\Fundamentals\Classes\CmsPermissions::canDelete($controller)): ?>
+        <?php if (\NumenCode\Fundamentals\Classes\CmsPermissions::canDelete($controller)) : ?>
             <button
                 type="button"
                 class="oc-icon-trash-o btn-icon danger pull-right"

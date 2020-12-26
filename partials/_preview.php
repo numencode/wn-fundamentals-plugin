@@ -7,10 +7,8 @@
     </ul>
 <?php Block::endPut() ?>
 
-<?php if (!$controller->fatalError): ?>
-
-    <?php if(empty($sidebar)): ?>
-
+<?php if (!$controller->fatalError) : ?>
+    <?php if (empty($sidebar)) : ?>
         <div class="form-preview">
             <?= $controller->formRenderPreview() ?>
         </div>
@@ -19,9 +17,7 @@
                 <?= e(trans('backend::lang.form.return_to_list')) ?>
             </a>
         </p>
-
-    <?php else: ?>
-
+    <?php else : ?>
         <?php Block::put('form-contents') ?>
             <div class="layout-row min-size">
                 <?= $controller->formRender(['section' => 'outside', 'preview' => true]) ?>
@@ -43,19 +39,15 @@
         <?php Block::put('body') ?>
             <?= Form::open(['class'=>'layout']) ?>
                 <?= $controller->makeLayout('form-with-sidebar') ?>
-                <?php if (!empty($custom)): ?>
+                <?php if (!empty($custom)) : ?>
                     <?= $custom ?>
-                <?php endif; ?>
+                <?php endif ?>
             <?= Form::close() ?>
         <?php Block::endPut() ?>
-
-    <?php endif; ?>
-
-<?php else: ?>
-
+    <?php endif ?>
+<?php else : ?>
     <div class="padded-container">
         <p class="flash-message static error"><?= e(trans($controller->fatalError)) ?></p>
         <p><a href="<?= $url ?>" class="btn btn-default"><?= e(trans('backend::lang.form.return_to_list')) ?></a></p>
     </div>
-
 <?php endif ?>

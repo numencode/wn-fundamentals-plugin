@@ -19,7 +19,7 @@ class OverrideFormWidgets
     {
         WidgetManager::instance()->registerFormWidget(Repeater::class, [
             'label' => 'Repeater',
-            'code'  => 'repeater'
+            'code'  => 'repeater',
         ]);
     }
 }

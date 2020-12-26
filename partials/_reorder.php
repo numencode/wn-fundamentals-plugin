@@ -8,11 +8,11 @@
 <?php Block::endPut() ?>
 
 <?php Block::put('body') ?>
-    <?php if(empty($sidebar)): ?>
+    <?php if (empty($sidebar)) : ?>
         <?= $controller->reorderRender() ?>
-    <?php else: ?>
+    <?php else : ?>
         <div class="padded-container" style="padding-top: 0;">
             <?= $controller->reorderRender() ?>
         </div>
-    <?php endif; ?>
+    <?php endif ?>
 <?php Block::endPut() ?>

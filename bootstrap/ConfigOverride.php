@@ -53,7 +53,7 @@ class ConfigOverride
 
     private static function filePath($file, $class)
     {
-        $path = str_replace('\\' , '/', strtolower($class) . '/' . $file);
+        $path = str_replace('\\', '/', strtolower($class) . '/' . $file);
 
         if (starts_with($path, ['system/', 'backend/', 'cms/'])) {
             $path = '/modules/' . $path;
@@ -82,7 +82,7 @@ class ConfigOverride
             }
 
             if (!empty(static::$globalOverrides)) {
-                foreach(static::$globalOverrides as $callback) {
+                foreach (static::$globalOverrides as $callback) {
                     if ($result = $callback($publicFile, $config)) {
                         $config = $result;
                         $hasOverrides = true;
