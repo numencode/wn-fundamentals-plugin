@@ -1,8 +1,20 @@
 {
     "name": "numencode/fundamentals-plugin",
-    "type": "october-plugin",
     "description": "NumenCode Fundamentals plugin for October CMS",
+    "type": "october-plugin",
+    "homepage": "https://www.numencode.com",
+    "keywords": ["october", "cms", "octobercms", "laravel"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Blaz Orazem",
+            "email": "blaz@orazem.si",
+            "homepage": "https://orazem.si",
+            "role": "Founder"
+        }
+    ],
     "require": {
+        "php": ">=7.3",
         "mobiledetect/mobiledetectlib": "^2.8",
         "laravelcollective/remote": "^6.2"
     },
