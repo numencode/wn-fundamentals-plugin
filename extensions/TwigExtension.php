@@ -4,17 +4,23 @@ use Cache;
 use Detection\MobileDetect;
 use Cms\Classes\Controller;
 use NumenCode\Fundamentals\Classes\ImageResize;
+use NumenCode\Fundamentals\Classes\ImageResizer;
 
 class TwigExtension
 {
     public static function filters()
     {
         return [
-            'resize'   => [new ImageResize, 'makeResizeUrl'],
-            'str_pad'  => function ($number, $pad_length, $pad_string) {
+            'resize'        => [
+                new ImageResize, 'makeResizeUrl'
+            ],
+            'resize_images' => [
+                new ImageResizer, 'makeResizedUrls'
+            ],
+            'str_pad'       => function ($number, $pad_length, $pad_string) {
                 return str_pad($number, $pad_length, $pad_string, STR_PAD_LEFT);
             },
-            'url_path' => function ($value) {
+            'url_path'      => function ($value) {
                 return parse_url($value, PHP_URL_PATH);
             },
         ];
