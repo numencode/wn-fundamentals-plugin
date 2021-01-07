@@ -250,7 +250,7 @@ Extensions are divided into two scopes, filters and functions, which can all be 
 
 # Author
 
-**NumenCode Fundamentals plugin** was created by and is maintained by [Blaz Orazem](https://www.orazem.si/).
+**NumenCode.Fundamentals** plugin was created by and is maintained by [Blaz Orazem](https://www.orazem.si/).
 
 Please write an email to [info@numencode.com](mailto:info@numencode.com) about all the things concerning this project.
 
