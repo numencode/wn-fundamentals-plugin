@@ -7,12 +7,11 @@ use Illuminate\Support\Facades\Storage;
 class ProjectBackupCommand extends Command
 {
     protected $signature = 'project:backup
-        {cloud? : The name of the cloud storage where backup will be uploaded}
-        {--d|--nodelete : Do not delete the backup file after it is uploaded to the cloud storage}';
+        {cloud? : The name of the cloud storage to upload the backup}
+        {folder? : The name of the folder on the cloud storage (default: files)}
+        {--d|--nodelete : Do not delete the backup file after it\'s uploaded to the cloud storage}';
 
     protected $description = 'Create all project files backup and optionally upload it to the cloud storage.';
-
-    const BACKUP_DIRECTORY = 'files';
 
     public function handle()
     {
@@ -25,10 +24,11 @@ class ProjectBackupCommand extends Command
         $this->line('');
 
         if ($this->argument('cloud')) {
-            $cloudStorage = Storage::disk($this->argument('cloud') ?: 'dropbox');
+            $cloudStorage = Storage::disk($this->argument('cloud'));
+            $cloudStorageFolder = ($this->argument('folder') ?: 'files') . '/';
 
             $this->question('Uploading project backup package to the cloud storage...');
-            $cloudStorage->put(static::BACKUP_DIRECTORY . '/' . $backupName, file_get_contents($backupName));
+            $cloudStorage->put($cloudStorageFolder . $backupName, file_get_contents($backupName));
             $this->info('Project backup package successfully uploaded.');
             $this->line('');
 

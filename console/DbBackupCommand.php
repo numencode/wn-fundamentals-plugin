@@ -7,25 +7,26 @@ use Illuminate\Support\Facades\Storage;
 class DbBackupCommand extends Command
 {
     protected $signature = 'db:backup
-        {cloud? : The name of the cloud storage where backup will be uploaded}
-        {--d|--nodelete : Do not delete the backup file after it is uploaded to the cloud storage}';
+        {cloud? : The name of the cloud storage to upload the dump file}
+        {folder? : The name of the folder on the cloud storage (default: database)}
+        {--d|--nodelete : Do not delete the dump file after it\'s uploaded to the cloud storage}';
 
-    protected $description = 'Create database backup and optionally upload it to the cloud storage.';
-
-    const BACKUP_DIRECTORY = 'database';
+    protected $description = 'Create database dump and optionally upload it to the cloud storage.';
 
     public function handle()
     {
+        $cloudStorageFolder = ($this->argument('folder') ?: 'database') . DIRECTORY_SEPARATOR;
+
         $connection = config('database.default');
         $dbUser = config("database.connections.{$connection}.username");
         $dbPass = config("database.connections.{$connection}.password");
         $dbName = config("database.connections.{$connection}.database");
 
-        $backupName = Carbon::now()->format('Y-m-d_H-i-s') . '.sql.gz';
+        $dumpFileName = Carbon::now()->format('Y-m-d_H-i-s') . '.sql.gz';
 
         $this->line('');
         $this->question('Creating database dump file...');
-        $this->info(shell_exec("mysqldump -u{$dbUser} -p{$dbPass} {$dbName} | gzip > {$backupName}"));
+        $this->info(shell_exec("mysqldump -u{$dbUser} -p{$dbPass} {$dbName} | gzip > {$dumpFileName}"));
         $this->info('Database dump file successfully created.');
         $this->line('');
 
@@ -33,13 +34,13 @@ class DbBackupCommand extends Command
             $cloudStorage = Storage::disk($this->argument('cloud'));
 
             $this->question('Uploading database dump file to the cloud storage...');
-            $cloudStorage->put(static::BACKUP_DIRECTORY . '/' . $backupName, file_get_contents($backupName));
+            $cloudStorage->put($cloudStorageFolder . $dumpFileName, file_get_contents($dumpFileName));
             $this->info('Database dump file successfully uploaded.');
             $this->line('');
 
             if (!$this->option('nodelete')) {
                 $this->question('Deleting the database dump file...');
-                $this->info(shell_exec("rm -f {$backupName}"));
+                $this->info(shell_exec("rm -f {$dumpFileName}"));
                 $this->info('Database dump file successfully deleted.');
                 $this->line('');
             }

@@ -9,7 +9,8 @@ class MediaPullCommand extends RemoteCommand
 
     protected $signature = 'media:pull
         {server : The name of the remote server}
-        {cloud? : The name of the cloud storage (default: dropbox)}
+        {cloud : The name of the cloud storage}
+        {folder? : The name of the folder on the cloud storage (default: storage)}
         {--x|--sudo : Force super user (sudo)}';
 
     protected $description = 'Download media files from the cloud storage to the local storage.';
@@ -26,9 +27,12 @@ class MediaPullCommand extends RemoteCommand
             $this->sudo = 'sudo ';
         }
 
-        $cloud = $this->argument('cloud') ?: 'dropbox';
+        $cloud = $this->argument('cloud');
+        $folder = $this->argument('folder');
 
-        $result = $this->sshRunAndPrint([$this->sudo . 'php artisan media:backup ' . $cloud]);
+        $cloudStorageFolder = ($folder ?: 'storage') . '/';
+
+        $result = $this->sshRunAndPrint([$this->sudo . 'php artisan media:backup ' . $cloud . ' ' . $folder]);
 
         if (!str_contains($result, 'files successfully uploaded')) {
             $this->error('An error occurred while uploading files to the cloud storage.');
@@ -38,24 +42,29 @@ class MediaPullCommand extends RemoteCommand
 
         $localStorage = Storage::disk('local');
         $cloudStorage = Storage::disk($cloud);
-        $files = $cloudStorage->allFiles();
-        $bar = 1;
+
+        $files = array_filter($cloudStorage->allFiles(), function ($file) {
+            return starts_with($file, 'storage/');
+        });
 
         $this->line('');
-
         $this->question('Downloading ' . count($files) . ' files from the cloud storage...');
+
+        $bar = 1;
 
         foreach ($files as $file) {
             $this->progressBar($bar, count($files));
             $bar++;
 
-            if ($localStorage->exists($file)) {
-                if ($localStorage->size($file) == $cloudStorage->size($file)) {
+            $localStorageFile = ltrim($file, $cloudStorageFolder);
+
+            if ($localStorage->exists($localStorageFile)) {
+                if ($localStorage->size($localStorageFile) == $cloudStorage->size($file)) {
                     continue;
                 }
             }
 
-            $localStorage->put($file, $cloudStorage->get($file));
+            $localStorage->put($localStorageFile, $cloudStorage->get($file));
         }
 
         $this->line('');
