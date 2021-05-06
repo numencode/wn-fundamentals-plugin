@@ -1,6 +1,6 @@
 <?php namespace NumenCode\Fundamentals\Extensions;
 
-use RainLab\Translate\Classes\EventRegistry;
+use Winter\Translate\Classes\EventRegistry;
 
 class EventRegistryExtension extends EventRegistry
 {

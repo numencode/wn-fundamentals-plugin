@@ -73,8 +73,8 @@ A new config file must be created under `\config\remote.php`. File content must 
                     'username' => env('REMOTE_DB_USERNAME'),
                     'password' => env('REMOTE_DB_PASSWORD'),
                     'tables'   => [
-                        'rainlab_blog_posts',
-                        'rainlab_blog_categories',
+                        'winter_blog_posts',
+                        'winter_blog_categories',
                     ],
                 ],
             ],
@@ -105,7 +105,7 @@ The command supports some optional arguments:
 `php artisan project:deploy production --fast --composer --migrate --sudo`
 - where `--fast` or `-f` is optional argument which deploys without clearing the cache
 - where `--composer` or `-c` is optional argument which forces Composer install
-- where `--migrate` or `-m` is optional argument which runs migrations (`php artisan october:up`)
+- where `--migrate` or `-m` is optional argument which runs migrations (`php artisan winter:up`)
 - where `--sudo` or `-x` is optional argument which forces the super user (`sudo`) usage
 
 ### Update a local database with the data from the production server

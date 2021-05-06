@@ -1,6 +1,6 @@
 <?php namespace NumenCode\Fundamentals\Classes;
 
-use October\Rain\Database\Attach\Resizer;
+use Winter\Storm\Database\Attach\Resizer;
 
 class ImageResizeManager extends Resizer
 {

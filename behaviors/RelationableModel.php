@@ -1,9 +1,9 @@
 <?php namespace NumenCode\Fundamentals\Behaviors;
 
-use October\Rain\Extension\ExtensionBase;
-use October\Rain\Database\Traits\Sortable;
-use October\Rain\Database\Traits\Validation;
-use October\Rain\Exception\ValidationException;
+use Winter\Storm\Extension\ExtensionBase;
+use Winter\Storm\Database\Traits\Sortable;
+use Winter\Storm\Database\Traits\Validation;
+use Winter\Storm\Exception\ValidationException;
 
 class RelationableModel extends ExtensionBase
 {

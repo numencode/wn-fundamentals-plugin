@@ -2,7 +2,7 @@
 
 use ReflectionProperty;
 use System\Classes\PluginBase;
-use RainLab\Translate\Classes\EventRegistry;
+use Winter\Translate\Classes\EventRegistry;
 use NumenCode\Fundamentals\Console\DbPullCommand;
 use NumenCode\Fundamentals\Console\DbBackupCommand;
 use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
@@ -62,7 +62,7 @@ class Plugin extends PluginBase
 
     protected function registerTranslatable()
     {
-        if (plugin_exists('RainLab.Translate')) {
+        if (plugin_exists('Winter.Translate')) {
             $reflection = new ReflectionProperty(EventRegistry::class, 'instance');
             $reflection->setAccessible(true);
             $reflection->setValue(null, EventRegistryExtension::instance());

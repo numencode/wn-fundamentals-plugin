@@ -2,7 +2,7 @@
 
 use Event;
 use Backend\Widgets\Form;
-use RainLab\Pages\Classes\Page;
+use Winter\Pages\Classes\Page;
 
 class ConfigOverride
 {

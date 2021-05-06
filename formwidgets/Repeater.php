@@ -47,7 +47,7 @@ class Repeater extends BaseRepeater
 
     protected function processItemsOnTheFly()
     {
-        $requestedAction = request()->header('X-OCTOBER-REQUEST-HANDLER');
+        $requestedAction = request()->header('X-WINTER-REQUEST-HANDLER');
         $alias = $this->alias . 'Form';
 
         if ($requestedAction && starts_with($requestedAction, $alias)) {

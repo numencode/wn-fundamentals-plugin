@@ -1,6 +1,6 @@
 <?php namespace NumenCode\Fundamentals\Classes;
 
-use October\Rain\Exception\ApplicationException;
+use Winter\Storm\Exception\ApplicationException;
 
 class ImageResize
 {

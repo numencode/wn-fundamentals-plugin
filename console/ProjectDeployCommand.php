@@ -158,7 +158,7 @@ class ProjectDeployCommand extends RemoteCommand
     protected function migrateCommands()
     {
         return [
-            $this->sudo . 'php artisan october:up',
+            $this->sudo . 'php artisan winter:up',
         ];
     }
 

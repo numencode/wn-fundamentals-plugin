@@ -1,9 +1,9 @@
-<?php if (plugin_exists('RainLab.Translate') && isset($controller->widget->form)) : ?>
+<?php if (plugin_exists('Winter.Translate') && isset($controller->widget->form)) : ?>
 
     <?php $model = !empty($model) ? $model : $controller->widget->form->model; ?>
-    <?php $isTranslatable = $model->isClassExtendedWith(\RainLab\Translate\Behaviors\TranslatableModel::class); ?>
+    <?php $isTranslatable = $model->isClassExtendedWith(\Winter\Translate\Behaviors\TranslatableModel::class); ?>
     <?php $hasTranslationMask = $isTranslatable && in_array(\Sp\Essentials\Traits\TranslatableMask::class, class_uses($model)); ?>
-    <?php $locales = \RainLab\Translate\Models\Locale::listAvailable(); ?>
+    <?php $locales = \Winter\Translate\Models\Locale::listAvailable(); ?>
 
     <div class="translatable-selector">
         <?php if ($isTranslatable) : ?>
