@@ -33,93 +33,6 @@ Some helper functions are included in the plugin and can be used elsewhere in th
 | ddd                       | Quick fix for not rendering dd() in the browser's network tab. |
 | ddt                       | Dumps a simple debug backtrace and ends the script. Useful for console debugging. |
 
-## Console commands
-
-Various console commands are included, which provide a better experience with remote deployment, cloud storage for
-media files, database updating, backups and much more.
-
-### Prerequisites
-
-A new config file must be created under `\config\remote.php`. File content must contain remote connections in a manner:
-
-    return [
-
-        /*
-        |--------------------------------------------------------------------------
-        | Remote connections
-        |--------------------------------------------------------------------------
-        |
-        | This file is for storing the credentials for the remote server connections.
-        |
-        */
-
-        'connections' => [
-            'production' => [
-                'key'              => env('REMOTE_PRODUCTION_KEY'),
-                'path'             => rtrim(env('REMOTE_PRODUCTION_PATH'), '/'),
-                'branch'           => env('REMOTE_PRODUCTION_BRANCH', 'prod'),
-                // 'master_branch'    => env('REMOTE_PRODUCTION_MASTER_BRANCH'),
-                'host'             => env('REMOTE_PRODUCTION_HOST'),
-                'username'         => env('REMOTE_PRODUCTION_USERNAME'),
-                'keyphrase'        => env('REMOTE_PRODUCTION_KEYPHRASE', ''),
-                'timeout'          => 600,
-                'permissions'      => [
-                    'root_user'   => env('REMOTE_PRODUCTION_ROOT_USER'),
-                    'www_user'    => env('REMOTE_PRODUCTION_WWW_USER'),
-                    'www_folders' => env('REMOTE_PRODUCTION_WWW_FOLDERS'),
-                ],
-                'database'         => [
-                    'name'     => env('REMOTE_DB_DATABASE'),
-                    'username' => env('REMOTE_DB_USERNAME'),
-                    'password' => env('REMOTE_DB_PASSWORD'),
-                    'tables'   => [
-                        'winter_blog_posts',
-                        'winter_blog_categories',
-                    ],
-                ],
-            ],
-        ],
-
-    ],
-
-Setting `master_branch` is optional and should be uncommented only if the main branch is named differently from `master`.
-
-### Pull changes from the remote server
-
-Pull changes into the project from a remote server with command:
-`php artisan project:pull production`
-- where `production` is remote server name specified in the config file
-
-The command supports some optional arguments:
-`php artisan project:pull production --pull --nomerge`
-- where `--pull` or `-p` is optional argument which executes git pull command before git push
-- where `--nomerge` or `-m` is optional argument which does not merge changes automatically
-
-### Deploy changes to a remote server
-
-Deploy project to a remote server with command:
-`php artisan project:deploy production`
-- where `production` is remote server name specified in the config file
-
-The command supports some optional arguments:
-`php artisan project:deploy production --fast --composer --migrate --sudo`
-- where `--fast` or `-f` is optional argument which deploys without clearing the cache
-- where `--composer` or `-c` is optional argument which forces Composer install
-- where `--migrate` or `-m` is optional argument which runs migrations (`php artisan winter:up`)
-- where `--sudo` or `-x` is optional argument which forces the super user (`sudo`) usage
-
-### Update a local database with the data from the production server
-
-TBD.
-
-### Upload media files to the cloud storage
-
-TBD.
-
-### Download media files from the cloud storage
-
-TBD.
-
 ## CMS permissions
 
 CmsPermissions class can be used to allow or revoke specific user groups from running certain actions
@@ -248,11 +161,23 @@ Extensions are divided into two scopes, filters and functions, which can all be 
 | trim           | Strip whitespace (or other characters) from the beginning and end of a string | trim(' Some random sentence ') |
 | url_params     | Returns the current routing parameters | dd(url_params()) |
 
+# Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+# Contributing
+
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+# Security
+
+If you discover any security-related issues, please email info@numencode.com instead of using the issue tracker.
+
 # Author
 
 **NumenCode.Fundamentals** plugin was created by and is maintained by [Blaz Orazem](https://www.orazem.si/).
 
-Please write an email to [info@numencode.com](mailto:info@numencode.com) about all the things concerning this project.
+Please write an email to info@numencode.com about all the things concerning this project.
 
 Follow [@blazorazem](https://twitter.com/blazorazem) on Twitter.
 
@@ -260,4 +185,4 @@ Follow [@blazorazem](https://twitter.com/blazorazem) on Twitter.
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-[![MIT License](https://img.shields.io/github/license/numencode/fundamentals-plugin?label=License&color=blue&style=flat-square&cacheSeconds=600)](https://github.com/numencode/fundamentals-plugin/blob/master/LICENSE.md)
+[![MIT License](https://img.shields.io/github/license/numencode/fundamentals-plugin?label=License&color=blue&style=flat-square&cacheSeconds=600)](https://github.com/numencode/fundamentals-plugin/blob/main/LICENSE.md)
