@@ -100,7 +100,7 @@ if (!function_exists('array_insert')) {
     }
 }
 
-if (!function_exists('array_move_element_before')) {
+if (!function_exists('array_before')) {
     /**
      * Moves a specific array element before another array element in an
      * associated array by halving the array at the desired position
@@ -112,7 +112,7 @@ if (!function_exists('array_move_element_before')) {
      *
      * @return array
      */
-    function array_move_element_before(array $haystack, string $needle, string $move)
+    function array_before(array $haystack, string $needle, string $move)
     {
         if (!isset($haystack[$needle], $haystack[$move])) {
             return $haystack;

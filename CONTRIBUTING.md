@@ -2,53 +2,84 @@
 
 Contributions are **welcome** and will be fully **credited**.
 
-Please read and understand the contribution guide before creating an issue or pull request.
+Before creating an issue or pull request, please take a moment to read and understand this contribution guide.
+
+---
 
 ## Etiquette
 
-This project is open source, and as such, the maintainers give their free time to build and maintain the
-source code held within. They make the code freely available in the hope that it will be of use to other
-developers. It would be extremely unfair for them to suffer abuse or anger for their hard work.
+This project is open source, and the maintainers volunteer their time to build and maintain it. They provide the source code freely with the hope that it will be useful to others. Please be respectful and considerate when raising issues or submitting pull requests.
 
-Please be considerate towards maintainers when raising issues or presenting pull requests.
-Let's show the world that developers are civilized and selfless people.
+- **Be respectful**: Avoid abusive, angry, or impatient behavior toward maintainers or contributors.
+- **Stay constructive**: Provide detailed, actionable feedback and clearly describe issues or suggestions.
+- **Understand maintainers' decisions**: Contributions are accepted at the discretion of the maintainers. Respect their decision, even if your submission is not used.
 
-It's the duty of the maintainer to ensure that all submissions to the project are of sufficient
-quality to benefit the project. Many developers have different skill sets, strengths, and weaknesses.
-Respect the maintainer's decision, and do not be upset or abusive if your submission is not used.
+Let’s show the world that developers are civilized, collaborative, and selfless!
+
+---
 
 ## Viability
 
-When requesting or submitting new features, first consider whether it might be useful to others.
-Open source projects are used by many developers, who may have entirely different needs to your own.
-Think about whether your feature is likely to be used by other users of the project.
+Before suggesting new features or changes, consider their viability:
+- Will the feature benefit other users of the project?
+- Is the feature aligned with the project's scope and goals?
+- Could the feature introduce unnecessary complexity or maintenance challenges?
 
-## Procedure
+Open source projects serve a diverse group of developers with varied needs, so your contributions should aim to add value to the broader community.
+
+---
+
+## Reporting Issues
 
 Before filing an issue:
+1. **Attempt to replicate the problem** to rule out one-off incidents.
+2. **Search existing issues** to ensure your problem or suggestion hasn’t already been raised.
+3. **Check pull requests** for ongoing work that may address the issue.
 
-- Attempt to replicate the problem, to ensure that it wasn't a coincidental incident.
-- Check to make sure your feature suggestion isn't already present within the project.
-- Check the pull requests tab to ensure that the bug doesn't have a fix in progress.
-- Check the pull requests tab to ensure that the feature isn't already in progress.
+---
 
-Before submitting a pull request:
+## Submitting Pull Requests
 
-- Check the codebase to ensure that your feature doesn't already exist.
-- Check the pull requests to ensure that another person hasn't already submitted the feature or fix.
+When submitting a pull request:
+1. **Ensure the feature doesn’t already exist** in the codebase.
+2. **Review existing pull requests** to ensure no one else is working on the same feature or fix.
+3. Follow these best practices:
+    - **One pull request per feature**: If you want to contribute multiple changes, submit separate pull requests for each.
+    - **Provide a coherent commit history**: Squash intermediate commits into meaningful ones.
+    - **Document your changes**: Update the `README.md` or other relevant documentation to reflect your changes.
+    - **Adhere to coding standards**: Use the PSR-12 coding standard.
+
+---
 
 ## Requirements
 
-If the project maintainer has any additional requirements, you will find them listed here.
+This project follows specific standards and guidelines to ensure consistency and maintainability:
 
-- **[PSR-12 Coding Standard](https://www.php-fig.org/psr/psr-12/)** - The easiest way to apply the conventions is to install [PHP Code Sniffer](http://pear.php.net/package/PHP_CodeSniffer).
+1. **Coding Standard**
+    - Follow **[PSR-12](https://www.php-fig.org/psr/psr-12/)**.
+    - Use tools like [PHP Code Sniffer](http://pear.php.net/package/PHP_CodeSniffer) to check your code.
 
-- **Document any change in behaviour** - Make sure the `README.md` and any other relevant documentation are kept up-to-date.
+2. **Semantic Versioning**
+    - This project adheres to **[SemVer v2.0.0](http://semver.org/)**.
+    - Avoid making random or unnecessary breaking changes to public APIs.
 
-- **Consider our release cycle** - We try to follow [SemVer v2.0.0](http://semver.org/). Randomly breaking public APIs is not an option.
+3. **Documentation**
+    - Document any changes in functionality.
+    - Update all relevant files, including `README.md` and other documentation, as needed.
 
-- **One pull request per feature** - If you want to do more than one thing, send multiple pull requests.
+---
 
-- **Send coherent history** - Make sure each individual commit in your pull request is meaningful. If you had to make multiple intermediate commits while developing, please [squash them](http://www.git-scm.com/book/en/v2/Git-Tools-Rewriting-History#Changing-Multiple-Commit-Messages) before submitting.
+## Contribution Workflow
+
+To contribute effectively:
+1. Fork the repository and create a new branch for your work.
+2. Ensure your branch is up-to-date with the `main` branch.
+3. Implement your feature or fix, ensuring compliance with the guidelines.
+4. Run tests and ensure no existing functionality is broken.
+5. Create a pull request with a clear description of the changes and why they are necessary.
+
+---
+
+**Thank you for contributing!** Your effort and time are greatly appreciated. Let’s build something amazing together.
 
 **Happy coding**!

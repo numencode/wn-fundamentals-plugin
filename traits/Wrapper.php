@@ -23,6 +23,11 @@ trait Wrapper
         $this->parent->$property = $value;
     }
 
+    public function __unset($property)
+    {
+        unset($this->parent->$property);
+    }
+
     public function __call($method, $parameters)
     {
         return call_user_func_array([$this->parent, $method], $parameters);

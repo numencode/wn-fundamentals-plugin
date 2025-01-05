@@ -13,15 +13,15 @@
         {
             "name": "Blaz Orazem",
             "email": "blaz@orazem.si",
-            "homepage": "https://www.orazem.si/",
+            "homepage": "https://orazem.si/",
             "role": "Founder"
         }
     ],
     "require": {
-        "php": ">=7.2.9",
-        "mobiledetect/mobiledetectlib": "^2.8"
+        "php": "^8.0.2",
+        "mobiledetect/mobiledetectlib": "^4.8"
     },
     "require-dev": {
-        "symfony/var-dumper": "^5.2"
+        "symfony/var-dumper": "^5.4"
     }
 }

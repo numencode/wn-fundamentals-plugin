@@ -6,7 +6,7 @@ class Repeater extends BaseRepeater
 {
     protected $boundWidgets = [];
 
-    public function guessViewPath($suffix = '', $isPublic = false)
+    public function guessViewPath(string $suffix = '', bool $isPublic = false): ?string
     {
         $class = BaseRepeater::class;
 
@@ -34,7 +34,7 @@ class Repeater extends BaseRepeater
         }
 
         $order = array_keys($value);
-        $newValue = (array)$this->processSaveValue($value);
+        $newValue = $this->processSaveValue($value);
 
         foreach ($newValue as $key => $item) {
             if (isset($order[$key]) && isset($value[$order[$key]]['RLTranslate'])) {

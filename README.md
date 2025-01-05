@@ -1,188 +1,401 @@
-# Fundamentals plugin
+# Fundamentals Plugin
 
-This plugin contains some fundamental functionalities that facilitate application development.
+The **Fundamentals Plugin** provides essential functionalities to streamline application development within
+the Winter CMS ecosystem.  It includes backend overrides, helper functions, Twig extensions, and more,
+allowing developers to build robust applications efficiently.
 
-## Backend overrides
+[![Version](https://img.shields.io/github/v/release/numencode/wn-fundamentals-plugin?sort=semver&style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/releases)
+[![Tests](https://img.shields.io/github/actions/workflow/status/numencode/wn-fundamentals-plugin/tests.yml?branch=develop&label=tests&style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/actions)
+[![License](https://img.shields.io/github/license/numencode/wn-fundamentals-plugin?label=open%20source&style=flat-square)](https://packagist.org/packages/numencode/wn-fundamentals-plugin)
 
-A backend dashboard override system is incorporated in the plugin and includes a user-friendly "Settings" page.
+---
 
-## Common translations
+## Target Audience
 
-Fundamentals plugin includes some common language translations which can be used elsewhere.
+This plugin is designed for developers working with Winter CMS who seek to accelerate development processes
+and enhance code maintainability by leveraging reusable components and utilities.
 
-## Helper functions
+---
 
-Some helper functions are included in the plugin and can be used elsewhere in the application.
+# Features Overview
 
-| Function | Description |
-| --- | --- |
-| numencode_partial         | Returns the path to the NumenCode partial file. |
-| validate_request          | Validates current request and flashes errors to the session. Returns true if the request is valid or false if it's not. |
-| select_options            | Creates options for the select element. |
-| array_insert              | Inserts a new element into a specific position inside an array. |
-| array_move_element_before | Moves a specific array element before another array element in an associated array by halving the array at the desired position and squeezing the element-to-be-moved into the gap created. |
-| array_merge_reference     | Merges elements from passed arrays into one array and keeps a reference to the original arrays. |
-| array_search_recursive    | Searches the array recursively for a given value and returns the corresponding keys if successful. |
-| round_global              | Rounds the number to a number of decimals defined in a global setting. |
-| plugin_exists             | Checks if plugin exists and is enabled. |
-| extend_class              | Extends a class with a behavior. |
-| dumpbug                   | Dumps a simple debug backtrace. |
-| diebug                    | Dumps a simple debug backtrace and ends a script. |
-| dd_query                  | Dumps the next database query. |
-| d                         | Dumps the passed variables and does not end the script. |
-| ddd                       | Quick fix for not rendering dd() in the browser's network tab. |
-| ddt                       | Dumps a simple debug backtrace and ends the script. Useful for console debugging. |
+## Common Translations
 
-## CMS permissions
+The Fundamentals plugin provides a comprehensive set of common language translations designed for reuse across applications.
+These translations promote consistency, streamline development, and eliminate the need for repetitive localization efforts.
 
-CmsPermissions class can be used to allow or revoke specific user groups from running certain actions
-such as creating, updating and deleting data.
+Additionally, the common translations are fully compatible with and intended for use alongside other NumenCode plugins.
+Since the Fundamentals plugin is a prerequisite for all NumenCode plugins, these translations serve as a standardized
+foundation, ensuring seamless integration and uniformity across projects utilizing the NumenCode ecosystem.
 
-**1. Permission must be configured in the Plugin's boot() method**
+---
 
-    use NumenCode\Fundamentals\Classes\CmsPermissions;
+## Backend Overrides
 
-    class Plugin extends PluginBase
-    {
-        public function boot()
-        {
-            CmsPermissions::revokeDelete('owners', AcmeController::class);
-            CmsPermissions::revokeUpdate(['owners', 'publishers'], CustomController::class);
-        }
+The `BackendOverride` class customizes and extends the behavior of the Winter CMS backend panel.
+It provides a centralized way to enhance the backend's functionality, styling, and user experience.
+This class is useful for injecting custom styles, scripts, or modifying the backend behavior without
+altering the core framework.
 
-        ...
+### Key Features
+
+- **Custom Styles and Scripts:**
+  - Automatically adds custom SCSS and JavaScript files to backend pages.
+  - Combines and serves these assets for improved performance.
+- **Enhanced Settings Page:**
+  - Modifies the behavior of the Settings page (System\Controllers\Settings) and displays a customized layout.
+- **Custom List Column Rendering:**
+  - Overrides the value rendering for list columns of type switch to provide a visually enhanced representation
+  (icons and colors).
+
+---
+
+## Config Overrides
+
+The `ConfigOverride` class enables developers to customize and extend configuration files dynamically across a
+Winter CMS application. Its primary purpose is to facilitate granular or global overrides of configuration files,
+reducing duplication and enhancing flexibility.
+
+### Key Features
+
+- **Field Customization**: Modify or extend `fields.yaml` files for any class using the `extendFields()` method.
+- **Column Customization**: Adjust or add columns to `columns.yaml`, `columns_import.yaml`, or `columns_export.yaml` via dedicated methods like `extendColumns()`, `extendImportColumns()`, and `extendExportColumns()`.
+- **Import/Export Enhancements**: Extend configurations for `config_import_export.yaml` using `extendImportExport()`.
+- **Global Overrides**: Apply global overrides to all configuration files using the `extendAll()` method, ensuring system-wide customizations.
+- **Scoped Overrides**: Limit overrides to specific classes and configuration files using methods like `extend()` for precise control.
+- **Pages Plugin Integration**: Automatically aligns form tabs and secondary tabs for the Winter Pages plugin to improve backend usability.
+
+### Usage Example
+
+```php
+use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
+
+// Extend fields.yaml for a specific model
+ConfigOverride::extendFields(ExampleModel::class, function ($fields) {
+    $fields['new_field'] = [
+        'label'   => 'New Field',
+        'type'    => 'text',
+        'default' => 'Default Value',
+    ];
+
+    return $fields;
+});
+
+// Extend columns.yaml for a list view
+ConfigOverride::extendColumns(ExampleModel::class, function ($columns) {
+    $columns['new_column'] = [
+        'label' => 'New Column',
+        'type'  => 'text',
+    ];
+
+    return $columns;
+});
+
+// Global Overrides: Apply global configuration changes across the system.
+ConfigOverride::extendAll(function ($filePath, $config) {
+    if ($filePath === 'backend/models/user/fields.yaml') {
+        $config['tabs']['fields']['new_field'] = [
+            'label' => 'Global New Field',
+            'type'  => 'text',
+        ];
     }
 
-**2. After you can use it in a template for an example**
+    return $config;
+});
 
-    <?php if(\NumenCode\Fundamentals\Classes\CmsPermissions::canDelete($controller)): ?>
-        <button
-            type="button"
-            class="oc-icon-trash-o btn-icon danger pull-right"
-            data-request="onDelete"
-            data-load-indicator="<?= e(trans('backend::lang.form.deleting')) ?>"
-            data-request-confirm="<?= e(trans('backend::lang.form.confirm_delete')) ?>">
-        </button>
-    <?php endif; ?>
+// Integration with Winter Pages Plugin: Automatically align form tabs for Pages
+Event::listen('backend.form.extendFieldsBefore', function ($form) {
+    if (get_class($form->model) === Winter\Pages\Classes\Page::class) {
+        // Adjust fields in the secondary tab
+        foreach ((array) $form->secondaryTabs['fields'] as $key => $value) {
+            $value['cssClass'] = trim(str_replace('secondary-tab', '', $value['cssClass']));
+            unset($form->secondaryTabs['fields'][$key]);
+            $form->tabs['fields'][$key] = $value;
+        }
+    }
+}, 1000);
+```
 
+---
+
+## Helper Functions
+
+The plugin provides a collection of helper functions to simplify complex operations.
+These can be used across the application to improve code readability and functionality.
+
+| **Function**             | **Description**                                                                                                             |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| `numencode_partial`      | Returns the path to the NumenCode partial file.                                                                             |
+| `validate_request`       | Validates the current request and flashes errors to the session. Returns `true` if the request is valid, `false` otherwise. |
+| `select_options`         | Creates options for the `<select>` element.                                                                                 |
+| `array_insert`           | Inserts a new element into a specific position within an array.                                                             |
+| `array_before`           | Moves a specific array element before another array element.                                                                |
+| `array_merge_reference`  | Merges elements from passed arrays into one array, retaining references to the original arrays.                             |
+| `array_search_recursive` | Recursively searches an array for a value and returns the corresponding keys if successful.                                  |
+| `round_global`           | Rounds a number to a predefined number of decimals set in a global configuration.                                           |
+| `plugin_exists`          | Checks if a plugin exists and is enabled.                                                                                   |
+| `extend_class`           | Extends a class with a behavior.                                                                                            |
+| `dumpbug`                | Dumps a simple debug backtrace.                                                                                             |
+| `diebug`                 | Dumps a simple debug backtrace and terminates the script.                                                                   |
+| `dd_query`               | Dumps the next database query.                                                                                              |
+| `d`                      | Dumps the passed variables without terminating the script.                                                                  |
+| `ddd`                    | Resolves rendering issues with `dd()` in the browser's network tab.                                                         |
+| `ddt`                    | Dumps a debug backtrace and terminates the script, useful for console debugging.                                            |
+
+---
+
+## CMS Permissions
+The `CmsPermissions` class enables fine-grained control over user group actions, such as creating, updating, and deleting data.
+
+### Configuration Example
+
+**Step 1**: Configure permissions in the plugin's `boot()` method:
+
+```php
+use NumenCode\Fundamentals\Classes\CmsPermissions;
+
+class Plugin extends PluginBase
+{
+    public function boot()
+    {
+        CmsPermissions::revokeDelete('owners', AcmeController::class);
+        CmsPermissions::revokeUpdate(['owners', 'publishers'], CustomController::class);
+    }
+}
+```
+
+**Step 2**: Apply permission logic in templates:
+
+```php
+<?php if (\NumenCode\Fundamentals\Classes\CmsPermissions::canDelete($controller)): ?>
+    <button
+        type="button"
+        class="oc-icon-trash-o btn-icon danger pull-right"
+        data-request="onDelete"
+        data-load-indicator="<?= e(trans('backend::lang.form.deleting')) ?>"
+        data-request-confirm="<?= e(trans('backend::lang.form.confirm_delete')) ?>">
+    </button>
+<?php endif; ?>
+```
+
+---
 
 ## Traits
 
-### Progress bar
+### Progress Bar
 
-Progress bar can be used to display the progress status in the CLI while iterating through an array,
-when running a certain console command.
+The `ProgressBar` trait displays progress status in the CLI while iterating through an array during console command execution.
+The `AutoProgressBar` should be used when you need to display a progress bar in the CMS backend.
+
+#### Parameters
+
+- `int $current`: Current processing element.
+- `int $total`: Total number of elements.
+- `int $barSize`: The size of the progress bar in blocks.
+
+### Usage Example
+
+```php
+// Progress Bar for CLI
+foreach ($haystack as $needle) {
+    $this->progressBar(isset($bar) ? ++$bar : $bar=1, count($haystack));
+    // All logic comes after this line...
+}
+
+// Progress Bar for CMS
+foreach ($haystack as $needle) {
+    $this->autoProgressBar($haystack, 'progress');
+    // All logic comes after this line...
+}
+```
 
 ### Publishable
+The `Publishable` trait provides a simple way to manage content visibility using an `is_published` field in the database table.
 
-A publishable trait can be used on models that allow content to be published or hidden from the website.
-Model entity must use the Publishable trait, and the table must include boolean field `is_published`.
+#### Requirements
 
-**Usage in Model**
+Add a boolean field named `is_published` to the table.
 
-    class Acme extends Model
+#### Features
+
+1. **Automatic Filtering**: Only records with `is_published = true` are included in queries for frontend users.
+2. **Override Scope**: Use the `withUnpublished()` method to retrieve all records, including unpublished ones.
+
+#### Usage Example
+
+```php
+class Post extends Model
+{
+    use \NumenCode\Fundamentals\Traits\Publishable;
+
+    protected $fillable = ['title', 'content', 'is_published'];
+}
+
+// To fetch only published records:
+$posts = Post::all();
+
+// To include unpublished records:
+$allPosts = Post::withUnpublished()->get();
+```
+
+### Wrapper
+The `Wrapper` trait is designed to wrap and extend the functionality of an existing object, providing a flexible way to
+interact with the parent object while maintaining access to its properties and methods. This trait acts as a proxy,
+delegating calls to the wrapped object, and can be used to enhance or modify its behavior without directly modifying
+the parent class.
+
+#### Usage Example
+
+1. Include the `Wrapper` trait in your class.
+2. Pass the parent object to the constructor of the class using the `Wrapper` trait.
+3. Use the `init()` method in your class to define any custom initialization logic.
+
+```php
+class MyWrapper
+{
+    use \NumenCode\Fundamentals\Traits\Wrapper;
+
+    protected function init($parent)
     {
-        use \NumenCode\Fundamentals\Traits\Publishable;
-
-        ...
+        // Custom initialization logic
     }
+}
 
-## Behaviours
+// Usage
+$parentObject = new ParentClass();
+$wrapper = new MyWrapper($parentObject);
+
+$wrapper->someProperty = 'value'; // Delegates to $parentObject
+$result = $wrapper->someMethod(); // Calls method on $parentObject
+
+// Accessing the Parent Object: use the getWrappedObject() method to access the original parent object if needed
+$original = $wrapper->getWrappedObject();
+```
+
+---
+
+## Behaviors
 
 ### RelationableModel Behavior
+The `RelationableModel` behavior allows a `repeater` to be used as a relations editor via relation behavior.
 
-RelationableModel behavior enables `repeater` to be used as relations editor via relation behavior.
+#### Example
 
-For the purpose of demonstration, let's say we created two models: `Category` and `Item`.
-`Category` can have multiple items which we want to display and edit via the repeater.
+For a `Category` model with multiple `Item` relations:
 
-`Category` model must:
- - implement the `RelationableModel` behavior
- - define the `$hasMany` relationship for the items
- - define the `$relationable` property (where key is a relationable property name and value is the relationship)
+```php
+class Category extends Model
+{
+    public $implement = [
+        '@NumenCode.Fundamentals.Behaviors.RelationableModel',
+    ];
 
-Here's the mockup for the `Category` model:
+    public $hasMany = [
+        'items' => [Item::class, 'key' => 'category_id'],
+    ];
 
-    class Category extends Model
-    {
-        public $implement = [
-            '@NumenCode.Fundamentals.Behaviors.RelationableModel',
-        ];
+    public $relationable = [
+        'items_list' => 'items',
+    ];
+}
+```
 
-        public $hasMany = [
-            'items' => [Item::class, 'key' => 'category_id'],
-        ];
+In `\models\category\fields.yaml`:
 
-        public $relationable = [
-            'items_list' => 'items',
-        ];
-    }
+```yaml
+fields:
+    items_list:
+        prompt: Add new item
+        span: full
+        type: repeater
+        cssClass: 'repeater-collapsible repeater-open'
+        form: $/models/item/fields.yaml
+```
 
-Finally, `repeater` for the items must be defined in `\models\category\fields.yaml` as such:
+---
 
-    fields:
-        ...
-        items_list:
-            prompt: Add new item
-            span: full
-            type: repeater
-            cssClass: 'repeater-collapsible repeater-open'
-            form: $/models/item/fields.yaml
-        ...
+## Twig Extensions
 
-## Twig extensions
-
-Multiple Twig extensions are available in order to provide a better development experience.
-Extensions are divided into two scopes, filters and functions, which can all be used across the Twig template files.
+Twig extensions provide enhanced template functionality and are divided into two scopes:
 
 ### Filters
 
-| Command | Description | Usage |
-| --- | --- | --- |
-| resize   | Resize an image and create a thumbnail cache file | 'picture.jpg'&#124;media&#124;resize('600x400.crop') |
-| str_pad  | Pad a string to a certain length with another string on the left side | 'file.pdf'&#124;str_pad(4, '0') |
-| url_path | Parse a URL and return its components | 'file.pdf'&#124;url_path |
+Use filters to transform data.
+
+| **Filter**      | **Description**                                          | **Usage**                                            |
+|-----------------|----------------------------------------------------------|------------------------------------------------------|
+| `resize`        | Resize an image and create a thumbnail cache file        | 'picture.jpg'&#124;media&#124;resize('600x400.crop') |
+| `resize_images` | Resize all images in HTML content by creating thumbnails | {{ content&#124;resize_images }}                     |
+| `str_pad`       | Pad a string to a specific length                        | 'file.pdf'&#124;str_pad(4, '0')                      |
+| `url_path`      | Parse URL and return its components                      | 'file.pdf'&#124;url_path                             |
 
 ### Functions
 
-| Command | Description | Usage |
-| --- | --- | --- |
-| app            | Get the available container instance | app() |
-| asset_hash     | Store the unique value in the cache forever which can be used as an asset version | asset_hash() |
-| class_basename | Get the class "basename" of the given object / class | class_basename('\\Acme\\SomeClassName') |
-| collect        | Creates a collection from the given value | collect($someStringOrArray) |
-| config         | Get / set the specified configuration value | config('app.some_setting') |
-| d              | Dumps the passed variables and does not end the script | d($variable) |
-| dd             | Dumps the passed variables and ends the script | dd($variable) |
-| detect         | Detect mobile devices (including tablets) | dd(detect()) |
-| device_type    | Returns either 'mobile' or 'desktop' code, based on a detected device | device_type() |
-| require        | Uses file_get_contents() to read the entire file into a string | require('filename.txt') |
-| trans          | Translate the given string | trans('Some random sentence') |
-| trim           | Strip whitespace (or other characters) from the beginning and end of a string | trim(' Some random sentence ') |
-| url_params     | Returns the current routing parameters | dd(url_params()) |
+Use functions for broader, dynamic operations.
 
-# Changelog
+| **Function**     | **Description**                                        | **Usage**                            |
+|------------------|--------------------------------------------------------|--------------------------------------|
+| `app`            | Retrieves the container instance                       | `app()`                              |
+| `asset_hash`     | Generates a cache-busting asset version                | `asset_hash()`                       |
+| `class_basename` | Retrieves the "basename" of a class                    | `class_basename('\Namespace\Class')` |
+| `collect`        | Creates a collection from a given value                | `collect($array)`                    |
+| `config`         | Retrieves or sets configuration values                 | `config('app.key')`                  |
+| `d`              | Dumps the passed variables and does not end the script | `d($variable)`                       |
+| `dd`             | Dumps the passed variables and ends the script         | `dd($variable)`                      |
+| `detect`         | Detects mobile devices                                 | `detect()`                           |
+| `device_type`    | Returns 'mobile' or 'desktop' based on detected device | `device_type()`                      |
+| `require`        | Reads a file into a string                             | `require('file.txt')`                |
+| `trans`          | Translates a string                                    | `trans('backend::lang.form.save')`   |
+| `trim`           | Strip whitespaces (or other characters)                | `trim(' Some random sentence ')`     |
+| `url_params`     | Retrieves the current routing parameters               | `dd(url_params())`                   |
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+#### When to Use
 
-# Contributing
+- **Filters**: Use when transforming or modifying data inline within Twig.
+- **Functions**: Use for accessing dynamic or reusable logic outside of a single data transformation.
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+---
 
-# Security
+## Installation
 
-If you discover any security-related issues, please email info@numencode.com instead of using the issue tracker.
+Install via Composer:
 
-# Author
+```bash
+composer require numencode/wn-fundamentals-plugin
+```
 
-**NumenCode.Fundamentals** plugin was created by and is maintained by [Blaz Orazem](https://www.orazem.si/).
+---
 
-Please write an email to info@numencode.com about all the things concerning this project.
+## Changelog
+
+All notable changes are documented in the [CHANGELOG](CHANGELOG.md).
+
+---
+
+## Contributing
+
+Please refer to the [CONTRIBUTING](CONTRIBUTING.md) guide for details on contributing to this project.
+
+---
+
+## Security
+
+If you identify any security issues, email info@numencode.com rather than using the issue tracker.
+
+---
+
+## Author
+
+The **NumenCode.Fundamentals** plugin is created and maintained by [Blaz Orazem](https://orazem.si/).
+
+For inquiries, contact: info@numencode.com.
 
 Follow [@blazorazem](https://twitter.com/blazorazem) on Twitter.
 
-# License
+---
+
+## License
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-[![MIT License](https://img.shields.io/github/license/numencode/fundamentals-plugin?label=License&color=blue&style=flat-square&cacheSeconds=600)](https://github.com/numencode/fundamentals-plugin/blob/main/LICENSE.md)
+[![MIT License](https://img.shields.io/github/license/numencode/wn-fundamentals-plugin?label=License&color=blue&style=flat-square&cacheSeconds=600)](https://github.com/numencode/wn-fundamentals-plugin/blob/main/LICENSE.md)

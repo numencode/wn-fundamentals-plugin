@@ -6,7 +6,7 @@ class RepeaterForm extends Form
 {
     protected $widgetsWrapped = false;
 
-    public function guessViewPath($suffix = '', $isPublic = false)
+    public function guessViewPath(string $suffix = '', bool $isPublic = false): ?string
     {
         $class = Form::class;
 
@@ -31,14 +31,14 @@ class RepeaterForm extends Form
         }
     }
 
-    public function getSaveData()
+    public function getSaveData(bool $includeAllFields = false): array
     {
         if (!$this->widgetsWrapped) {
             $this->wrapWidgets();
             $this->widgetsWrapped = true;
         }
 
-        return parent::getSaveData();
+        return parent::getSaveData($includeAllFields);
     }
 
     protected function wrapWidgets()

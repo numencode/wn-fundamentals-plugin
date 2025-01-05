@@ -1,6 +1,5 @@
 <?php namespace NumenCode\Fundamentals;
 
-use ReflectionProperty;
 use System\Classes\PluginBase;
 use Winter\Translate\Classes\EventRegistry;
 use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
@@ -41,10 +40,11 @@ class Plugin extends PluginBase
 
     protected function registerTranslatable()
     {
+        // Override event registry to enable repeater translations
         if (plugin_exists('Winter.Translate')) {
-            $reflection = new ReflectionProperty(EventRegistry::class, 'instance');
-            $reflection->setAccessible(true);
-            $reflection->setValue(null, EventRegistryExtension::instance());
+            app()->singleton(EventRegistry::class, function () {
+                return EventRegistryExtension::instance();
+            });
         }
     }
 
