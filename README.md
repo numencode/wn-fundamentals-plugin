@@ -17,7 +17,7 @@ and enhance code maintainability by leveraging reusable components and utilities
 
 ---
 
-# Features Overview
+## Features Overview
 
 ## Common Translations
 
@@ -56,7 +56,7 @@ The `ConfigOverride` class enables developers to customize and extend configurat
 Winter CMS application. Its primary purpose is to facilitate granular or global overrides of configuration files,
 reducing duplication and enhancing flexibility.
 
-### Key Features
+### Key Features for Backend Overrides
 
 - **Field Customization**: Modify or extend `fields.yaml` files for any class using the `extendFields()` method.
 - **Column Customization**: Adjust or add columns to `columns.yaml`, `columns_import.yaml`, or `columns_export.yaml` via dedicated methods like `extendColumns()`, `extendImportColumns()`, and `extendExportColumns()`.
@@ -65,7 +65,7 @@ reducing duplication and enhancing flexibility.
 - **Scoped Overrides**: Limit overrides to specific classes and configuration files using methods like `extend()` for precise control.
 - **Pages Plugin Integration**: Automatically aligns form tabs and secondary tabs for the Winter Pages plugin to improve backend usability.
 
-### Usage Example
+### Usage Example for Backend Overrides
 
 ```php
 use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
@@ -221,7 +221,7 @@ Add a boolean field named `is_published` to the table.
 1. **Automatic Filtering**: Only records with `is_published = true` are included in queries for frontend users.
 2. **Override Scope**: Use the `withUnpublished()` method to retrieve all records, including unpublished ones.
 
-#### Usage Example
+#### Usage Example for Publishable
 
 ```php
 class Post extends Model
@@ -244,7 +244,7 @@ interact with the parent object while maintaining access to its properties and m
 delegating calls to the wrapped object, and can be used to enhance or modify its behavior without directly modifying
 the parent class.
 
-#### Usage Example
+#### Usage Example for Wrapper
 
 1. Include the `Wrapper` trait in your class.
 2. Pass the parent object to the constructor of the class using the `Wrapper` trait.

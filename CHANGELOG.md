@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release of the **Fundamentals Plugin**.
 - Features:
-    - Support for Winter CMS.
-    - Core functionalities for foundational CMS customization.
-    - Fully compatible with Winter CMS version `1.2.7`.
+  - Support for Winter CMS.
+  - Core functionalities for foundational CMS customization.
+  - Fully compatible with Winter CMS version `1.2.7`.
 
 ---
 
