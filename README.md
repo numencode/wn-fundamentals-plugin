@@ -17,6 +17,30 @@ allowing developers to build robust applications efficiently.
 This plugin is designed for developers working with Winter CMS who seek to accelerate development processes
 and enhance code maintainability by leveraging reusable components and utilities.
 
+## Dependencies
+
+This plugin is a prerequisite for other `NumenCode` Winter CMS plugins. To use those plugins, this one must be
+installed first as it provides essential components and utilities required for their functionality.
+
+## Installation
+
+This plugin is available for installation via [Composer](http://getcomposer.org/).
+
+```bash
+composer require numencode/wn-fundamentals-plugin
+```
+
+After installing the plugin you will need to run the migrations.
+
+```bash
+php artisan migrate
+```
+
+## Requirements
+
+* Winter CMS 1.2.7 or higher.
+* PHP version 8.0 or higher.
+
 ---
 
 ## Features Overview
@@ -39,7 +63,7 @@ It provides a centralized way to enhance the backend's functionality, styling, a
 This class is useful for injecting custom styles, scripts, or modifying the backend behavior without
 altering the core framework.
 
-### Key Features
+### Key Features for Backend Overrides
 
 - **Custom Styles and Scripts:**
   - Automatically adds custom SCSS and JavaScript files to backend pages.
@@ -58,7 +82,7 @@ The `ConfigOverride` class enables developers to customize and extend configurat
 Winter CMS application. Its primary purpose is to facilitate granular or global overrides of configuration files,
 reducing duplication and enhancing flexibility.
 
-### Key Features for Backend Overrides
+### Key Features for Config Overrides
 
 - **Field Customization**: Modify or extend `fields.yaml` files for any class using the `extendFields()` method.
 - **Column Customization**: Adjust or add columns to `columns.yaml`, `columns_import.yaml`, or `columns_export.yaml` via dedicated methods like `extendColumns()`, `extendImportColumns()`, and `extendExportColumns()`.
@@ -67,7 +91,7 @@ reducing duplication and enhancing flexibility.
 - **Scoped Overrides**: Limit overrides to specific classes and configuration files using methods like `extend()` for precise control.
 - **Pages Plugin Integration**: Automatically aligns form tabs and secondary tabs for the Winter Pages plugin to improve backend usability.
 
-### Usage Example for Backend Overrides
+### Usage Example for Config Overrides
 
 ```php
 use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
@@ -154,7 +178,7 @@ fields:
                     span: full
 ```
 
-#### Example Behavior
+#### Example Behavior for Repeater
 
 - In the form, each item appears as a collapsible section.
 - Clicking "Add new item" adds a new collapsible section with an empty form.
@@ -170,7 +194,7 @@ This setup provides a flexible and user-friendly interface for managing lists of
 
 The `RelationableModel` behavior allows a `Repeater` to be used as a relations editor via relation behavior.
 
-#### Example
+#### Example for RelationableModel Behavior
 
 For a `Category` model with multiple `Item` relations:
 
@@ -234,7 +258,7 @@ These can be used across the application to improve code readability and functio
 ## CMS Permissions
 The `CmsPermissions` class enables fine-grained control over user group actions, such as creating, updating, and deleting data.
 
-### Configuration Example
+### Configuration Example for CMS Permissions
 
 **Step 1**: Configure permissions in the plugin's `boot()` method:
 
@@ -274,13 +298,13 @@ class Plugin extends PluginBase
 The `ProgressBar` trait displays progress status in the CLI while iterating through an array during console command execution.
 The `AutoProgressBar` should be used when you need to display a progress bar in the CMS backend.
 
-#### Parameters
+#### Parameters for Progress Bar
 
 - `int $current`: Current processing element.
 - `int $total`: Total number of elements.
 - `int $barSize`: The size of the progress bar in blocks.
 
-#### Usage Example
+#### Usage Example for Progress Bar
 
 ```php
 // Progress Bar for CLI
@@ -300,11 +324,11 @@ foreach ($haystack as $needle) {
 
 The `Publishable` trait provides a simple way to manage content visibility using an `is_published` field in the database table.
 
-#### Requirements
+#### Requirements for Publishable
 
 Add a boolean field named `is_published` to the table.
 
-#### Features
+#### Features for Publishable
 
 1. **Automatic Filtering**: Only records with `is_published = true` are included in queries for frontend users.
 2. **Override Scope**: Use the `withUnpublished()` method to retrieve all records, including unpublished ones.
@@ -446,16 +470,6 @@ Use functions for broader, dynamic operations.
 
 ---
 
-## Installation
-
-Install via Composer:
-
-```bash
-composer require numencode/wn-fundamentals-plugin
-```
-
----
-
 ## Changelog
 
 All notable changes are documented in the [CHANGELOG](CHANGELOG.md).
@@ -478,9 +492,7 @@ If you identify any security issues, email info@numencode.com rather than using 
 
 The **NumenCode.Fundamentals** plugin is created and maintained by [Blaz Orazem](https://orazem.si/).
 
-For inquiries, contact: info@numencode.com.
-
-Follow [@blazorazem](https://twitter.com/blazorazem) on Twitter.
+For inquiries, contact: info@numencode.com
 
 ---
 
