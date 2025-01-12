@@ -2,6 +2,7 @@
 
 use System\Classes\PluginManager;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\VarDumper\VarDumper;
 
 if (!function_exists('numencode_partial')) {
@@ -11,16 +12,25 @@ if (!function_exists('numencode_partial')) {
      * @param string $_fileName
      * @param array $partialData
      * @return string
+     * @throws RuntimeException
      */
-    function numencode_partial(string $_fileName, $partialData = [])
+    function numencode_partial(string $_fileName, array $partialData = [])
     {
+        $filePath = base_path('plugins/numencode/fundamentals/partials/' . $_fileName);
+
+        if (!file_exists($filePath)) {
+            throw new RuntimeException("Partial file not found: {$filePath}");
+        }
+
         extract($partialData, EXTR_OVERWRITE);
 
         ob_start();
 
-        require base_path('plugins/numencode/fundamentals/partials/' . $_fileName);
-
-        return ob_get_clean();
+        try {
+            require $filePath;
+        } finally {
+            return ob_get_clean();
+        }
     }
 }
 
@@ -33,7 +43,7 @@ if (!function_exists('validate_request')) {
      * @param array $messages
      * @return bool
      */
-    function validate_request(array $rules, $messages = [])
+    function validate_request(array $rules, array $messages = [])
     {
         if (post('_ajax_validate')) {
             $rules['_ajax_validate_ensure_failure'] = 'required';
@@ -134,13 +144,13 @@ if (!function_exists('array_merge_reference')) {
      * @param array[] $args
      * @return array
      */
-    function &array_merge_reference(array &...$args)
+    function &array_merge_reference(array ...$args)
     {
         $result = [];
 
-        foreach ($args as &$arg) {
+        foreach ($args as $arg) {
             foreach ($arg as $key => $value) {
-                $result[$key] = &$arg[$key];
+                $result[$key] = $value;
             }
         }
 
@@ -157,17 +167,19 @@ if (!function_exists('array_search_recursive')) {
      * @param array $keys
      * @return array
      */
-    function array_search_recursive(string $needle, array $haystack, $keys = [])
+    function array_search_recursive(string $needle, array $haystack, array $keys = [])
     {
         foreach ($haystack as $key => $value) {
-            if (is_array($value)) {
-                $sub = recursive_array_search($needle, $value, array_merge($keys, [$key]));
+            if ($value === $needle) {
+                return array_merge($keys, [$key]);
+            }
 
-                if (count($sub)) {
+            if (is_array($value)) {
+                $sub = array_search_recursive($needle, $value, array_merge($keys, [$key]));
+
+                if ($sub) {
                     return $sub;
                 }
-            } elseif ($value === $needle) {
-                return array_merge($keys, [$key]);
             }
         }
 
@@ -182,9 +194,11 @@ if (!function_exists('round_global')) {
      * @param mixed $number
      * @return float
      */
-    function round_global($number)
+    function round_global(mixed $number)
     {
-        return round($number, config('app.round_decimals', 2));
+        $decimals = config('app.round_decimals') ?: 2;
+
+        return round($number, $decimals);
     }
 }
 
@@ -311,7 +325,7 @@ if (!function_exists('ddt')) {
      * @param int $skip Number of last nodes to skip from the output.
      * @param bool $die Die after printing the trace.
      */
-    function ddt($skip = 0, $die = true)
+    function ddt(int $skip = 0, bool $die = true)
     {
         $stacks = debug_backtrace();
         $output = '';

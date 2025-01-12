@@ -4,9 +4,11 @@ The **Fundamentals Plugin** provides essential functionalities to streamline app
 the Winter CMS ecosystem.  It includes backend overrides, helper functions, Twig extensions, and more,
 allowing developers to build robust applications efficiently.
 
-[![Version](https://img.shields.io/github/v/release/numencode/wn-fundamentals-plugin?sort=semver&style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/releases)
-[![Tests](https://img.shields.io/github/actions/workflow/status/numencode/wn-fundamentals-plugin/tests.yml?branch=develop&label=tests&style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/actions)
-[![License](https://img.shields.io/github/license/numencode/wn-fundamentals-plugin?label=open%20source&style=flat-square)](https://packagist.org/packages/numencode/wn-fundamentals-plugin)
+[![Version](https://img.shields.io/github/v/release/numencode/wn-fundamentals-plugin?sort=semver&style=flat-square&color=0099FF)](https://github.com/numencode/wn-fundamentals-plugin/releases)
+[![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/numencode/wn-fundamentals-plugin?style=flat-square&color=0099FF)](https://packagist.org/packages/numencode/wn-fundamentals-plugin)
+[![Checks](https://img.shields.io/github/check-runs/numencode/wn-fundamentals-plugin/main?style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/actions)
+[![Tests](https://img.shields.io/github/actions/workflow/status/numencode/wn-fundamentals-plugin/main.yml?branch=main&label=tests&style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/actions)
+[![License](https://img.shields.io/github/license/numencode/wn-fundamentals-plugin?label=open%20source&style=flat-square&color=0099FF)](https://packagist.org/packages/numencode/wn-fundamentals-plugin/blob/main/LICENSE.md)
 
 ---
 
@@ -118,6 +120,91 @@ Event::listen('backend.form.extendFieldsBefore', function ($form) {
 
 ---
 
+## Form Widgets Overrides
+
+### Repeater Field Type
+
+The `Repeater` field type allows you to display and manage a form with multiple collapsible sections,
+each representing an individual record. This is useful for managing lists of related data, where each
+item can be edited using the same form structure.
+
+#### Usage Example for Repeater
+
+Define a `Repeater` field in your form configuration YAML:
+
+```yaml
+fields:
+    posts:
+        label: Posts
+        type: repeater
+        span: auto
+        form:
+            fields:
+                id:
+                    label: ID
+                    type: number
+                    cssClass: hidden
+                title:
+                    label: Title
+                    type: text
+                    span: full
+                content:
+                    label: Content
+                    type: textarea
+                    span: full
+```
+
+#### Example Behavior
+
+- In the form, each item appears as a collapsible section.
+- Clicking "Add new item" adds a new collapsible section with an empty form.
+- Saving the form saves each item in the repeater as a separate record in the database table.
+
+This setup provides a flexible and user-friendly interface for managing lists of related data.
+
+---
+
+## Behaviors
+
+### RelationableModel Behavior
+
+The `RelationableModel` behavior allows a `Repeater` to be used as a relations editor via relation behavior.
+
+#### Example
+
+For a `Category` model with multiple `Item` relations:
+
+```php
+class Category extends Model
+{
+    public $implement = [
+        '@NumenCode.Fundamentals.Behaviors.RelationableModel',
+    ];
+
+    public $hasMany = [
+        'items' => [Item::class, 'key' => 'category_id'],
+    ];
+
+    public $relationable = [
+        'items_list' => 'items',
+    ];
+}
+```
+
+In `\models\category\fields.yaml`:
+
+```yaml
+fields:
+    items_list:
+        prompt: Add new item
+        span: full
+        type: repeater
+        cssClass: 'repeater-collapsible repeater-open'
+        form: $/models/item/fields.yaml
+```
+
+---
+
 ## Helper Functions
 
 The plugin provides a collection of helper functions to simplify complex operations.
@@ -193,7 +280,7 @@ The `AutoProgressBar` should be used when you need to display a progress bar in 
 - `int $total`: Total number of elements.
 - `int $barSize`: The size of the progress bar in blocks.
 
-### Usage Example
+#### Usage Example
 
 ```php
 // Progress Bar for CLI
@@ -210,6 +297,7 @@ foreach ($haystack as $needle) {
 ```
 
 ### Publishable
+
 The `Publishable` trait provides a simple way to manage content visibility using an `is_published` field in the database table.
 
 #### Requirements
@@ -239,6 +327,7 @@ $allPosts = Post::withUnpublished()->get();
 ```
 
 ### Wrapper
+
 The `Wrapper` trait is designed to wrap and extend the functionality of an existing object, providing a flexible way to
 interact with the parent object while maintaining access to its properties and methods. This trait acts as a proxy,
 delegating calls to the wrapped object, and can be used to enhance or modify its behavior without directly modifying
@@ -274,42 +363,43 @@ $original = $wrapper->getWrappedObject();
 
 ---
 
-## Behaviors
+## ImageResize Utility
 
-### RelationableModel Behavior
-The `RelationableModel` behavior allows a `repeater` to be used as a relations editor via relation behavior.
+The `ImageResize` utility is a helper class designed to resize images dynamically. It provides an
+easy-to-use interface for adjusting image dimensions while maintaining high performance and quality.
 
-#### Example
+### Features
+- Resize images to specific dimensions.
+- Option to maintain aspect ratio.
+- Crop images to fit exact dimensions.
+- Specify custom image quality.
+- Handles various image formats (e.g., JPEG, PNG, WebP).
+- Supports caching of resized images for performance optimization.
 
-For a `Category` model with multiple `Item` relations:
+### Usage
 
-```php
-class Category extends Model
-{
-    public $implement = [
-        '@NumenCode.Fundamentals.Behaviors.RelationableModel',
-    ];
+You can use the `ImageResize` utility in your Twig templates by using `resize` filter to process images.
 
-    public $hasMany = [
-        'items' => [Item::class, 'key' => 'category_id'],
-    ];
+#### Example: Image resizing in Twig
 
-    public $relationable = [
-        'items_list' => 'items',
-    ];
-}
+```html
+<img src="{{ post.picture|media|resize('750x300.crop') }}">
 ```
 
-In `\models\category\fields.yaml`:
+---
 
-```yaml
-fields:
-    items_list:
-        prompt: Add new item
-        span: full
-        type: repeater
-        cssClass: 'repeater-collapsible repeater-open'
-        form: $/models/item/fields.yaml
+## ImageResizer Utility
+
+The `ImageResizer` utility is a helper class designed to resize all images in the provided content dynamically.
+
+### Usage
+
+You can use the `ImageResizer` utility in your Twig templates by using `resize_images` filter to process images.
+
+#### Example: Resize images in content in Twig
+
+```html
+<div class="content">{{ content|resize_images }}"</div>
 ```
 
 ---
@@ -398,4 +488,4 @@ Follow [@blazorazem](https://twitter.com/blazorazem) on Twitter.
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-[![MIT License](https://img.shields.io/github/license/numencode/wn-fundamentals-plugin?label=License&color=blue&style=flat-square&cacheSeconds=600)](https://github.com/numencode/wn-fundamentals-plugin/blob/main/LICENSE.md)
+[![License](https://img.shields.io/github/license/numencode/wn-fundamentals-plugin?style=flat-square&color=0099FF)](https://packagist.org/packages/numencode/wn-fundamentals-plugin/blob/main/LICENSE.md)

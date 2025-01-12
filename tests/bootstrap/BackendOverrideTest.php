@@ -5,7 +5,7 @@ use Winter\Storm\Database\Model;
 
 class BackendOverrideTest extends \PluginTestCase
 {
-    public function testListColumnRenderingOverride()
+    public function testListColumnRenderingOverride(): void
     {
         Event::listen('backend.list.overrideColumnValue', function ($list, $record, $column, $value) {
             if ($column->type === 'switch') {

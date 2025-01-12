@@ -1,14 +1,13 @@
 <?php namespace NumenCode\Fundamentals\Bootstrap;
 
-use App;
 use Backend\Classes\WidgetManager;
 use NumenCode\Fundamentals\FormWidgets\Repeater;
 
-class OverrideFormWidgets
+class FormWidgetsOverride
 {
     public function init()
     {
-        if (!App::runningInBackend()) {
+        if (!app()->runningInBackend()) {
             return;
         }
 

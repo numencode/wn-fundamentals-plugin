@@ -5,7 +5,7 @@ use Winter\Translate\Classes\EventRegistry;
 use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
 use NumenCode\Fundamentals\Extensions\TwigExtension;
 use NumenCode\Fundamentals\Bootstrap\BackendOverride;
-use NumenCode\Fundamentals\Bootstrap\OverrideFormWidgets;
+use NumenCode\Fundamentals\Bootstrap\FormWidgetsOverride;
 use NumenCode\Fundamentals\Extensions\EventRegistryExtension;
 
 class Plugin extends PluginBase
@@ -17,7 +17,7 @@ class Plugin extends PluginBase
             'description' => 'numencode.fundamentals::lang.plugin.description',
             'author'      => 'Blaz Orazem',
             'icon'        => 'oc-icon-cogs',
-            'homepage'    => 'https://github.com/numencode/fundamentals-plugin',
+            'homepage'    => 'https://github.com/numencode/wn-fundamentals-plugin',
         ];
     }
 
@@ -58,7 +58,7 @@ class Plugin extends PluginBase
 
     public function registerFormWidgets()
     {
-        (new OverrideFormWidgets())->init();
+        (new FormWidgetsOverride())->init();
 
         return [
             'NumenCode\Fundamentals\FormWidgets\TranslatableHelper' => [
