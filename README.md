@@ -368,7 +368,7 @@ $original = $wrapper->getWrappedObject();
 The `ImageResize` utility is a helper class designed to resize images dynamically. It provides an
 easy-to-use interface for adjusting image dimensions while maintaining high performance and quality.
 
-### Features
+### Features for ImageResize Utility
 - Resize images to specific dimensions.
 - Option to maintain aspect ratio.
 - Crop images to fit exact dimensions.
@@ -376,7 +376,7 @@ easy-to-use interface for adjusting image dimensions while maintaining high perf
 - Handles various image formats (e.g., JPEG, PNG, WebP).
 - Supports caching of resized images for performance optimization.
 
-### Usage
+### Usage for ImageResize Utility
 
 You can use the `ImageResize` utility in your Twig templates by using `resize` filter to process images.
 
@@ -392,7 +392,7 @@ You can use the `ImageResize` utility in your Twig templates by using `resize` f
 
 The `ImageResizer` utility is a helper class designed to resize all images in the provided content dynamically.
 
-### Usage
+### Usage for ImageResizer Utility
 
 You can use the `ImageResizer` utility in your Twig templates by using `resize_images` filter to process images.
 
