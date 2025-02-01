@@ -105,7 +105,7 @@ class ConfigOverride
                 return;
             }
 
-            foreach ((array)$form->secondaryTabs['fields'] as $key => $value) {
+            foreach (($form->secondaryTabs['fields'] ?? []) as $key => $value) {
                 if (starts_with($key, 'viewBag')) {
                     $value['cssClass'] = trim(str_replace('secondary-tab', '', $value['cssClass']));
 
