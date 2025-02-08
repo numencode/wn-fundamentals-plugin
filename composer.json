@@ -3,7 +3,7 @@
     "description": "NumenCode Fundamentals plugin for Winter CMS",
     "type": "winter-plugin",
     "homepage": "https://www.numencode.com",
-    "keywords": ["winter", "cms", "wintercms", "laravel", "numencode"],
+    "keywords": ["winter cms", "winter", "plugin", "laravel", "numencode"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/numencode/wn-fundamentals-plugin/issues",
@@ -23,5 +23,8 @@
     },
     "require-dev": {
         "symfony/var-dumper": "^5.4"
+    },
+    "extra": {
+        "installer-name": "fundamentals"
     }
 }
