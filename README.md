@@ -7,7 +7,7 @@ allowing developers to build robust applications efficiently.
 [![Version](https://img.shields.io/github/v/release/numencode/wn-fundamentals-plugin?sort=semver&style=flat-square&color=0099FF)](https://github.com/numencode/wn-fundamentals-plugin/releases)
 [![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/numencode/wn-fundamentals-plugin?style=flat-square&color=0099FF)](https://packagist.org/packages/numencode/wn-fundamentals-plugin)
 [![Checks](https://img.shields.io/github/check-runs/numencode/wn-fundamentals-plugin/main?style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/actions)
-[![Tests](https://img.shields.io/github/actions/workflow/status/numencode/wn-fundamentals-plugin/main.yml?branch=main&label=tests&style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/actions)
+[![Tests](https://img.shields.io/github/actions/workflow/status/numencode/wn-fundamentals-plugin/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/actions)
 [![License](https://img.shields.io/github/license/numencode/wn-fundamentals-plugin?label=open%20source&style=flat-square&color=0099FF)](https://github.com/numencode/wn-fundamentals-plugin/blob/main/LICENSE.md)
 
 ---
@@ -63,7 +63,7 @@ It provides a centralized way to enhance the backend's functionality, styling, a
 This class is useful for injecting custom styles, scripts, or modifying the backend behavior without
 altering the core framework.
 
-### Key Features for Backend Overrides
+### Key Features
 
 - **Custom Styles and Scripts:**
   - Automatically adds custom SCSS and JavaScript files to backend pages.
@@ -82,7 +82,7 @@ The `ConfigOverride` class enables developers to customize and extend configurat
 Winter CMS application. Its primary purpose is to facilitate granular or global overrides of configuration files,
 reducing duplication and enhancing flexibility.
 
-### Key Features for Config Overrides
+### Key Features
 
 - **Field Customization**: Modify or extend `fields.yaml` files for any class using the `extendFields()` method.
 - **Column Customization**: Adjust or add columns to `columns.yaml`, `columns_import.yaml`, or `columns_export.yaml` via dedicated methods like `extendColumns()`, `extendImportColumns()`, and `extendExportColumns()`.
@@ -91,7 +91,7 @@ reducing duplication and enhancing flexibility.
 - **Scoped Overrides**: Limit overrides to specific classes and configuration files using methods like `extend()` for precise control.
 - **Pages Plugin Integration**: Automatically aligns form tabs and secondary tabs for the Winter Pages plugin to improve backend usability.
 
-### Usage Example for Config Overrides
+### Usage Example
 
 ```php
 use NumenCode\Fundamentals\Bootstrap\ConfigOverride;
@@ -152,7 +152,7 @@ The `Repeater` field type allows you to display and manage a form with multiple 
 each representing an individual record. This is useful for managing lists of related data, where each
 item can be edited using the same form structure.
 
-#### Usage Example for Repeater
+#### Usage Example
 
 Define a `Repeater` field in your form configuration YAML:
 
@@ -178,7 +178,7 @@ fields:
                     span: full
 ```
 
-#### Example Behavior for Repeater
+#### Example
 
 - In the form, each item appears as a collapsible section.
 - Clicking "Add new item" adds a new collapsible section with an empty form.
@@ -194,7 +194,7 @@ This setup provides a flexible and user-friendly interface for managing lists of
 
 The `RelationableModel` behavior allows a `Repeater` to be used as a relations editor via relation behavior.
 
-#### Example for RelationableModel Behavior
+#### Example
 
 For a `Category` model with multiple `Item` relations:
 
@@ -258,7 +258,7 @@ These can be used across the application to improve code readability and functio
 ## CMS Permissions
 The `CmsPermissions` class enables fine-grained control over user group actions, such as creating, updating, and deleting data.
 
-### Configuration Example for CMS Permissions
+### Configuration Example
 
 **Step 1**: Configure permissions in the plugin's `boot()` method:
 
@@ -298,13 +298,13 @@ class Plugin extends PluginBase
 The `ProgressBar` trait displays progress status in the CLI while iterating through an array during console command execution.
 The `AutoProgressBar` should be used when you need to display a progress bar in the CMS backend.
 
-#### Parameters for Progress Bar
+#### Parameters
 
 - `int $current`: Current processing element.
 - `int $total`: Total number of elements.
 - `int $barSize`: The size of the progress bar in blocks.
 
-#### Usage Example for Progress Bar
+#### Usage Example
 
 ```php
 // Progress Bar for CLI
@@ -324,16 +324,16 @@ foreach ($haystack as $needle) {
 
 The `Publishable` trait provides a simple way to manage content visibility using an `is_published` field in the database table.
 
-#### Requirements for Publishable
+#### Requirements
 
 Add a boolean field named `is_published` to the table.
 
-#### Features for Publishable
+#### Features
 
 1. **Automatic Filtering**: Only records with `is_published = true` are included in queries for frontend users.
 2. **Override Scope**: Use the `withUnpublished()` method to retrieve all records, including unpublished ones.
 
-#### Usage Example for Publishable
+#### Usage Example
 
 ```php
 class Post extends Model
@@ -357,7 +357,7 @@ interact with the parent object while maintaining access to its properties and m
 delegating calls to the wrapped object, and can be used to enhance or modify its behavior without directly modifying
 the parent class.
 
-#### Usage Example for Wrapper
+#### Usage Example
 
 1. Include the `Wrapper` trait in your class.
 2. Pass the parent object to the constructor of the class using the `Wrapper` trait.
@@ -392,7 +392,7 @@ $original = $wrapper->getWrappedObject();
 The `ImageResize` utility is a helper class designed to resize images dynamically. It provides an
 easy-to-use interface for adjusting image dimensions while maintaining high performance and quality.
 
-### Features for ImageResize Utility
+### Features
 - Resize images to specific dimensions.
 - Option to maintain aspect ratio.
 - Crop images to fit exact dimensions.
@@ -400,7 +400,7 @@ easy-to-use interface for adjusting image dimensions while maintaining high perf
 - Handles various image formats (e.g., JPEG, PNG, WebP).
 - Supports caching of resized images for performance optimization.
 
-### Usage for ImageResize Utility
+### Usage
 
 You can use the `ImageResize` utility in your Twig templates by using `resize` filter to process images.
 
@@ -416,7 +416,7 @@ You can use the `ImageResize` utility in your Twig templates by using `resize` f
 
 The `ImageResizer` utility is a helper class designed to resize all images in the provided content dynamically.
 
-### Usage for ImageResizer Utility
+### Usage
 
 You can use the `ImageResizer` utility in your Twig templates by using `resize_images` filter to process images.
 

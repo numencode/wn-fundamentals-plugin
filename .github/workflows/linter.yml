@@ -1,0 +1,28 @@
+---
+name: Linter
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+
+jobs:
+    linter:
+        runs-on: ubuntu-latest
+        name: Super-Linter
+        steps:
+            - name: Checkout changes
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Run Super-Linter
+              uses: github/super-linter@v4
+              env:
+                  DEFAULT_BRANCH: main
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  VALIDATE_YAML: true
+                  VALIDATE_JSON: true
+                  VALIDATE_MARKDOWN: true
+                  VALIDATE_PHP_BUILTIN: true
