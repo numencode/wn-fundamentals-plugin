@@ -4,7 +4,7 @@ The **Fundamentals Plugin** provides essential functionalities to streamline app
 the Winter CMS ecosystem.  It includes backend overrides, helper functions, Twig extensions, and more,
 allowing developers to build robust applications efficiently.
 
-[![Version](https://img.shields.io/github/v/release/numencode/wn-fundamentals-plugin?sort=semver&style=flat-square&color=0099FF)](https://github.com/numencode/wn-fundamentals-plugin/releases)
+[![Version](https://img.shields.io/github/v/release/numencode/wn-fundamentals-plugin?style=flat-square&color=0099FF)](https://github.com/numencode/wn-fundamentals-plugin/releases)
 [![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/numencode/wn-fundamentals-plugin?style=flat-square&color=0099FF)](https://packagist.org/packages/numencode/wn-fundamentals-plugin)
 [![Checks](https://img.shields.io/github/check-runs/numencode/wn-fundamentals-plugin/main?style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/actions)
 [![Tests](https://img.shields.io/github/actions/workflow/status/numencode/wn-fundamentals-plugin/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/numencode/wn-fundamentals-plugin/actions)
