@@ -293,6 +293,50 @@ class Plugin extends PluginBase
 
 ## Traits
 
+### ComponentRenderer
+
+The `ComponentRenderer` trait provides useful rendering utilities for Winter CMS components,
+allowing dynamic alias resolution and customizable template overrides.
+
+#### Features
+
+1. **Automatic Alias Resolution**: The component alias is automatically set based on its class name.
+2. **Customizable Rendering**: Supports overriding default templates using component properties.
+3. **Layout Selection**: Provides a method to list available layout options from partials.
+
+#### Usage Example
+
+```php
+class MyComponent extends ComponentBase
+{
+    use \NumenCode\Fundamentals\Traits\ComponentRenderer;
+}
+
+// Resolves alias based on the class name
+$component = new MyComponent();
+$component->init();
+echo $component->alias; // Outputs 'mycomponent'
+```
+
+#### Overriding Component Layouts
+
+To override a component's layouts, follow these steps:
+1. Create a folder with the component's name inside your theme's partials directory
+(e.g., `/themes/custom/partials/mycomponent`)
+2. Add layout files to that folder
+(e.g., `default.htm`, `special.htm`, etc.)
+3. Enable layout overriding by setting `$overrideLayout = true` in the `boot()` method of your plugin's `Plugin.php`:
+
+```php
+class Plugin extends PluginBase
+{
+    public function boot()
+    {
+        MyComponent::$overrideLayout = true;
+    }
+}
+```
+
 ### Progress Bar
 
 The `ProgressBar` trait displays progress status in the CLI while iterating through an array during console command execution.

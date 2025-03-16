@@ -1,6 +1,5 @@
 <?php namespace NumenCode\Fundamentals\Tests;
 
-use Mockery;
 use PluginTestCase;
 
 class HelpersTest extends PluginTestCase
