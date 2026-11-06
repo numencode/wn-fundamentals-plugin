@@ -98,9 +98,12 @@ items_list:
     form: $/acme/demo/models/galleryitem/fields.yaml
     titleFrom: title
     style: collapsed
+    showToggleAll: true
 ```
 
 All options of the core `repeater` widget work (`titleFrom`, `style`, `minItems`, `maxItems`, `sortable`, ...).
+`showToggleAll: true` adds "Expand all" and "Collapse all" buttons above the items. They are shown in list mode
+with the `default` or `collapsed` style, not with `accordion` (where only one item is open) or in grid mode.
 The related model's `fields.yaml` **must** contain its primary key as a hidden field. Without it, existing items are
 not recognized, and every save deletes and recreates all related records:
 
@@ -338,6 +341,8 @@ is_published:
 
 Groups: `field.*` (id, title, subtitle, description, content, picture, link, slug, sort order, ...), `timestamp.*`
 (created, updated, deleted, ...) and `item.*` (item labels and actions). See [`lang/en/lang.php`](lang/en/lang.php).
+
+The plugin is translated into English and Slovenian (`lang/sl`).
 
 ## Upgrading from 1.x
 

@@ -4,3 +4,5 @@
     - 'Add the ComponentRenderer trait'
 2.0.0:
     - '!!! Security fixes, relationrepeater form widget, Winter 1.2.15 alignment; removes the image resizer, controller views, several Twig functions and helpers. Requires PHP 8.2+. See the upgrade guide in CHANGELOG.md.'
+2.1.0:
+    - 'Relation repeater "Expand all" / "Collapse all" buttons (showToggleAll), Slovenian translation'

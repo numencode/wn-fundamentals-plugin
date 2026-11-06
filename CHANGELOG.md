@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-11-06
+
+### Added
+
+- `relationrepeater`: the `showToggleAll` option adds "Expand all" and "Collapse all" buttons above the items.
+- Slovenian translation (`lang/sl`).
+
 ## [2.0.0] - 2026-11-06
 
 A rewrite focused on security, Winter CMS 1.2.15 and a clean, documented toolbox. It contains breaking changes –
@@ -159,7 +166,8 @@ see [Upgrading from 1.x](#upgrading-from-1x).
 - Core functionality for Winter CMS projects, compatible with Winter CMS `1.2.7`.
 - Prerequisite for the other NumenCode plugins.
 
-[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/numencode/wn-fundamentals-plugin/compare/v1.0.0...v1.0.1

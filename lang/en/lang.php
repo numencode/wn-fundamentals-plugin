@@ -49,6 +49,10 @@ return [
     'formwidget' => [
         'relationrepeater' => 'Relation repeater',
     ],
+    'repeater' => [
+        'expand_all'   => 'Expand all',
+        'collapse_all' => 'Collapse all',
+    ],
     'relationable' => [
         'item_error' => 'Item :index: :message',
     ],

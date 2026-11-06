@@ -47,7 +47,7 @@ class RelationRepeaterTest extends FundamentalsTestCase
     /**
      * Builds the backend form of a gallery. With $post, the request is a POST with that data (like a save).
      */
-    protected function makeForm(TestGallery $gallery, ?array $post = null, string $context = 'update'): Form
+    protected function makeForm(TestGallery $gallery, ?array $post = null, string $context = 'update', array $options = []): Form
     {
         if ($post !== null) {
             $this->app['request']->setMethod('POST');
@@ -60,7 +60,7 @@ class RelationRepeaterTest extends FundamentalsTestCase
             'context'   => $context,
             'fields'    => [
                 'title'      => ['label' => 'Title', 'type' => 'text'],
-                'items_list' => ['label' => 'Items', 'type' => 'relationrepeater', 'titleFrom' => 'title', 'form' => self::ITEM_FORM],
+                'items_list' => ['label' => 'Items', 'type' => 'relationrepeater', 'titleFrom' => 'title', 'form' => self::ITEM_FORM] + $options,
             ],
         ]);
 
@@ -225,5 +225,56 @@ class RelationRepeaterTest extends FundamentalsTestCase
 
         $this->assertTrue(RepeaterForm::isTranslateWidget($itemForm->getFormWidget('title')));
         $this->assertFalse(RepeaterForm::isTranslateWidget($form->getFormWidget('items_list')));
+    }
+
+    public function testToggleAllButtonsAreOptIn(): void
+    {
+        $form = $this->makeForm($this->makeGallery());
+        $html = $form->render();
+
+        $this->assertStringNotContainsString('data-relationrepeater-toggle', $html);
+        $this->assertStringNotContainsString(
+            'relationrepeater.js',
+            implode(' ', $form->getFormWidget('items_list')->getController()->getAssetPaths()['js'] ?? [])
+        );
+    }
+
+    public function testToggleAllButtonsAreShownWhenEnabled(): void
+    {
+        $form = $this->makeForm($this->makeGallery(), null, 'update', ['showToggleAll' => true, 'style' => 'collapsed']);
+        $html = $form->render();
+
+        $this->assertStringContainsString('data-control="relationrepeater"', $html);
+        $this->assertStringContainsString('data-relationrepeater-toggle="expand"', $html);
+        $this->assertStringContainsString('data-relationrepeater-toggle="collapse"', $html);
+        $this->assertStringContainsString('Expand all', $html);
+        $this->assertStringContainsString('data-control="fieldrepeater"', $html, 'The core repeater is still rendered');
+
+        $repeater = $form->getFormWidget('items_list');
+        $this->assertTrue($repeater->hasToggleAll());
+        $this->assertStringContainsString(
+            'formwidgets/relationrepeater/assets/js/relationrepeater.js',
+            implode(' ', $repeater->getController()->getAssetPaths()['js'])
+        );
+    }
+
+    public function testToggleAllButtonsAreTranslated(): void
+    {
+        $this->app->setLocale('sl');
+
+        $html = $this->makeForm($this->makeGallery(), null, 'update', ['showToggleAll' => true])->render();
+
+        $this->assertStringContainsString('Razširi vse', $html);
+        $this->assertStringContainsString('Strni vse', $html);
+    }
+
+    public function testToggleAllButtonsAreNotShownForAccordionOrGridRepeaters(): void
+    {
+        foreach ([['style' => 'accordion'], ['mode' => 'grid']] as $options) {
+            $form = $this->makeForm($this->makeGallery(), null, 'update', ['showToggleAll' => true] + $options);
+
+            $this->assertStringNotContainsString('data-relationrepeater-toggle', $form->render());
+            $this->assertFalse($form->getFormWidget('items_list')->hasToggleAll());
+        }
     }
 }

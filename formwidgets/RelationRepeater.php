@@ -15,9 +15,59 @@ use NumenCode\Fundamentals\Classes\RepeaterForm;
  * sortable, ...), but each item form is bound to its own related model, so related-model features
  * (Winter.Translate fields, file uploads, ...) work inside the items. The parent model must implement
  * the RelationableModel behavior; see that class for an example.
+ *
+ * Extra option:
+ *
+ *     showToggleAll: true   # "Expand all" / "Collapse all" buttons above the items (list mode, not with style: accordion)
  */
 class RelationRepeater extends Repeater
 {
+    protected const PATH = '$/numencode/fundamentals/formwidgets/relationrepeater';
+
+    /**
+     * Show the "Expand all" and "Collapse all" buttons.
+     */
+    public bool $showToggleAll = false;
+
+    public function init()
+    {
+        $this->showToggleAll = (bool) $this->getConfig('showToggleAll', false);
+
+        parent::init();
+    }
+
+    public function render()
+    {
+        $html = parent::render();
+
+        if (!$this->hasToggleAll()) {
+            return $html;
+        }
+
+        return $this->makePartial(static::PATH . '/partials/_toggle_all.php', ['repeater' => $html]);
+    }
+
+    /**
+     * Whether the toggle buttons are shown: enabled, and the items can be collapsed one by one.
+     */
+    public function hasToggleAll(): bool
+    {
+        return $this->showToggleAll
+            && ($this->vars['mode'] ?? $this->mode) === 'list'
+            && ($this->vars['style'] ?? $this->style) !== 'accordion';
+    }
+
+    protected function loadAssets()
+    {
+        parent::loadAssets();
+
+        // Called before init(), so the option is read from the config
+        if ($this->getConfig('showToggleAll', false)) {
+            $this->addCss(static::PATH . '/assets/css/relationrepeater.css', 'NumenCode.Fundamentals');
+            $this->addJs(static::PATH . '/assets/js/relationrepeater.js', 'NumenCode.Fundamentals');
+        }
+    }
+
     /**
      * Use the core repeater's partials and assets.
      */
