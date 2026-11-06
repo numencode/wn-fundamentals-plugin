@@ -1,48 +1,9 @@
 (function ($) {
 
-    let initialExecution = true;
-
-    function init()
-    {
-        //
-    }
-
     function render()
     {
-        $('.repeater-collapsible').each(initCollapsibleRepeater);
         $('.section-field[data-set-from]').each(initDynamicSection);
-        $('.translatable-selector').each(initTranslatableSelector);
-
-        initialExecution = false;
-    }
-
-    function initCollapsibleRepeater()
-    {
-        var collapsible = $(this);
-
-        if (!collapsible.hasClass('collapsible'))
-        {
-            collapsible.addClass('collapsible').prepend(
-                '<div class="collapsible-controls">' +
-                '<div class="btn-group collapsible-controls">' +
-                '<button class="btn btn-sm btn-link js-expand"><i class="icon-expand"></i> Expand all</button>' +
-                '<button class="btn btn-sm btn-link js-collapse"><i class="icon-compress"></i> Collapse all</button>' +
-                '</div>' +
-                '</div>'
-            );
-
-            collapsible.find('.js-expand').click(function (e) {
-                e.preventDefault();
-                collapsible.find('.section-field.collapsed, .form-section.collapsed').trigger('click');
-            });
-
-            collapsible.find('.js-collapse').click(function (e) {
-                e.preventDefault();
-                collapsible.find('.section-field:not(.collapsed), .form-section:not(.collapsed)').trigger('click');
-            });
-        }
-
-        collapsible.find('.section-field').each(initCollapsibleRepeaterItems);
+        $('[data-control="numencode-translate-selector"]').each(initTranslatableSelector);
     }
 
     function initDynamicSection()
@@ -55,7 +16,7 @@
 
         $(this).data('original', original);
 
-        var fields = pattern.match(/\[[a-z0-9_]+\]/gi);
+        var fields = pattern.match(/\[[a-z0-9_]+\]/gi) || [];
 
         for (var i=0; i< fields.length; i++) {
             if (fields[i] == '[original]') continue;
@@ -91,7 +52,9 @@
             var value = field.val();
 
             if (field.prop("tagName") == 'SELECT' && value) {
-                value = field.find('option[value="' + value + '"]').text();
+                value = field.find('option').filter(function () {
+                    return this.value === value;
+                }).text();
             }
 
             if (value) {
@@ -108,65 +71,68 @@
         target.text(result.replace(/\[[a-z0-9_]+\]/gi, ''));
     }
 
-    function initCollapsibleRepeaterItems()
-    {
-        var item = $(this).find('.field-section:first');
-        var form = item.closest('.field-repeater-item');
-        var collapsible = $(this).closest('.repeater-collapsible');
-
-        if (item.hasClass('is-collapsible')) return;
-
-        item.addClass('is-collapsible');
-        form.addClass('is-collapsible');
-
-        $(this).on('click', function () {
-            $(this)
-                .toggleClass('collapsed')
-                .nextUntil('.section-field').toggle()
-        });
-
-        var shouldInitializeCollapsed = initialExecution || $(this).parents('.modal-body').length > 0;
-
-        if (shouldInitializeCollapsed && ! collapsible.hasClass('repeater-open') && collapsible.find('.section-field').length > 1) {
-            $(this).addClass('collapsed').nextUntil('.section-field').hide();
-        }
-    }
-
+    /*
+     * Language selector for forms with translatable fields (partials/_translate_selector.htm).
+     * Uses Winter.Translate's multilingual control API, so every field type updates correctly.
+     */
     function initTranslatableSelector()
     {
-        var selector = $(this);
+        var $selector = $(this);
 
-        if (selector.hasClass('translatable-initialized')) return;
+        if ($selector.data('initialized')) return;
 
-        selector.addClass('translatable-initialized');
+        $selector.data('initialized', true);
 
-        selector.find('#js-lang-select').change(function () {
-            $(this).closest('form').find('[data-switch-locale="' + $(this).val() + '"]').click();
+        var $form = $selector.closest('form');
+        var $locale = $selector.find('[data-translate-locale]');
+        var $copy = $selector.find('[data-translate-copy]');
+
+        // Every Translate field (mltext, mlricheditor, ...) holds a MultiLingual instance in its data
+        function multilingualControls()
+        {
+            return $form.find('.field-multilingual').filter(function () {
+                return !!$(this).data('oc.multilingual');
+            });
+        }
+
+        $locale.on('change', function () {
+            var locale = $(this).val();
+
+            multilingualControls().each(function () {
+                $(this).multiLingual('setLocale', locale);
+            });
         });
 
-        selector.find('#js-lang-copy').change(function () {
-            var target = selector.find('#js-lang-select').val();
+        $copy.on('change', function () {
             var source = $(this).val();
+            var target = $locale.val();
 
-            if (!source) return;
+            // Reset the dropdown without running this handler again
+            $(this).val('').trigger('change.select2');
 
-            if (confirm("You will override all " + target.toUpperCase() + " translations with " + source.toUpperCase() + ".\n\nDo you wish to continue?")) {
-                // Copy all of the translations
-                $('[data-locale-value="' + source + '"]').each(function () {
-                    var targetElm = $(this).parent().find('[data-locale-value="' + target + '"]');
-                    targetElm.val($(this).val());
+            if (!source || !target || source === target) return;
+
+            var message = String($selector.data('copy-confirm'))
+                .replace(':source', source.toUpperCase())
+                .replace(':target', target.toUpperCase());
+
+            var copyAll = function () {
+                multilingualControls().each(function () {
+                    $(this).multiLingual('setLocale', target);
+                    $(this).multiLingual('applyCopyLocale', source, '');
                 });
+            };
 
-                // Switch to new language
-                $(this).closest('form').find('[data-active-locale]').text(source);
-                $(this).closest('form').find('[data-switch-locale="' + target + '"]').click();
+            if ($.wn && typeof $.wn.confirm === 'function') {
+                $.wn.confirm(message, function (isConfirm) {
+                    if (isConfirm) copyAll();
+                });
+            } else if (window.confirm(message)) {
+                copyAll();
             }
-
-            $(this).val('').trigger('change');
         });
     }
 
     $(document).render(render);
-    $(document).ready(init);
 
 }(jQuery));

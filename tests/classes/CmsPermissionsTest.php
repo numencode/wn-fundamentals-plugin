@@ -1,62 +1,111 @@
-<?php namespace NumenCode\Fundamentals\Tests\Classes;
+<?php
 
-use PluginTestCase;
-use ReflectionClass;
-use UnexpectedValueException;
+declare(strict_types=1);
+
+namespace NumenCode\Fundamentals\Tests\Classes;
+
+use Backend\Facades\BackendAuth;
+use Backend\Models\User;
+use Backend\Models\UserGroup;
 use NumenCode\Fundamentals\Classes\CmsPermissions;
+use NumenCode\Fundamentals\Tests\FundamentalsTestCase;
+use UnexpectedValueException;
 
-class CmsPermissionsTest extends PluginTestCase
+class CmsPermissionsTest extends FundamentalsTestCase
 {
-    public function testRevokeCreate(): void
+    protected const POSTS = 'Acme\Demo\Controllers\Posts';
+
+    public function setUp(): void
     {
-        CmsPermissions::revokeCreate('group1', 'TestController');
+        parent::setUp();
 
-        // Using Reflection to access the protected static property `$revokes`
-        $reflection = new ReflectionClass(CmsPermissions::class);
-        $property = $reflection->getProperty('revokes');
-        $property->setAccessible(true);
-        $revokes = $property->getValue();
-
-        // Check if the revoke action has been set correctly
-        $this->assertTrue(isset($revokes['create']['group1']['TestController']));
+        CmsPermissions::flush();
     }
 
-    public function testRevokeUpdate(): void
+    public function tearDown(): void
     {
-        CmsPermissions::revokeUpdate('group1', 'TestController');
+        CmsPermissions::flush();
 
-        // Using Reflection to access the protected static property `$revokes`
-        $reflection = new ReflectionClass(CmsPermissions::class);
-        $property = $reflection->getProperty('revokes');
-        $property->setAccessible(true);
-        $revokes = $property->getValue();
-
-        // Check if the revoke action has been set correctly
-        $this->assertTrue(isset($revokes['update']['group1']['TestController']));
+        parent::tearDown();
     }
 
-    public function testValidateActionThrowsExceptionForInvalidAction(): void
+    protected function loginWithGroups(string ...$codes): void
     {
-        // Test if an invalid action throws an UnexpectedValueException
+        $user = new User();
+        $user->setRelation('groups', collect(array_map(fn ($code) => new UserGroup(['code' => $code]), $codes)));
+
+        BackendAuth::setUser($user);
+    }
+
+    public function testEverythingIsAllowedByDefault(): void
+    {
+        $this->loginWithGroups('owners');
+
+        foreach (CmsPermissions::ACTIONS as $action) {
+            $this->assertTrue(CmsPermissions::can($action, self::POSTS));
+        }
+    }
+
+    public function testRevokedActionsAreDeniedForTheGroup(): void
+    {
+        CmsPermissions::revokeCreate('owners', self::POSTS);
+        CmsPermissions::revokeUpdate('owners', self::POSTS);
+        CmsPermissions::revokeDelete(['owners', 'publishers'], self::POSTS);
+        CmsPermissions::revokeDuplicate('publishers', '\\' . self::POSTS);
+
+        $this->loginWithGroups('publishers');
+
+        $this->assertTrue(CmsPermissions::canCreate(self::POSTS));
+        $this->assertTrue(CmsPermissions::canUpdate(self::POSTS));
+        $this->assertFalse(CmsPermissions::canDelete(self::POSTS));
+        $this->assertFalse(CmsPermissions::canDuplicate(self::POSTS), 'A leading backslash is ignored');
+
+        $this->loginWithGroups('owners');
+
+        $this->assertFalse(CmsPermissions::canCreate(self::POSTS));
+        $this->assertFalse(CmsPermissions::canUpdate(self::POSTS));
+        $this->assertTrue(CmsPermissions::canDuplicate(self::POSTS));
+    }
+
+    public function testAnyRevokedGroupDeniesTheAction(): void
+    {
+        CmsPermissions::revokeDelete('publishers', self::POSTS);
+
+        $this->loginWithGroups('owners', 'publishers');
+
+        $this->assertFalse(CmsPermissions::canDelete(self::POSTS));
+    }
+
+    public function testOtherControllersAreNotAffected(): void
+    {
+        CmsPermissions::revokeDelete('owners', self::POSTS);
+
+        $this->loginWithGroups('owners');
+
+        $this->assertTrue(CmsPermissions::canDelete('Acme\Demo\Controllers\Categories'));
+    }
+
+    public function testControllerObjectsAreAccepted(): void
+    {
+        $controller = new \Backend\Classes\Controller();
+        CmsPermissions::revokeDelete('owners', get_class($controller));
+
+        $this->loginWithGroups('owners');
+
+        $this->assertFalse(CmsPermissions::canDelete($controller));
+    }
+
+    public function testWithoutUserEverythingIsAllowed(): void
+    {
+        CmsPermissions::revokeDelete('owners', self::POSTS);
+
+        $this->assertTrue(CmsPermissions::canDelete(self::POSTS));
+    }
+
+    public function testUnknownActionIsRejected(): void
+    {
         $this->expectException(UnexpectedValueException::class);
 
-        $reflection = new ReflectionClass(CmsPermissions::class);
-        $method = $reflection->getMethod('validateAction');
-        $method->setAccessible(true);
-        $method->invoke(null, 'invalidAction'); // Trigger the exception
-    }
-
-    public function testRevokeDelete(): void
-    {
-        CmsPermissions::revokeDelete('group1', 'TestController');
-
-        // Using Reflection to access the protected static property `$revokes`
-        $reflection = new ReflectionClass(CmsPermissions::class);
-        $property = $reflection->getProperty('revokes');
-        $property->setAccessible(true);
-        $revokes = $property->getValue();
-
-        // Check if the revoke action has been set correctly
-        $this->assertTrue(isset($revokes['delete']['group1']['TestController']));
+        CmsPermissions::can('publish', self::POSTS);
     }
 }

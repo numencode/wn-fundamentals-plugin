@@ -1,78 +1,62 @@
-<?php namespace NumenCode\Fundamentals\Tests\Traits;
+<?php
 
-use PluginTestCase;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Schema\Blueprint;
-use NumenCode\Fundamentals\Traits\Publishable;
+declare(strict_types=1);
 
-class PublishableTest extends PluginTestCase
+namespace NumenCode\Fundamentals\Tests\Traits;
+
+use Backend\Facades\BackendAuth;
+use Backend\Models\User;
+use NumenCode\Fundamentals\Scopes\PublishableScope;
+use NumenCode\Fundamentals\Tests\Fixtures\Models\TestItem;
+use NumenCode\Fundamentals\Tests\FundamentalsTestCase;
+
+class PublishableTest extends FundamentalsTestCase
 {
     public function setUp(): void
     {
         parent::setUp();
 
-        // Create a temporary table for testing
-        Schema::create('test_publishables', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->boolean('is_published')->default(false);
-            $table->timestamps();
-        });
+        $this->loadTranslate();
+        $this->createFixtureTables();
+
+        TestItem::create(['title' => 'Published', 'is_published' => true]);
+        TestItem::create(['title' => 'Unpublished', 'is_published' => false]);
     }
 
-    public function tearDown(): void
+    public function testHidesUnpublishedRecordsForVisitors(): void
     {
-        // Drop the temporary table
-        Schema::dropIfExists('test_publishables');
-
-        parent::tearDown();
+        $this->assertTrue(PublishableScope::shouldHideUnpublished());
+        $this->assertSame(['Published'], TestItem::pluck('title')->all());
     }
 
-    public function testGlobalScopeFiltersUnpublishedRecords(): void
+    public function testBackendUsersSeeUnpublishedRecords(): void
     {
-        // Create records
-        TestPublishable::create(['title' => 'Published', 'is_published' => true]);
-        TestPublishable::create(['title' => 'Unpublished', 'is_published' => false]);
+        BackendAuth::setUser(new User());
 
-        // Query without modifications
-        $records = TestPublishable::all();
-
-        $this->assertCount(1, $records);
-        $this->assertEquals('Published', $records->first()->title);
+        $this->assertFalse(PublishableScope::shouldHideUnpublished());
+        $this->assertCount(2, TestItem::all());
     }
 
-    public function testWithUnpublishedScope(): void
+    public function testWithUnpublishedAndOnlyUnpublished(): void
     {
-        // Create records
-        TestPublishable::create(['title' => 'Published', 'is_published' => true]);
-        TestPublishable::create(['title' => 'Unpublished', 'is_published' => false]);
-
-        // Query including unpublished records
-        $records = TestPublishable::withUnpublished()->get();
-
-        $this->assertCount(2, $records);
+        $this->assertCount(2, TestItem::withUnpublished()->get());
+        $this->assertSame(['Unpublished'], TestItem::onlyUnpublished()->pluck('title')->all());
     }
 
-    public function testIsPublishedMethod(): void
+    public function testIsPublishedReturnsABoolean(): void
     {
-        // Create a record
-        $record = TestPublishable::create(['title' => 'Published', 'is_published' => true]);
-
-        $this->assertTrue($record->isPublished());
-
-        // Update and test again
-        $record->is_published = false;
-        $this->assertFalse($record->isPublished());
+        $this->assertTrue(TestItem::withUnpublished()->where('title', 'Published')->first()->isPublished());
+        $this->assertFalse(TestItem::withUnpublished()->where('title', 'Unpublished')->first()->isPublished());
     }
-}
 
-// Define a test model
-class TestPublishable extends Model
-{
-    use Publishable;
+    public function testPublishedColumnCanBeChanged(): void
+    {
+        $model = new class extends TestItem {
+            public const PUBLISHED_COLUMN = 'is_visible';
+        };
 
-    protected $table = 'test_publishables';
-
-    protected $fillable = ['title', 'is_published'];
+        $this->assertSame('is_published', (new TestItem())->getPublishedColumn());
+        $this->assertSame('is_visible', $model->getPublishedColumn());
+        $this->assertSame('nc_test_items.is_visible', $model->getQualifiedPublishedColumn());
+    }
 }

@@ -1,0 +1,10 @@
+url = "/renderer"
+
+[testRenderer first]
+layout = "@fancy"
+
+[testRenderer second]
+layout = "@plain"
+==
+A[{% component 'first' %}]
+B[{% component 'second' %}]

@@ -1,9 +1,9 @@
 {
     "name": "numencode/wn-fundamentals-plugin",
-    "description": "NumenCode Fundamentals plugin for Winter CMS",
+    "description": "Toolbox for Winter CMS projects: inline relation repeaters, publishable models, theme-overridable component layouts, backend improvements, Twig functions and PHP helpers.",
     "type": "winter-plugin",
     "homepage": "https://www.numencode.com",
-    "keywords": ["winter cms", "winter", "plugin", "laravel", "numencode"],
+    "keywords": ["winter cms", "winter", "plugin", "laravel", "numencode", "toolbox", "repeater", "relations", "twig", "helpers", "translate"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/numencode/wn-fundamentals-plugin/issues",
@@ -14,17 +14,32 @@
             "name": "Blaz Orazem",
             "email": "blaz@orazem.si",
             "homepage": "https://orazem.si/",
-            "role": "Founder"
+            "role": "Maintainer"
         }
     ],
     "require": {
-        "php": "^8.0.2",
-        "mobiledetect/mobiledetectlib": "^4.8"
+        "php": "^8.2",
+        "composer/installers": "^1.0 || ^2.0",
+        "mobiledetect/mobiledetectlib": "^4.8",
+        "winter/storm": "^1.2"
     },
-    "require-dev": {
-        "symfony/var-dumper": "^5.4"
+    "suggest": {
+        "winter/wn-translate-plugin": "Enables translations of fields inside relation repeaters and the language selector in backend forms."
+    },
+    "autoload": {
+        "psr-4": {
+            "NumenCode\\Fundamentals\\": ""
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        },
+        "sort-packages": true
     },
     "extra": {
         "installer-name": "fundamentals"
-    }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

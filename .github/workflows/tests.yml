@@ -7,78 +7,65 @@ on:
             - main
     pull_request:
 
+permissions:
+    contents: read
+
 jobs:
     phpUnitTests:
         runs-on: ubuntu-latest
-        name: Unit Tests / PHP ${{ matrix.phpVersion }} / Winter ${{ matrix.winterRelease }}
+        name: Unit Tests / PHP ${{ matrix.php }} / Winter ${{ matrix.winter }}
+        continue-on-error: ${{ matrix.experimental }}
         strategy:
-            max-parallel: 6
-            matrix:
-                phpVersion: ['8.1', '8.2', '8.3']
-                winterRelease: ['develop']
-                winterReleaseDir: ['develop']
             fail-fast: false
-        env:
-            phpExtensions: mbstring, intl, gd, xml, sqlite
-            cacheKey: ext-cache-v1
-            winterCmsRelease: develop
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            matrix:
+                php: ['8.2', '8.3', '8.4', '8.5']
+                winter: ['~1.2.0']
+                experimental: [false]
+                include:
+                    # Upcoming Winter release – informational only
+                    - php: '8.4'
+                      winter: 'dev-develop'
+                      experimental: true
         steps:
-            - name: Checkout changes
+            - name: Checkout plugin
               uses: actions/checkout@v4
               with:
-                  fetch-depth: 0
+                  path: plugin
 
-            - name: Move files to a fundamentals-plugin directory
-              run: mkdir fundamentals-plugin && find . -mindepth 1 -maxdepth 1 ! -name 'fundamentals-plugin' -exec mv -t fundamentals-plugin -- {} +
-
-            - name: Setup cache environment
-              id: extcache
-              uses: shivammathur/cache-extensions@v1
-              with:
-                  php-version: ${{ matrix.phpVersion }}
-                  extensions: ${{ env.phpExtensions }}
-                  key: ${{ env.cacheKey }}
-
-            - name: Cache extensions
-              uses: actions/cache@v4
-              with:
-                  path: ${{ steps.extcache.outputs.dir }}
-                  key: ${{ steps.extcache.outputs.key }}
-                  restore-keys: ${{ steps.extcache.outputs.key }}
-
-            - name: Install PHP and extensions
+            - name: Install PHP
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: ${{ matrix.phpVersion }}
-                  extensions: ${{ env.phpExtensions }}
+                  php-version: ${{ matrix.php }}
+                  extensions: mbstring, intl, gd, xml, sqlite, pdo_sqlite
+                  coverage: none
 
-            - name: Install Winter CMS
+            - name: Create Winter CMS project
+              run: composer create-project wintercms/winter winter "${{ matrix.winter }}" --no-install --no-scripts --no-interaction
+
+            - name: Add plugin to the project
+              working-directory: winter
               run: |
-                  wget https://github.com/wintercms/winter/archive/${{ matrix.winterRelease }}.zip
-                  unzip ${{ matrix.winterRelease }}.zip
-                  rm ${{ matrix.winterRelease }}.zip
-                  shopt -s dotglob
-                  mv winter-${{ matrix.winterReleaseDir }}/* ./
-                  rmdir winter-${{ matrix.winterReleaseDir }}
-                  shopt -u dotglob
+                  mkdir -p plugins/numencode config/testing
+                  mv ../plugin plugins/numencode/fundamentals
                   cp config/cms.php config/testing/cms.php
-                  mkdir -p plugins/numencode
-                  mv fundamentals-plugin plugins/numencode/fundamentals
+                  composer config --json extra.merge-plugin.include '["plugins/numencode/*/composer.json"]'
 
-            - name: Get Composer cache directory
-              id: composercache
-              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_ENV
+            # Winter develop requires winter/storm with an alias ("dev-develop as 1.2"), which the merge
+            # plugin cannot combine with the plugin's own constraint – let the project define it.
+            - name: Drop the plugin's winter/storm constraint (develop only)
+              if: matrix.winter == 'dev-develop'
+              working-directory: winter/plugins/numencode/fundamentals
+              run: composer remove winter/storm --no-update --no-interaction
 
-            - name: Cache dependencies
-              uses: actions/cache@v4
-              with:
-                  path: ${{ env.dir }}
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-                  restore-keys: ${{ runner.os }}-composer-
+            # Winter.Translate is optional for the plugin; installed so the integration tests can run.
+            - name: Add Winter.Translate to the project
+              working-directory: winter
+              run: composer require winter/wn-translate-plugin --no-update --no-interaction
 
             - name: Install Composer dependencies
-              run: composer install --no-interaction --no-progress --no-suggest --prefer-dist
+              working-directory: winter
+              run: composer update --no-interaction --no-progress --prefer-dist
 
             - name: Run unit tests
-              run: php artisan winter:test -p NumenCode.Fundamentals  --configuration=plugins/numencode/fundamentals/phpunit.xml
+              working-directory: winter
+              run: php artisan winter:test -p NumenCode.Fundamentals --configuration=plugins/numencode/fundamentals/phpunit.xml

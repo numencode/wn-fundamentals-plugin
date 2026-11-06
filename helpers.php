@@ -1,157 +1,95 @@
 <?php
 
-use System\Classes\PluginManager;
+declare(strict_types=1);
+
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Symfony\Component\VarDumper\VarDumper;
+use NumenCode\Fundamentals\Classes\QueryFormatter;
+use System\Classes\PluginManager;
 
-if (!function_exists('numencode_partial')) {
+if (!function_exists('plugin_exists')) {
     /**
-     * Returns the path to the NumenCode partial file.
-     *
-     * @param string $_fileName
-     * @param array $partialData
-     * @return string
-     * @throws RuntimeException
+     * Checks whether a plugin is installed and enabled, e.g. plugin_exists('Winter.Translate').
      */
-    function numencode_partial(string $_fileName, array $partialData = [])
+    function plugin_exists(string $plugin): bool
     {
-        $filePath = base_path('plugins/numencode/fundamentals/partials/' . $_fileName);
-
-        if (!file_exists($filePath)) {
-            throw new RuntimeException("Partial file not found: {$filePath}");
-        }
-
-        extract($partialData, EXTR_OVERWRITE);
-
-        ob_start();
-
-        try {
-            require $filePath;
-        } finally {
-            return ob_get_clean();
-        }
+        return PluginManager::instance()->exists($plugin);
     }
 }
 
-if (!function_exists('validate_request')) {
+if (!function_exists('extend_class')) {
     /**
-     * Validates current request and flashes errors to the session.
-     * Returns true if the request is valid or false if it's not.
+     * Extends an extendable class (model, controller, component...) with a behavior.
      *
-     * @param array $rules
-     * @param array $messages
-     * @return bool
+     * Example: extend_class(\Winter\User\Models\User::class, \Acme\Demo\Behaviors\Sluggable::class);
      */
-    function validate_request(array $rules, array $messages = [])
+    function extend_class(string $class, string $behavior): void
     {
-        if (post('_ajax_validate')) {
-            $rules['_ajax_validate_ensure_failure'] = 'required';
-        }
-
-        $validator = Validator::make(request()->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            session()->flash('errors', $validator->messages());
-
-            return false;
-        }
-
-        session()->forget('errors');
-
-        return true;
-    }
-}
-
-if (!function_exists('select_options')) {
-    /**
-     * Creates options for the select element.
-     *
-     * @param array $options
-     * @return string
-     */
-    function select_options(array $options)
-    {
-        $result = [];
-
-        foreach ($options as $key => $value) {
-            $result[] = '<option value="' . $key . '">' . $value . '</option>';
-        }
-
-        return implode("\n", $result);
+        $class::extend(function ($object) use ($behavior) {
+            $object->extendClassWith($behavior);
+        });
     }
 }
 
 if (!function_exists('array_insert')) {
     /**
-     * Inserts a new element into a specific position inside an array.
+     * Inserts the elements of $data into $haystack before the given position or key.
      *
-     * @param array $haystack
-     * @param $beforeElement
-     * @param $data
-     * @return array
+     * - An integer $before is a position (0 = at the beginning).
+     * - A string $before is a key; when the key doesn't exist, $data is appended at the end.
+     *
+     * Numeric keys are renumbered, string keys are preserved.
+     *
+     * @param array<array-key, mixed> $haystack
+     * @param array<array-key, mixed> $data
+     * @return array<array-key, mixed>
      */
-    function array_insert(array $haystack, $beforeElement, $data)
+    function array_insert(array $haystack, int|string $before, array $data): array
     {
-        if (is_int($beforeElement)) {
-            $first = $haystack;
-            $second = array_splice($first, $beforeElement);
-
-            return array_merge($first, $data, $second);
+        if (is_int($before)) {
+            $position = $before;
         } else {
-            $beforeElement = array_search($beforeElement, array_keys($haystack));
+            $position = array_search($before, array_keys($haystack), true);
 
-            return array_merge(
-                array_slice($haystack, 0, $beforeElement),
-                $data,
-                array_slice($haystack, $beforeElement)
-            );
+            if ($position === false) {
+                $position = count($haystack);
+            }
         }
+
+        return array_merge(
+            array_slice($haystack, 0, $position, true),
+            $data,
+            array_slice($haystack, $position, null, true)
+        );
     }
 }
 
 if (!function_exists('array_before')) {
     /**
-     * Moves a specific array element before another array element in an
-     * associated array by halving the array at the desired position
-     * and squeezing the element-to-be-moved into the gap created.
+     * Moves the element with key $move so that it comes directly before the element with key $needle.
+     * Returns the array unchanged when one of the keys doesn't exist.
      *
-     * @param array $haystack The array.
-     * @param string $needle The searched element key.
-     * @param string $move The element key that should be moved before the needle.
-     *
-     * @return array
+     * @param array<array-key, mixed> $haystack
+     * @return array<array-key, mixed>
      */
-    function array_before(array $haystack, string $needle, string $move)
+    function array_before(array $haystack, int|string $needle, int|string $move): array
     {
-        if (!isset($haystack[$needle], $haystack[$move])) {
+        if ((string) $needle === (string) $move || !array_key_exists($needle, $haystack) || !array_key_exists($move, $haystack)) {
             return $haystack;
         }
 
-        $element = [$move => $haystack[$move]];
-        $start = array_splice($haystack, 0, array_search($needle, array_keys($haystack)));
-
-        unset($start[$move]);
-
-        return $start + $element + $haystack;
-    }
-}
-
-if (!function_exists('array_merge_reference')) {
-    /**
-     * Merges elements from passed arrays into one array and keeps a reference to the original arrays.
-     *
-     * @param array[] $args
-     * @return array
-     */
-    function &array_merge_reference(array ...$args)
-    {
         $result = [];
 
-        foreach ($args as $arg) {
-            foreach ($arg as $key => $value) {
-                $result[$key] = $value;
+        foreach ($haystack as $key => $value) {
+            if ((string) $key === (string) $move) {
+                continue;
             }
+
+            if ((string) $key === (string) $needle) {
+                $result[$move] = $haystack[$move];
+            }
+
+            $result[$key] = $value;
         }
 
         return $result;
@@ -160,26 +98,22 @@ if (!function_exists('array_merge_reference')) {
 
 if (!function_exists('array_search_recursive')) {
     /**
-     * Searches the array recursively for a given value and returns the corresponding keys if successful.
+     * Searches a multidimensional array for a value (strict comparison) and returns the path of keys
+     * leading to it, e.g. ['fields', 'title', 'label']. Returns an empty array when nothing is found.
      *
-     * @param string $needle
-     * @param array $haystack
-     * @param array $keys
-     * @return array
+     * @param array<array-key, mixed> $haystack
+     * @param array<int, array-key> $keys Path prefix, used internally for recursion.
+     * @return array<int, array-key>
      */
-    function array_search_recursive(string $needle, array $haystack, array $keys = [])
+    function array_search_recursive(mixed $needle, array $haystack, array $keys = []): array
     {
         foreach ($haystack as $key => $value) {
             if ($value === $needle) {
-                return array_merge($keys, [$key]);
+                return [...$keys, $key];
             }
 
-            if (is_array($value)) {
-                $sub = array_search_recursive($needle, $value, array_merge($keys, [$key]));
-
-                if ($sub) {
-                    return $sub;
-                }
+            if (is_array($value) && $found = array_search_recursive($needle, $value, [...$keys, $key])) {
+                return $found;
             }
         }
 
@@ -187,169 +121,66 @@ if (!function_exists('array_search_recursive')) {
     }
 }
 
-if (!function_exists('round_global')) {
-    /**
-     * Rounds the number to a number of decimals defined in a global setting.
-     *
-     * @param mixed $number
-     * @return float
-     */
-    function round_global(mixed $number)
-    {
-        $decimals = config('app.round_decimals') ?: 2;
-
-        return round($number, $decimals);
-    }
-}
-
-if (!function_exists('plugin_exists')) {
-    /**
-     * Checks if plugin exists and is enabled.
-     *
-     * @param string $plugin
-     * @return bool
-     */
-    function plugin_exists(string $plugin)
-    {
-        return array_key_exists($plugin, PluginManager::instance()->getPlugins());
-    }
-}
-
-if (!function_exists('extend_class')) {
-    /**
-     * Extends a class with a behavior.
-     *
-     * @param string $class
-     * @param $extension
-     */
-    function extend_class(string $class, $extension)
-    {
-        $class::extend(function ($object) use ($extension) {
-            $object->extendClassWith($extension);
-        });
-    }
-}
-
-if (!function_exists('dumpbug')) {
-    /**
-     * Dumps a simple debug backtrace.
-     */
-    function dumpbug()
-    {
-        $vars = func_get_args();
-
-        echo '<pre>';
-
-        foreach ($vars as $var) {
-            echo '<strong>(' . gettype($var) . ')</strong> ';
-            print_r($var);
-        }
-
-        echo '</pre>';
-
-        return;
-    }
-}
-
-if (!function_exists('diebug')) {
-    /**
-     * Dumps a simple debug backtrace and ends a script.
-     */
-    function diebug()
-    {
-        die(call_user_func_array('dumpbug', func_get_args()));
-    }
-}
-
 if (!function_exists('dd_query')) {
-    $_global_query_count = 0;
-
     /**
-     * Dumps the next database query.
-     *
-     * @param int $count
-     * @return void
+     * Dumps the executed SQL queries (with bindings filled in) and dies after the $count-th query.
      */
-    function dd_query($count = 1)
+    function dd_query(int $count = 1): void
     {
-        DB::listen(function ($query) use ($count) {
-            global $_global_query_count;
+        $executed = 0;
 
-            while (strpos($query->sql, '?')) {
-                $query->sql = preg_replace('/\?/', '"' . array_shift($query->bindings) . '"', $query->sql, 1);
-            }
+        DB::listen(function (QueryExecuted $query) use ($count, &$executed) {
+            $output = sprintf('(%s ms) %s', $query->time, QueryFormatter::interpolate($query->sql, $query->bindings));
 
-            $output = '(' . $query->time . ' ms) ' . $query->sql;
-
-            if (++$_global_query_count == $count) {
+            if (++$executed >= $count) {
                 dd($output);
-            } else {
-                d($output);
             }
-        });
-    }
-}
 
-if (!function_exists('d')) {
-    /**
-     * Dumps the passed variables and does not end the script.
-     *
-     * @param mixed
-     * @return void
-     */
-    function d()
-    {
-        array_map(function ($x) {
-            (new VarDumper)->dump($x);
-        }, func_get_args());
+            dump($output);
+        });
     }
 }
 
 if (!function_exists('ddd')) {
     /**
-     * Quick fix for not rendering dd() in the browser's network tab.
-     *
-     * @param mixed ...$args
+     * Same as dd(), but responds with HTTP status 500, so the output is easy to spot in the browser's network tab
+     * (e.g. when debugging AJAX requests).
      */
-    function ddd(...$args)
+    function ddd(mixed ...$args): never
     {
-        http_response_code(500);
-        call_user_func_array('dd', $args);
+        if (!headers_sent()) {
+            http_response_code(500);
+        }
+
+        dd(...$args);
     }
 }
 
 if (!function_exists('ddt')) {
     /**
-     * Dumps a simple debug backtrace and ends the script. Useful for console debugging.
+     * Prints a simple backtrace (file : line - function) and dies, or dumps it when $die is false.
      *
-     * @param int $skip Number of last nodes to skip from the output.
-     * @param bool $die Die after printing the trace.
+     * @param int $skip Number of the most recent frames to leave out.
      */
-    function ddt(int $skip = 0, bool $die = true)
+    function ddt(int $skip = 0, bool $die = true): void
     {
-        $stacks = debug_backtrace();
-        $output = '';
+        $lines = [];
 
-        foreach ($stacks as $_stack) {
-            if (!isset($_stack['file'])) {
-                $_stack['file'] = '[PHP Kernel]';
-            }
-
-            if (!isset($_stack['line'])) {
-                $_stack['line'] = '';
-            }
-
-            if ($skip <= 0) {
-                $output .= "{$_stack["file"]} : {$_stack["line"]} - {$_stack["function"]}" . PHP_EOL;
-            }
-
-            $skip--;
+        foreach (array_slice(debug_backtrace(), $skip) as $frame) {
+            $lines[] = sprintf(
+                '%s : %s - %s',
+                $frame['file'] ?? '[internal]',
+                $frame['line'] ?? '',
+                isset($frame['class']) ? $frame['class'] . $frame['type'] . $frame['function'] : $frame['function']
+            );
         }
+
+        $output = implode(PHP_EOL, $lines) . PHP_EOL;
 
         if ($die) {
-            die($output);
+            exit($output);
         }
 
-        d($output);
+        dump($output);
     }
 }

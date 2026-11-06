@@ -7,22 +7,44 @@ on:
             - main
     pull_request:
 
+permissions:
+    contents: read
+
 jobs:
-    linter:
+    php:
         runs-on: ubuntu-latest
-        name: Super-Linter
+        name: PHP ${{ matrix.php }} syntax
+        strategy:
+            fail-fast: false
+            matrix:
+                php: ['8.2', '8.3', '8.4', '8.5']
         steps:
             - name: Checkout changes
               uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
 
-            - name: Run Super-Linter
-              uses: github/super-linter@v4
-              env:
-                  DEFAULT_BRANCH: main
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  VALIDATE_YAML: true
-                  VALIDATE_JSON: true
-                  VALIDATE_MARKDOWN: true
-                  VALIDATE_PHP_BUILTIN: true
+            - name: Install PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  coverage: none
+
+            - name: Check PHP syntax
+              run: find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
+
+            - name: Validate composer.json
+              run: composer validate --strict --no-check-lock
+
+    markdown:
+        runs-on: ubuntu-latest
+        name: Markdown
+        steps:
+            - name: Checkout changes
+              uses: actions/checkout@v4
+
+            - name: Validate JSON files
+              run: jq empty .markdownlint.json
+
+            - name: Lint Markdown
+              uses: DavidAnson/markdownlint-cli2-action@v19
+              with:
+                  globs: '**/*.md'

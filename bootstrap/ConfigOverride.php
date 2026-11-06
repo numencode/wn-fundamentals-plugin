@@ -1,119 +1,144 @@
-<?php namespace NumenCode\Fundamentals\Bootstrap;
+<?php
+
+declare(strict_types=1);
+
+namespace NumenCode\Fundamentals\Bootstrap;
 
 use Event;
-use Backend\Widgets\Form;
-use Winter\Pages\Classes\Page;
+use Winter\Storm\Support\Str;
 
+/**
+ * Changes the YAML configuration (fields, columns, ...) of other plugins and modules from code.
+ *
+ * Example – add a field to a model's fields.yaml:
+ *
+ *     ConfigOverride::extendFields(GalleryItem::class, function (array $config) {
+ *         $config['fields']['caption'] = ['label' => 'Caption', 'type' => 'text'];
+ *
+ *         return $config;
+ *     });
+ *
+ * The callback receives the parsed YAML as an array and returns the changed array
+ * (or null to leave it unchanged).
+ */
 class ConfigOverride
 {
-    protected static $overrides = [];
+    /**
+     * Callbacks per public config file path.
+     *
+     * @var array<string, array<int, callable>>
+     */
+    protected static array $overrides = [];
 
-    protected static $globalOverrides = [];
+    /**
+     * Callbacks applied to every config file.
+     *
+     * @var array<int, callable>
+     */
+    protected static array $globalOverrides = [];
 
-    public static function extendFields($class, $callback)
+    public static function extendFields(string $class, callable $callback): void
     {
         static::extend('fields.yaml', $class, $callback);
     }
 
-    public static function extendColumns($class, $callback)
+    public static function extendColumns(string $class, callable $callback): void
     {
         static::extend('columns.yaml', $class, $callback);
     }
 
-    public static function extendImportColumns($class, $callback)
+    public static function extendImportColumns(string $class, callable $callback): void
     {
         static::extend('columns_import.yaml', $class, $callback);
     }
 
-    public static function extendExportColumns($class, $callback)
+    public static function extendExportColumns(string $class, callable $callback): void
     {
         static::extend('columns_export.yaml', $class, $callback);
     }
 
-    public static function extendImportExport($class, $callback)
+    public static function extendImportExport(string $class, callable $callback): void
     {
         static::extend('config_import_export.yaml', $class, $callback);
     }
 
-    public static function extendAll($callback)
+    /**
+     * Registers a callback for every config file. It receives the public file path and the config array.
+     */
+    public static function extendAll(callable $callback): void
     {
         static::$globalOverrides[] = $callback;
     }
 
-    public static function extend($file, $class, $callback)
+    /**
+     * Registers a callback for a config file that belongs to a class, e.g. ('fields.yaml', Post::class)
+     * for plugins/winter/blog/models/post/fields.yaml.
+     */
+    public static function extend(string $file, string $class, callable $callback): void
     {
-        $key = static::filePath($file, $class);
-
-        if (!isset(static::$overrides[$key])) {
-            static::$overrides[$key] = [];
-        }
-
-        static::$overrides[$key][] = $callback;
+        static::$overrides[static::filePath($file, $class)][] = $callback;
     }
 
-    private static function filePath($file, $class)
+    /**
+     * Returns the public path of a config file that belongs to a class, as used by the
+     * system.extendConfigFile event (lowercase).
+     */
+    public static function filePath(string $file, string $class): string
     {
-        $path = str_replace('\\', '/', strtolower($class) . '/' . $file);
+        $path = str_replace('\\', '/', strtolower(ltrim($class, '\\')) . '/' . $file);
 
-        if (starts_with($path, ['system/', 'backend/', 'cms/'])) {
-            $path = '/modules/' . $path;
-        } else {
-            $path = '/plugins/' . $path;
+        if (Str::startsWith($path, ['system/', 'backend/', 'cms/'])) {
+            return '/modules/' . $path;
         }
 
-        return $path;
+        return '/plugins/' . $path;
     }
 
-    public function init()
+    /**
+     * Removes all registered callbacks (used in tests).
+     */
+    public static function flush(): void
+    {
+        static::$overrides = [];
+        static::$globalOverrides = [];
+    }
+
+    public function init(): void
     {
         Event::listen('system.extendConfigFile', function ($publicFile, $config) {
-            $hasOverrides = false;
-            $key = strtolower($publicFile);
-
-            if (isset(static::$overrides[$key])) {
-                $callbacks = static::$overrides[$key];
-
-                foreach ($callbacks as $callback) {
-                    if ($result = $callback($config)) {
-                        $config = $result;
-                        $hasOverrides = true;
-                    }
-                }
+            // An empty YAML file is parsed as null
+            if (!is_string($publicFile) || !is_array($config)) {
+                return null;
             }
 
-            if (!empty(static::$globalOverrides)) {
-                foreach (static::$globalOverrides as $callback) {
-                    if ($result = $callback($publicFile, $config)) {
-                        $config = $result;
-                        $hasOverrides = true;
-                    }
-                }
-            }
-
-            if ($hasOverrides) {
-                return $config;
-            }
+            return static::apply($publicFile, $config);
         });
-
-        $this->extendPagesPlugin();
     }
 
-    protected function extendPagesPlugin()
+    /**
+     * Applies the registered callbacks to a config array. Returns the changed config, or null when nothing changed.
+     *
+     * @param array<string, mixed> $config
+     * @return array<string, mixed>|null
+     */
+    public static function apply(string $publicFile, array $config): ?array
     {
-        Event::listen('backend.form.extendFieldsBefore', function (Form $form) {
-            if (get_class($form->model) != Page::class) {
-                return;
+        $changed = false;
+
+        foreach (static::$overrides[strtolower($publicFile)] ?? [] as $callback) {
+            if (is_array($result = $callback($config))) {
+                $config = $result;
+                $changed = true;
             }
+        }
 
-            foreach (($form->secondaryTabs['fields'] ?? []) as $key => $value) {
-                if (starts_with($key, 'viewBag')) {
-                    $value['cssClass'] = trim(str_replace('secondary-tab', '', $value['cssClass']));
-
-                    unset($form->secondaryTabs['fields'][$key]);
-
-                    $form->tabs['fields'][$key] = $value;
-                }
+        foreach (static::$globalOverrides as $callback) {
+            if (is_array($result = $callback($publicFile, $config))) {
+                $config = $result;
+                $changed = true;
             }
-        }, 1000);
+        }
+
+        return $changed ? $config : null;
     }
 }

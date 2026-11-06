@@ -1,0 +1,33 @@
+<?php
+/*
+ * Language selector for backend forms with translatable fields (added by TranslateIntegration).
+ * Switches all multilingual fields of the form at once and copies all translations from another language.
+ */
+$locales = \Winter\Translate\Models\Locale::listEnabled();
+$defaultLocale = \Winter\Translate\Models\Locale::getDefault();
+?>
+<div
+    class="translatable-selector"
+    data-control="numencode-translate-selector"
+    data-copy-confirm="<?= e(trans('numencode.fundamentals::lang.translate.copy_confirm')) ?>">
+    <label class="translatable-label" for="<?= e($this->getId('ncLangSelect')) ?>">
+        <?= e(trans('numencode.fundamentals::lang.translate.language')) ?>
+    </label>
+    <div class="form-group-sm">
+        <select id="<?= e($this->getId('ncLangSelect')) ?>" class="form-control custom-select" data-translate-locale>
+            <?php foreach ($locales as $code => $name): ?>
+                <option value="<?= e($code) ?>" <?= $defaultLocale && $defaultLocale->code === $code ? 'selected' : '' ?>>
+                    <?= e(strtoupper((string) $code)) ?> – <?= e($name) ?>
+                </option>
+            <?php endforeach ?>
+        </select>
+    </div>
+    <div class="form-group-sm">
+        <select class="form-control custom-select" data-translate-copy aria-label="<?= e(trans('numencode.fundamentals::lang.translate.copy_from')) ?>">
+            <option value=""><?= e(trans('numencode.fundamentals::lang.translate.copy_from')) ?></option>
+            <?php foreach ($locales as $code => $name): ?>
+                <option value="<?= e($code) ?>"><?= e(strtoupper((string) $code)) ?> – <?= e($name) ?></option>
+            <?php endforeach ?>
+        </select>
+    </div>
+</div>

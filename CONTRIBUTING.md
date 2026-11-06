@@ -21,6 +21,7 @@ Let’s show the world that developers are civilized, collaborative, and selfles
 ## Viability
 
 Before suggesting new features or changes, consider their viability:
+
 - Will the feature benefit other users of the project?
 - Is the feature aligned with the project's scope and goals?
 - Could the feature introduce unnecessary complexity or maintenance challenges?
@@ -32,6 +33,7 @@ Open source projects serve a diverse group of developers with varied needs, so y
 ## Reporting Issues
 
 Before filing an issue:
+
 1. **Attempt to replicate the problem** to rule out one-off incidents.
 2. **Search existing issues** to ensure your problem or suggestion hasn’t already been raised.
 3. **Check pull requests** for ongoing work that may address the issue.
@@ -41,6 +43,7 @@ Before filing an issue:
 ## Submitting Pull Requests
 
 When submitting a pull request:
+
 1. **Ensure the feature doesn’t already exist** in the codebase.
 2. **Review existing pull requests** to ensure no one else is working on the same feature or fix.
 3. Follow these best practices:
@@ -72,6 +75,7 @@ This project follows specific standards and guidelines to ensure consistency and
 ## Contribution Workflow
 
 To contribute effectively:
+
 1. Fork the repository and create a new branch for your work.
 2. Ensure your branch is up-to-date with the `main` branch.
 3. Implement your feature or fix, ensuring compliance with the guidelines.

@@ -43,7 +43,18 @@ return [
         'update' => 'Update item',
         'count'  => 'No. of items',
     ],
-    'form'      => [
-        'translatable' => 'Translatable mask',
+    'component' => [
+        'layout_default' => 'Default',
+    ],
+    'formwidget' => [
+        'relationrepeater' => 'Relation repeater',
+    ],
+    'relationable' => [
+        'item_error' => 'Item :index: :message',
+    ],
+    'translate' => [
+        'language'     => 'Language',
+        'copy_from'    => 'Copy from…',
+        'copy_confirm' => 'This replaces the :target translations of all fields in this form with the :source values. Continue?',
     ],
 ];

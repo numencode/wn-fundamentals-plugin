@@ -1,0 +1,13 @@
+fields:
+    id:
+        type: number
+        cssClass: hidden
+    title:
+        label: Title
+        type: text
+    subtitle:
+        label: Subtitle
+        type: text
+    is_published:
+        label: Published
+        type: switch
