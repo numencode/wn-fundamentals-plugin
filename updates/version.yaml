@@ -6,3 +6,5 @@
     - '!!! Security fixes, relationrepeater form widget, Winter 1.2.15 alignment; removes the image resizer, controller views, several Twig functions and helpers. Requires PHP 8.2+. See the upgrade guide in CHANGELOG.md.'
 2.1.0:
     - 'Relation repeater "Expand all" / "Collapse all" buttons (showToggleAll), Slovenian translation'
+2.2.0:
+    - 'Clear the Winter.Pages caches of all locales on save (Winter.Translate integration)'

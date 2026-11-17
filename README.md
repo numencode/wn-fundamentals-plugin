@@ -15,8 +15,8 @@ PHP helpers. It is also the foundation of the other [NumenCode](https://www.nume
 
 - **Relation repeater** – edit a model's "has many" records inline in a repeater (`relationrepeater` form widget and
   `RelationableModel` behavior), including validation, ordering and Winter.Translate translations.
-- **Winter.Translate integration** – translatable fields inside relation repeater items, plus a language selector that
-  switches and copies all translations of a form at once.
+- **Winter.Translate integration** – translatable fields inside relation repeater items, a language selector that
+  switches and copies all translations of a form at once, and Winter.Pages caches cleared for all locales on save.
 - **Publishable models** – hide unpublished records on the frontend, while backend users can still preview them.
 - **Component layouts** – let editors choose a layout for a component and override layouts in the theme.
 - **CMS permissions** – revoke create, update, delete or duplicate actions on a controller for backend user groups.
@@ -44,8 +44,9 @@ The plugin has no database tables, so no migrations are needed.
 
 ## Configuration
 
-The plugin makes a few changes to the whole backend. Each one is enabled by default and can be switched off by
-creating `config/numencode/fundamentals/config.php` in your project:
+The plugin makes a few changes to the whole backend and to Winter.Translate. Each one is enabled by default and can
+be switched off by creating `config/numencode/fundamentals/config.php` in your project (only the keys you change are
+needed):
 
 ```php
 <?php
@@ -56,6 +57,9 @@ return [
         'pages_viewbag_primary_tabs' => true,  // Winter.Pages: page settings in the main tabs
         'assets'                     => true,  // backend JS/CSS: dynamic section titles, Translate language selector
     ],
+    'translate' => [
+        'pages_cache_all_locales' => true,     // Winter.Pages + Translate: clear the Pages caches of all locales
+    ],
 ];
 ```
 
@@ -64,6 +68,7 @@ return [
 | `switch_column_icons` | List columns of type `switch` show a green check or a red cross with the translated Yes/No label. |
 | `pages_viewbag_primary_tabs` | Winter.Pages: the page settings (`viewBag` fields) are shown in the primary tabs instead of the sidebar. |
 | `assets` | Loads the plugin's backend JS and CSS on every backend page. Required for dynamic section titles and the Translate language selector. |
+| `pages_cache_all_locales` | Winter.Pages with Winter.Translate: saving clears the Pages caches of every enabled locale, see [Winter.Translate integration](#wintertranslate-integration). |
 
 ## Relation repeater
 
@@ -146,6 +151,11 @@ When [Winter.Translate](https://github.com/wintercms/wn-translate-plugin) is ins
 - **Language selector** – backend forms with translatable fields (on the model or on its relation repeater items)
   get a language selector at the top. It switches all multilingual fields of the form to one language and can copy all
   translations of the form from another language. It requires at least two enabled locales and the `assets` option.
+- **Winter.Pages caches of all locales** – Winter.Pages caches its routes (with `cms.enableRoutesCache`), menus and
+  snippet maps, and Translate keeps a separate cache per locale. Pages only clears the caches of the locale the backend
+  runs in, so after saving a page, menu, content block, snippet or CMS template the other locales would show the old
+  URLs, menu items or snippets until the caches expire. The plugin clears the caches of every enabled locale on the
+  same events (`pages.object.save`, `cms.template.save`). Switch it off with `translate.pages_cache_all_locales`.
 
 Without Translate, the plugin works the same, without these features.
 

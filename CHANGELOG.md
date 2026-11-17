@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-17
+
+### Added
+
+- Winter.Translate integration: saving a page, menu, content block, snippet or CMS template in the backend clears the
+  Winter.Pages caches (routes, menus, snippet maps) of every enabled locale. Before, only the backend's locale was
+  cleared and the other locales showed stale URLs, menus and snippets until the caches expired. Needs Winter.Pages and
+  Winter.Translate; can be switched off with the config option `translate.pages_cache_all_locales`.
+
 ## [2.1.0] - 2026-11-06
 
 ### Added
@@ -166,7 +175,8 @@ see [Upgrading from 1.x](#upgrading-from-1x).
 - Core functionality for Winter CMS projects, compatible with Winter CMS `1.2.7`.
 - Prerequisite for the other NumenCode plugins.
 
-[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v1.0.1...v1.1.0

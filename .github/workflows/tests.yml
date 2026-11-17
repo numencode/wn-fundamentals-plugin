@@ -57,10 +57,10 @@ jobs:
               working-directory: winter/plugins/numencode/fundamentals
               run: composer remove winter/storm --no-update --no-interaction
 
-            # Winter.Translate is optional for the plugin; installed so the integration tests can run.
-            - name: Add Winter.Translate to the project
+            # Winter.Pages and Winter.Translate are optional for the plugin; installed so the integration tests can run.
+            - name: Add Winter.Pages and Winter.Translate to the project
               working-directory: winter
-              run: composer require winter/wn-translate-plugin --no-update --no-interaction
+              run: composer require winter/wn-pages-plugin winter/wn-translate-plugin --no-update --no-interaction
 
             - name: Install Composer dependencies
               working-directory: winter

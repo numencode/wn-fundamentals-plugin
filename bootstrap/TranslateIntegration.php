@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace NumenCode\Fundamentals\Bootstrap;
 
 use Backend\Widgets\Form;
+use Config;
 use Event;
+use Lang;
 use NumenCode\Fundamentals\Behaviors\RelationableModel;
 use NumenCode\Fundamentals\Classes\RepeaterForm;
 use Winter\Storm\Database\Model;
 use Winter\Translate\Classes\EventRegistry;
+use Winter\Pages\Plugin as PagesPlugin;
 use Winter\Translate\Models\Locale;
 
 /**
@@ -19,6 +22,8 @@ use Winter\Translate\Models\Locale;
  *   nested forms).
  * - Backend forms with translatable fields get a language selector at the top, which switches all
  *   fields of the form at once and can copy all translations from another language.
+ * - With Winter.Pages: saving a page, menu, content, snippet or CMS template clears the Pages caches of every
+ *   enabled locale, not only the backend's (config translate.pages_cache_all_locales).
  */
 class TranslateIntegration
 {
@@ -43,6 +48,41 @@ class TranslateIntegration
             Event::listen('backend.form.extendFieldsBefore', function (Form $form) {
                 $this->addLanguageSelector($form);
             });
+        }
+
+        // The same events on which Winter.Pages clears its caches (for the current locale only)
+        if (static::enabled('pages_cache_all_locales') && plugin_exists('Winter.Pages')) {
+            Event::listen('pages.object.save', fn () => static::clearPagesCacheForAllLocales());
+            Event::listen('cms.template.save', fn () => static::clearPagesCacheForAllLocales());
+        }
+    }
+
+    /**
+     * Whether a Translate integration feature is enabled (config numencode.fundamentals::translate.<feature>).
+     */
+    public static function enabled(string $feature): bool
+    {
+        return (bool) Config::get('numencode.fundamentals::translate.' . $feature, true);
+    }
+
+    /**
+     * Clears the Winter.Pages caches (routes, menus, snippet maps) of every enabled locale.
+     *
+     * Winter.Translate appends the current locale to the Pages cache keys, so Pages' own clearCache() only reaches
+     * the caches of the locale it runs in (the backend's). The other locales would show stale URLs, menus and
+     * snippets until the caches expire.
+     */
+    public static function clearPagesCacheForAllLocales(): void
+    {
+        $current = Lang::getLocale();
+
+        try {
+            foreach (array_keys(Locale::listEnabled()) as $locale) {
+                Lang::setLocale($locale);
+                PagesPlugin::clearCache();
+            }
+        } finally {
+            Lang::setLocale($current);
         }
     }
 

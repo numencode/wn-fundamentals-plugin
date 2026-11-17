@@ -25,4 +25,15 @@ return [
 
     ],
 
+    /*
+     * Winter.Translate integration (only active when Winter.Translate is installed).
+     */
+    'translate' => [
+
+        // Winter.Pages caches its routes, menus and snippet maps per locale, but saving in the backend only clears
+        // the caches of the backend's locale. Clear them for every enabled locale (needs Winter.Pages).
+        'pages_cache_all_locales' => true,
+
+    ],
+
 ];
