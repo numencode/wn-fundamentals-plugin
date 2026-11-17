@@ -50,10 +50,17 @@ class TranslateIntegration
             });
         }
 
-        // The same events on which Winter.Pages clears its caches (for the current locale only)
-        if (static::enabled('pages_cache_all_locales') && plugin_exists('Winter.Pages')) {
-            Event::listen('pages.object.save', fn () => static::clearPagesCacheForAllLocales());
-            Event::listen('cms.template.save', fn () => static::clearPagesCacheForAllLocales());
+        // The same events on which Winter.Pages clears its caches (for the current locale only). The config switch is
+        // read when the event fires, so it can be changed after the plugin booted.
+        if (plugin_exists('Winter.Pages')) {
+            $clear = function (): void {
+                if (static::enabled('pages_cache_all_locales')) {
+                    static::clearPagesCacheForAllLocales();
+                }
+            };
+
+            Event::listen('pages.object.save', $clear);
+            Event::listen('cms.template.save', $clear);
         }
     }
 

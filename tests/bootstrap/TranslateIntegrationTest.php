@@ -96,8 +96,9 @@ class TranslateIntegrationTest extends FundamentalsTestCase
 
     public function testTheFeatureCanBeSwitchedOff(): void
     {
-        config(['numencode.fundamentals::translate.pages_cache_all_locales' => false]);
+        // Switched off after the listeners are registered (as when the plugin booted with the default config)
         $this->loadTranslate();
+        config(['numencode.fundamentals::translate.pages_cache_all_locales' => false]);
         $keys = $this->fillCaches();
 
         Event::fire('pages.object.save', [null, new Page(), 'page']);
