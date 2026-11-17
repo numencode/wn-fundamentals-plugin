@@ -64,3 +64,42 @@
 .list-switch-false {
     color: #d6220f;
 }
+
+/**************************************
+    REPEATER
+**************************************/
+// Collapsed items are taller (core: about 24px), with the title and the collapse/remove buttons centred vertically.
+// The title covers the whole bar, so a click anywhere on it expands the item (core: only the line of text).
+.field-repeater li.field-repeater-item.collapsed {
+    min-height: 44px;
+
+    > .repeater-item-collapse,
+    > .repeater-item-remove {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    > .repeater-item-collapsed-title {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 100% !important;
+        transform: none;
+        line-height: 42px; // the item's min-height without its borders
+        padding: 0 60px 0 14px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+// No focus border on the collapse/remove buttons after a mouse click (keyboard focus keeps it)
+.field-repeater li.field-repeater-item {
+    > .repeater-item-collapse a,
+    > .repeater-item-remove .close {
+        &:focus:not(:focus-visible) {
+            outline: none;
+            box-shadow: none;
+        }
+    }
+}

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-11-17
+
+### Changed
+
+- Backend repeaters (with the `assets` option): collapsed items are taller (44px), the whole bar expands the item
+  (before, only the title text was clickable), long titles end with "…", and the collapse and remove buttons are centred
+  and show no focus border after a mouse click (keyboard focus keeps it).
+- `relationrepeater`: the "Expand all" and "Collapse all" buttons are a joined pair of light buttons with more padding.
+
 ## [2.2.0] - 2026-11-17
 
 ### Added
@@ -175,7 +184,8 @@ see [Upgrading from 1.x](#upgrading-from-1x).
 - Core functionality for Winter CMS projects, compatible with Winter CMS `1.2.7`.
 - Prerequisite for the other NumenCode plugins.
 
-[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.1...HEAD
+[2.2.1]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v1.1.0...v2.0.0

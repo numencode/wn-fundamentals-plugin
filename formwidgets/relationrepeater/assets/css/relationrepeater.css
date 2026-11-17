@@ -1,4 +1,40 @@
+/* Expand all / Collapse all: one joined pair of light buttons, right-aligned above the items */
 .field-relationrepeater > .relationrepeater-toggle-all {
-    margin-bottom: 8px;
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+.field-relationrepeater > .relationrepeater-toggle-all > .btn {
+    margin: 0;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+    color: var(--wn-text-secondary, #536061);
+    background: var(--wn-surface-raised, #fff);
+    border: 1px solid var(--wn-border, #d1d6d9);
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: none;
+    transition: background-color .15s, color .15s;
+}
+.field-relationrepeater > .relationrepeater-toggle-all > .btn:first-child {
+    border-radius: 4px 0 0 4px;
+}
+.field-relationrepeater > .relationrepeater-toggle-all > .btn:last-child {
+    margin-left: -1px;
+    border-radius: 0 4px 4px 0;
+}
+.field-relationrepeater > .relationrepeater-toggle-all > .btn:hover,
+.field-relationrepeater > .relationrepeater-toggle-all > .btn:active {
+    color: var(--wn-text-strong, #2a3e51);
+    background: var(--wn-surface-hover, #f0f3f5);
+}
+.field-relationrepeater > .relationrepeater-toggle-all > .btn:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+}
+.field-relationrepeater > .relationrepeater-toggle-all > .btn:before {
+    margin-right: 6px;
+    opacity: .7;
 }

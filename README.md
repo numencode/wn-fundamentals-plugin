@@ -55,7 +55,7 @@ return [
     'backend' => [
         'switch_column_icons'        => true,  // switch list columns as a green check / red cross
         'pages_viewbag_primary_tabs' => true,  // Winter.Pages: page settings in the main tabs
-        'assets'                     => true,  // backend JS/CSS: dynamic section titles, Translate language selector
+        'assets'                     => true,  // backend JS/CSS: dynamic section titles, Translate language selector, repeater styles
     ],
     'translate' => [
         'pages_cache_all_locales' => true,     // Winter.Pages + Translate: clear the Pages caches of all locales
@@ -67,7 +67,7 @@ return [
 |---|---|
 | `switch_column_icons` | List columns of type `switch` show a green check or a red cross with the translated Yes/No label. |
 | `pages_viewbag_primary_tabs` | Winter.Pages: the page settings (`viewBag` fields) are shown in the primary tabs instead of the sidebar. |
-| `assets` | Loads the plugin's backend JS and CSS on every backend page. Required for dynamic section titles and the Translate language selector. |
+| `assets` | Loads the plugin's backend JS and CSS on every backend page. Required for dynamic section titles and the Translate language selector; also makes collapsed repeater items taller and clickable along the whole bar. |
 | `pages_cache_all_locales` | Winter.Pages with Winter.Translate: saving clears the Pages caches of every enabled locale, see [Winter.Translate integration](#wintertranslate-integration). |
 
 ## Relation repeater
