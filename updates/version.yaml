@@ -10,3 +10,5 @@
     - 'Clear the Winter.Pages caches of all locales on save (Winter.Translate integration)'
 2.2.1:
     - 'Taller, fully clickable collapsed repeater items; restyled Expand all / Collapse all buttons'
+2.2.2:
+    - 'Maintenance release: same code as 2.2.1, published so Packagist refers to the tagged commit'

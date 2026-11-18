@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.2] - 2026-11-18
+
+### Fixed
+
+- Packagist's metadata for 2.2.1 referred to a different commit than the git tag. This release has the same code as
+  2.2.1 and is the version to install.
+
 ## [2.2.1] - 2026-11-17
 
 ### Changed
@@ -184,7 +191,8 @@ see [Upgrading from 1.x](#upgrading-from-1x).
 - Core functionality for Winter CMS projects, compatible with Winter CMS `1.2.7`.
 - Prerequisite for the other NumenCode plugins.
 
-[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.1...HEAD
+[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.2...HEAD
+[2.2.2]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.0.0...v2.1.0
