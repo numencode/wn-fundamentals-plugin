@@ -1,4 +1,4 @@
-/* Expand all / Collapse all: one joined pair of light buttons, right-aligned above the items */
+/* Expand all / Collapse all: one joined pair of light buttons, right-aligned above the items (item actions: "Paste item" + × left of it) */
 .field-relationrepeater > .relationrepeater-toggle-all {
     display: flex;
     justify-content: flex-end;
@@ -18,10 +18,10 @@
     text-shadow: none;
     transition: background-color .15s, color .15s;
 }
-.field-relationrepeater > .relationrepeater-toggle-all > .btn:first-child {
+.field-relationrepeater > .relationrepeater-toggle-all > .btn[data-relationrepeater-toggle="expand"] {
     border-radius: 4px 0 0 4px;
 }
-.field-relationrepeater > .relationrepeater-toggle-all > .btn:last-child {
+.field-relationrepeater > .relationrepeater-toggle-all > .btn[data-relationrepeater-toggle="collapse"] {
     margin-left: -1px;
     border-radius: 0 4px 4px 0;
 }
@@ -37,4 +37,68 @@
 .field-relationrepeater > .relationrepeater-toggle-all > .btn:before {
     margin-right: 6px;
     opacity: .7;
+}
+
+/* "Paste item" + × (forget the copied item): a joined pair */
+.field-relationrepeater > .relationrepeater-toggle-all > .btn.relationrepeater-paste {
+    border-radius: 4px 0 0 4px;
+}
+.field-relationrepeater > .relationrepeater-toggle-all > .btn.relationrepeater-paste-clear {
+    margin: 0 8px 0 -1px;
+    padding: 6px 9px;
+    border-radius: 0 4px 4px 0;
+    font-size: 14px;
+}
+
+/* Item actions (copy, duplicate, publish), left of the core collapse and remove buttons */
+.field-relationrepeater li.relationrepeater-item > .relationrepeater-item-actions {
+    position: absolute;
+    top: 0;
+    right: 60px;
+    z-index: 91;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 42px;
+}
+.field-relationrepeater li.relationrepeater-item:not(.collapsed) > .relationrepeater-item-actions {
+    height: 34px;
+}
+.relationrepeater-item-actions > button {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--wn-text-secondary, #999);
+    font-size: 14px;
+    line-height: 26px;
+}
+.relationrepeater-item-actions > button:hover {
+    background: var(--wn-border-subtle, #eef0f2);
+    color: var(--wn-text, #333);
+}
+.relationrepeater-item-actions > button:focus:not(:focus-visible) {
+    outline: none;
+}
+.relationrepeater-item-actions > .relationrepeater-item-label {
+    margin-right: 6px;
+    padding: 1px 7px;
+    border-radius: 9px;
+    background: var(--wn-border-subtle, #eef0f2);
+    color: var(--wn-text-secondary, #777);
+    font-size: 11px;
+    line-height: 16px;
+}
+.field-relationrepeater li.relationrepeater-item.collapsed > .repeater-item-collapsed-title {
+    padding-right: 190px !important;
+}
+
+/* An unpublished item: dimmed title, "Unpublished" label */
+.field-relationrepeater li.relationrepeater-item--unpublished > .repeater-item-collapsed-title {
+    opacity: 0.5;
+}
+.field-relationrepeater li.relationrepeater-item--unpublished [data-relationrepeater-action="publish"] {
+    color: var(--wn-text, #333);
 }

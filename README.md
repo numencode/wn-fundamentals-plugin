@@ -104,11 +104,23 @@ items_list:
     titleFrom: title
     style: collapsed
     showToggleAll: true
+    itemActions: true
 ```
 
 All options of the core `repeater` widget work (`titleFrom`, `style`, `minItems`, `maxItems`, `sortable`, ...).
 `showToggleAll: true` adds "Expand all" and "Collapse all" buttons above the items. They are shown in list mode
 with the `default` or `collapsed` style, not with `accordion` (where only one item is open) or in grid mode.
+
+`itemActions: true` adds buttons to each item (list mode, not in preview mode):
+
+- **Copy** – keeps the item in the browser; "Paste item" (above the items) adds it to the end of the list of any
+  relation repeater with the same item form, e.g. in another record. The × next to it forgets the copied item.
+- **Duplicate** – adds a copy right after the item.
+- **Publish / unpublish** – toggles the item's `is_published` switch (another field with `publishField: <field>`;
+  no button when the item form doesn't have it). Unpublished items are dimmed and marked.
+
+Copies and duplicates are new records when the form is saved (without the primary key), with the item's
+translations.
 The related model's `fields.yaml` **must** contain its primary key as a hidden field. Without it, existing items are
 not recognized, and every save deletes and recreates all related records:
 

@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace NumenCode\Fundamentals\FormWidgets;
 
 use Backend\FormWidgets\Repeater;
+use Lang;
 use NumenCode\Fundamentals\Behaviors\RelationableModel;
 use NumenCode\Fundamentals\Classes\RepeaterForm;
+use Request;
+use Winter\Storm\Exception\ApplicationException;
+use Winter\Storm\Html\Helper as HtmlHelper;
 
 /**
  * A repeater that edits a model's "has many" related records (form widget type "relationrepeater").
@@ -16,9 +20,15 @@ use NumenCode\Fundamentals\Classes\RepeaterForm;
  * (Winter.Translate fields, file uploads, ...) work inside the items. The parent model must implement
  * the RelationableModel behavior; see that class for an example.
  *
- * Extra option:
+ * Extra options:
  *
  *     showToggleAll: true   # "Expand all" / "Collapse all" buttons above the items (list mode, not with style: accordion)
+ *     itemActions: true     # copy, duplicate and publish/unpublish buttons on each item, and "Paste item"
+ *     publishField: is_published   # the item field the publish button toggles (default; no button without it)
+ *
+ * Item actions: a duplicate is rendered by the server from the item's posted values (onDuplicateItem) without its
+ * key, so saving creates a new record (with the posted translations). A copied item is kept in the browser's local
+ * storage and can be pasted into any relation repeater with the same item form, e.g. in another record.
  */
 class RelationRepeater extends Repeater
 {
@@ -29,9 +39,21 @@ class RelationRepeater extends Repeater
      */
     public bool $showToggleAll = false;
 
+    /**
+     * Show the copy, duplicate and publish buttons on each item, and "Paste item".
+     */
+    public bool $itemActions = false;
+
+    /**
+     * The item field toggled by the publish button.
+     */
+    public string $publishField = 'is_published';
+
     public function init()
     {
         $this->showToggleAll = (bool) $this->getConfig('showToggleAll', false);
+        $this->itemActions = (bool) $this->getConfig('itemActions', false);
+        $this->publishField = (string) $this->getConfig('publishField', 'is_published');
 
         parent::init();
     }
@@ -40,11 +62,102 @@ class RelationRepeater extends Repeater
     {
         $html = parent::render();
 
-        if (!$this->hasToggleAll()) {
+        if (!$this->hasToggleAll() && !$this->hasItemActions()) {
             return $html;
         }
 
-        return $this->makePartial(static::PATH . '/partials/_toggle_all.php', ['repeater' => $html]);
+        return $this->makePartial(static::PATH . '/partials/_relationrepeater.php', [
+            'repeater'    => $html,
+            'toggleAll'   => $this->hasToggleAll(),
+            'itemActions' => $this->hasItemActions() ? $this->itemActionsConfig() : null,
+        ]);
+    }
+
+    /**
+     * Whether the item actions are shown: enabled, in list mode and not in preview mode.
+     */
+    public function hasItemActions(): bool
+    {
+        return $this->itemActions && !$this->previewMode && ($this->vars['mode'] ?? $this->mode) === 'list';
+    }
+
+    /**
+     * The settings of the item actions for relationrepeater.js.
+     *
+     * @return array<string, mixed>
+     */
+    public function itemActionsConfig(): array
+    {
+        $fields = (array) ($this->makeConfig($this->form)->fields ?? []);
+
+        return [
+            'handler'      => $this->getEventHandler('onDuplicateItem'),
+            'field'        => $this->getFieldName(),
+            'formKey'      => $this->formKey(),
+            'publishField' => isset($fields[$this->publishField]) ? $this->publishField : null,
+            'labels'       => Lang::get('numencode.fundamentals::lang.repeater.actions'),
+        ];
+    }
+
+    /**
+     * Identifies the item form, so a copied item is only pasted into repeaters with the same item form.
+     */
+    public function formKey(): string
+    {
+        return md5(is_string($this->form) ? $this->form : (string) json_encode($this->form));
+    }
+
+    /**
+     * AJAX: renders a new item filled with values – a duplicate of the posted item at _repeater_source, or a copied
+     * item (_repeater_paste, JSON from the browser, with _repeater_paste_form = its form key). The record key is left
+     * out, so the item is saved as a new record.
+     *
+     * @return array<string, string> The item's markup ("item") and its index ("index")
+     * @throws ApplicationException
+     */
+    public function onDuplicateItem(): array
+    {
+        $this->abortIfPreviewMode();
+
+        $items = post($this->getFieldName());
+        $items = is_array($items) ? $items : [];
+
+        if (($paste = post('_repeater_paste')) !== null) {
+            $copy = is_string($paste) ? json_decode($paste, true) : null;
+
+            if (!is_array($copy) || post('_repeater_paste_form') !== $this->formKey()) {
+                throw new ApplicationException(Lang::get('numencode.fundamentals::lang.repeater.actions.paste_unavailable'));
+            }
+        } else {
+            $source = post('_repeater_source');
+            $copy = is_scalar($source) ? ($items[$source] ?? null) : null;
+
+            if (!is_array($copy)) {
+                throw new ApplicationException(Lang::get('numencode.fundamentals::lang.repeater.actions.duplicate_failed'));
+            }
+        }
+
+        if ($this->maxItems && count($items) >= $this->maxItems) {
+            throw new ApplicationException(Lang::get('numencode.fundamentals::lang.repeater.actions.duplicate_max'));
+        }
+
+        unset($copy[$this->getItemModel([])->getKeyName()]);
+
+        $index = $this->getNextIndex();
+
+        // The new item's form reads its values from the posted field at its index
+        $parts = HtmlHelper::nameToArray($this->getFieldName());
+        $root = array_shift($parts);
+        $value = Request::post($root);
+        $value = is_array($value) ? $value : [];
+        array_set($value, implode('.', array_merge($parts, [(string) $index])), $copy);
+        Request::merge([$root => $value]);
+
+        $this->prepareVars();
+        $this->vars['widget'] = $this->makeItemFormWidget($index, $copy['_group'] ?? null);
+        $this->vars['indexValue'] = $index;
+
+        return ['item' => $this->makePartial('repeater_item'), 'index' => (string) $index];
     }
 
     /**
@@ -61,8 +174,8 @@ class RelationRepeater extends Repeater
     {
         parent::loadAssets();
 
-        // Called before init(), so the option is read from the config
-        if ($this->getConfig('showToggleAll', false)) {
+        // Called before init(), so the options are read from the config
+        if ($this->getConfig('showToggleAll', false) || $this->getConfig('itemActions', false)) {
             $this->addCss(static::PATH . '/assets/css/relationrepeater.css', 'NumenCode.Fundamentals');
             $this->addJs(static::PATH . '/assets/js/relationrepeater.js', 'NumenCode.Fundamentals');
         }
@@ -151,6 +264,19 @@ class RelationRepeater extends Repeater
             return $this->model;
         }
 
-        return $this->model->getRelationableModel($this->formField->getName(false), $data) ?? $this->model;
+        $model = $this->model->getRelationableModel($this->formField->getName(false), $data) ?? $this->model;
+
+        // A new item (e.g. a duplicate) shows its posted translations: Translate's fields read them from the model
+        if ($model !== $this->model && !$model->exists && is_array($data['RLTranslate'] ?? null) && $model->methodExists('setAttributeTranslated')) {
+            foreach ($data['RLTranslate'] as $locale => $attributes) {
+                foreach (is_array($attributes) ? $attributes : [] as $attribute => $value) {
+                    if (is_string($attribute) && is_scalar($value)) {
+                        $model->setAttributeTranslated($attribute, (string) $value, (string) $locale);
+                    }
+                }
+            }
+        }
+
+        return $model;
     }
 }

@@ -12,3 +12,5 @@
     - 'Taller, fully clickable collapsed repeater items; restyled Expand all / Collapse all buttons'
 2.2.2:
     - 'Maintenance release: same code as 2.2.1, published so Packagist refers to the tagged commit'
+2.3.0:
+    - 'Relation repeater item actions: copy/paste, duplicate, publish/unpublish (option itemActions)'

@@ -258,6 +258,72 @@ class RelationRepeaterTest extends FundamentalsTestCase
         );
     }
 
+    public function testItemActionsAreOptIn(): void
+    {
+        $plain = $this->makeForm($this->makeGallery())->render();
+        $this->assertStringNotContainsString('data-item-actions', $plain);
+
+        $form = $this->makeForm($this->makeGallery(), null, 'update', ['itemActions' => true]);
+        $html = $form->render();
+        $repeater = $form->getFormWidget('items_list');
+        $config = $repeater->itemActionsConfig();
+
+        $this->assertStringContainsString('data-item-actions="', $html);
+        $this->assertStringContainsString('data-relationrepeater-paste', $html);
+        $this->assertStringNotContainsString('data-relationrepeater-toggle', $html, 'The toggle buttons stay off');
+        $this->assertSame('is_published', $config['publishField']);
+        $this->assertSame('TestGallery[items_list]', $config['field']);
+        $this->assertStringEndsWith('::onDuplicateItem', $config['handler']);
+        $this->assertSame($repeater->formKey(), $config['formKey']);
+        $this->assertNotSame('', trans('numencode.fundamentals::lang.repeater.actions.paste'));
+
+        // No publish button without the field; none of it in preview mode
+        $this->assertNull($this->makeForm($this->makeGallery(), null, 'update', ['itemActions' => true, 'publishField' => 'nope'])
+            ->getFormWidget('items_list')->itemActionsConfig()['publishField']);
+        $this->assertStringNotContainsString('data-item-actions', $this->makeForm($this->makeGallery(), null, 'preview', ['itemActions' => true])->render());
+    }
+
+    public function testDuplicatingAnItemRendersANewItemWithItsValuesAndTranslations(): void
+    {
+        $gallery = $this->makeGallery();
+        $beta = $gallery->items->firstWhere('title', 'Beta');
+        $post = ['TestGallery' => ['items_list' => [
+            ['id' => $gallery->items->firstWhere('title', 'Alpha')->id, 'title' => 'Alpha'],
+            ['id' => $beta->id, 'title' => 'Beta edited', 'subtitle' => 'Sub', 'RLTranslate' => ['sl' => ['title' => 'Beta SL edited']]],
+        ]], 'formItemsList_loaded' => 1, '_repeater_source' => '1'];
+
+        $form = $this->makeForm($gallery, $post, 'update', ['itemActions' => true]);
+        $form->render();
+        $result = $form->getFormWidget('items_list')->onDuplicateItem();
+
+        $this->assertSame('2', $result['index']);
+        $this->assertStringContainsString('name="TestGallery[items_list][2][title]"', $result['item']);
+        $this->assertStringContainsString('value="Beta edited"', $result['item']);
+        $this->assertStringContainsString('value="Sub"', $result['item']);
+
+        $copy = $this->itemForms($form)[2];
+        $this->assertFalse($copy->model->exists, 'A new record');
+        $this->assertNotSame($beta->id, $copy->model->id);
+        $this->assertSame('Beta SL edited', $this->translated($copy->model, 'title', 'sl'));
+    }
+
+    public function testOnlyItemsOfTheSameFormCanBePasted(): void
+    {
+        $gallery = $this->makeGallery();
+        $form = $this->makeForm($gallery, ['TestGallery' => ['items_list' => []], 'formItemsList_loaded' => 1], 'update', ['itemActions' => true]);
+        $form->render();
+        $repeater = $form->getFormWidget('items_list');
+
+        $this->app['request']->request->add(['_repeater_paste' => '{"title":"Pasted","id":"5"}', '_repeater_paste_form' => $repeater->formKey()]);
+        $result = $repeater->onDuplicateItem();
+        $this->assertStringContainsString('value="Pasted"', $result['item']);
+        $this->assertFalse($this->itemForms($form)[(int) $result['index']]->model->exists, 'The pasted key is dropped');
+
+        $this->app['request']->request->add(['_repeater_paste_form' => 'another form']);
+        $this->expectException(\Winter\Storm\Exception\ApplicationException::class);
+        $repeater->onDuplicateItem();
+    }
+
     public function testToggleAllButtonsAreTranslated(): void
     {
         $this->app->setLocale('sl');

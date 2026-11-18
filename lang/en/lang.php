@@ -52,6 +52,20 @@ return [
     'repeater' => [
         'expand_all'   => 'Expand all',
         'collapse_all' => 'Collapse all',
+        'actions'      => [
+            'copy'              => 'Copy (paste it into another record of the same kind)',
+            'copied'            => 'Item copied. Use "Paste item" in any record of the same kind.',
+            'duplicate'         => 'Duplicate',
+            'unpublish'         => 'Unpublish',
+            'publish'           => 'Publish',
+            'unpublished'       => 'Unpublished',
+            'paste'             => 'Paste item',
+            'paste_title'       => 'Paste the copied item (:title) at the end of the list',
+            'paste_clear'       => 'Forget the copied item',
+            'paste_unavailable' => 'The copied item can\'t be added here.',
+            'duplicate_failed'  => 'The item could not be duplicated. Reload the page and try again.',
+            'duplicate_max'     => 'No more items can be added.',
+        ],
     ],
     'relationable' => [
         'item_error' => 'Item :index: :message',

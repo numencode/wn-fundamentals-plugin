@@ -52,6 +52,20 @@ return [
     'repeater' => [
         'expand_all'   => 'Razširi vse',
         'collapse_all' => 'Strni vse',
+        'actions'      => [
+            'copy'              => 'Kopiraj (prilepite ga v drug zapis iste vrste)',
+            'copied'            => 'Element je kopiran. Prilepite ga z gumbom "Prilepi element" v katerikoli zapis iste vrste.',
+            'duplicate'         => 'Podvoji',
+            'unpublish'         => 'Skrij (ne objavi)',
+            'publish'           => 'Objavi',
+            'unpublished'       => 'Ni objavljeno',
+            'paste'             => 'Prilepi element',
+            'paste_title'       => 'Prilepi kopirani element (:title) na konec seznama',
+            'paste_clear'       => 'Pozabi kopirani element',
+            'paste_unavailable' => 'Kopiranega elementa tu ni mogoče dodati.',
+            'duplicate_failed'  => 'Elementa ni bilo mogoče podvojiti. Osvežite stran in poskusite znova.',
+            'duplicate_max'     => 'Več elementov ni mogoče dodati.',
+        ],
     ],
     'relationable' => [
         'item_error' => 'Vnos :index: :message',
