@@ -34,6 +34,10 @@ return [
         // the caches of the backend's locale. Clear them for every enabled locale (needs Winter.Pages).
         'pages_cache_all_locales' => true,
 
+        // Save translations that are only whitespace (e.g. "\n" from an empty rich editor) as empty, so the language
+        // falls back to the default value instead of failing a "required" rule or showing a blank value.
+        'clear_blank_translations' => true,
+
     ],
 
 ];

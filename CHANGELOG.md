@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- With Winter.Translate, a model with a required rich editor field (e.g. a blog post's content) couldn't be saved
+  after its form was switched to another language whose translation was empty: the empty editor posts `"\n"`, which
+  Translate validated as that language's value. Translations that are only whitespace are now saved empty, so they
+  fall back to the default language (config `translate.clear_blank_translations`, on by default).
+
 ## [2.3.0] - 2026-11-18
 
 ### Added

@@ -59,6 +59,7 @@ return [
     ],
     'translate' => [
         'pages_cache_all_locales' => true,     // Winter.Pages + Translate: clear the Pages caches of all locales
+        'clear_blank_translations' => true,    // Translate: save whitespace-only translations as empty
     ],
 ];
 ```
@@ -69,6 +70,7 @@ return [
 | `pages_viewbag_primary_tabs` | Winter.Pages: the page settings (`viewBag` fields) are shown in the primary tabs instead of the sidebar. |
 | `assets` | Loads the plugin's backend JS and CSS on every backend page. Required for dynamic section titles and the Translate language selector; also makes collapsed repeater items taller and clickable along the whole bar. |
 | `pages_cache_all_locales` | Winter.Pages with Winter.Translate: saving clears the Pages caches of every enabled locale, see [Winter.Translate integration](#wintertranslate-integration). |
+| `clear_blank_translations` | Winter.Translate: translations that are only whitespace are saved empty, see [Winter.Translate integration](#wintertranslate-integration). |
 
 ## Relation repeater
 
@@ -168,6 +170,10 @@ When [Winter.Translate](https://github.com/wintercms/wn-translate-plugin) is ins
   runs in, so after saving a page, menu, content block, snippet or CMS template the other locales would show the old
   URLs, menu items or snippets until the caches expire. The plugin clears the caches of every enabled locale on the
   same events (`pages.object.save`, `cms.template.save`). Switch it off with `translate.pages_cache_all_locales`.
+- **Blank translations** – an empty rich editor posts `"\n"`, which Translate stores as the translation of the
+  language the editor showed. Translate validates every changed language, so a `required` rule failed ("The Content
+  field is required.") and the website showed the blank value. Translations that are only whitespace are now saved
+  empty, so they fall back to the default language. Switch it off with `translate.clear_blank_translations`.
 
 Without Translate, the plugin works the same, without these features.
 

@@ -24,6 +24,8 @@ use Winter\Translate\Models\Locale;
  *   fields of the form at once and can copy all translations from another language.
  * - With Winter.Pages: saving a page, menu, content, snippet or CMS template clears the Pages caches of every
  *   enabled locale, not only the backend's (config translate.pages_cache_all_locales).
+ * - Translations that are only whitespace are saved empty, so they fall back to the default language
+ *   (config translate.clear_blank_translations).
  */
 class TranslateIntegration
 {
@@ -61,6 +63,36 @@ class TranslateIntegration
 
             Event::listen('pages.object.save', $clear);
             Event::listen('cms.template.save', $clear);
+        }
+
+        // Before Translate's own saveInternal listener (priority 0), which validates every changed language. Extend
+        // callbacks of a parent class run for every subclass; the behavior is checked when the model is saved,
+        // because behaviors are loaded after the extend callbacks.
+        Model::extend(function (Model $model): void {
+            $model->bindEvent('model.saveInternal', fn () => static::clearBlankTranslations($model), 100);
+        });
+    }
+
+    /**
+     * Empties translations that are only whitespace, so the language falls back to the default value.
+     *
+     * The backend rich editor beautifies an empty editor to "\n", and Winter.Translate stores it as the value of the
+     * language the editor showed. Translate then validates that language with "\n" instead of the default value, so a
+     * `required` rule fails ("The Content field is required."), and the website would show the blank value instead of
+     * the default one.
+     */
+    public static function clearBlankTranslations(Model $model): void
+    {
+        if (!static::enabled('clear_blank_translations') || !$model->isClassExtendedWith(self::TRANSLATABLE_BEHAVIOR)) {
+            return;
+        }
+
+        foreach ($model->getDirtyLocales() as $locale) {
+            foreach ($model->getTranslateDirty($locale) as $key => $value) {
+                if (is_string($value) && $value !== '' && trim($value) === '') {
+                    $model->setAttributeTranslated($key, '', $locale);
+                }
+            }
         }
     }
 
