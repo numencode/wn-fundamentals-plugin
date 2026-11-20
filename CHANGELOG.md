@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-11-21
+
 ### Fixed
 
 - With Winter.Translate, a model with a required rich editor field (e.g. a blog post's content) couldn't be saved
@@ -207,7 +209,8 @@ see [Upgrading from 1.x](#upgrading-from-1x).
 - Core functionality for Winter CMS projects, compatible with Winter CMS `1.2.7`.
 - Prerequisite for the other NumenCode plugins.
 
-[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.2...v2.3.0
 [2.2.2]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.0...v2.2.1

@@ -14,3 +14,5 @@
     - 'Maintenance release: same code as 2.2.1, published so Packagist refers to the tagged commit'
 2.3.0:
     - 'Relation repeater item actions: copy/paste, duplicate, publish/unpublish (option itemActions)'
+2.4.0:
+    - 'Whitespace-only translations are saved empty, so they fall back to the default language (config translate.clear_blank_translations)'
