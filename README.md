@@ -24,8 +24,8 @@ PHP helpers. It is also the foundation of the other [NumenCode](https://www.nume
 - **Twig** – `|resize_images`, `|url_path`, `asset_hash()`, `device_type()`, `detect()`, `collect()`, debug helpers
   and more.
 - **PHP helpers** – array helpers, `plugin_exists()`, `extend_class()` and debugging helpers.
-- **Backend improvements** – icon switch columns, dynamic section titles and Winter.Pages settings in the main tabs;
-  each can be switched off.
+- **Backend improvements** – icon switch columns, dynamic section titles, Winter.Pages settings in the main tabs and
+  deep links to Winter.Pages editor tabs; each can be switched off.
 - **Common translations** for field labels used across NumenCode plugins.
 
 ## Requirements
@@ -55,6 +55,7 @@ return [
     'backend' => [
         'switch_column_icons'        => true,  // switch list columns as a green check / red cross
         'pages_viewbag_primary_tabs' => true,  // Winter.Pages: page settings in the main tabs
+        'pages_deep_links'           => true,  // Winter.Pages: the editor URL follows the active tab
         'assets'                     => true,  // backend JS/CSS: dynamic section titles, Translate language selector, repeater styles
     ],
     'translate' => [
@@ -68,6 +69,7 @@ return [
 |---|---|
 | `switch_column_icons` | List columns of type `switch` show a green check or a red cross with the translated Yes/No label. |
 | `pages_viewbag_primary_tabs` | Winter.Pages: the page settings (`viewBag` fields) are shown in the primary tabs instead of the sidebar. |
+| `pages_deep_links` | Winter.Pages: the editor URL follows the active tab, so it can be refreshed, bookmarked or shared, see [Backend improvements](#backend-improvements). |
 | `assets` | Loads the plugin's backend JS and CSS on every backend page. Required for dynamic section titles and the Translate language selector; also makes collapsed repeater items taller and clickable along the whole bar. |
 | `pages_cache_all_locales` | Winter.Pages with Winter.Translate: saving clears the Pages caches of every enabled locale, see [Winter.Translate integration](#wintertranslate-integration). |
 | `clear_blank_translations` | Winter.Translate: translations that are only whitespace are saved empty, see [Winter.Translate integration](#wintertranslate-integration). |
@@ -344,6 +346,13 @@ $fields = array_insert($fields, 'content', ['subtitle' => ['label' => 'Subtitle'
   label (option `switch_column_icons`).
 - **Winter.Pages** – page settings (title, URL, meta data) are shown in the primary tabs instead of the sidebar
   (option `pages_viewbag_primary_tabs`).
+- **Winter.Pages deep links** – the Pages editor keeps the browser URL in sync with the active tab, e.g.
+  `/backend/winter/pages?type=content&path=footer/info.htm` (`type` is `page`, `menu` or `content`). Refreshing,
+  bookmarking or sharing the URL reopens the same object, switches to its sidebar section and expands collapsed parent
+  pages or content folders. Invalid links are ignored, a missing object shows the usual error, and a type the user may
+  not manage shows an error message. Snippets aren't linked, and the user's edit theme is used. This is a stopgap for
+  [wintercms/wn-pages-plugin#64](https://github.com/wintercms/wn-pages-plugin/pull/64): when Winter.Pages has the
+  feature itself, the plugin's script switches itself off (option `pages_deep_links`).
 - **Dynamic section titles** – a section field can show values of other fields in the same form or repeater item,
   updated while typing. `[original]` is the section's own label:
 

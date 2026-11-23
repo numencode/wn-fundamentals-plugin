@@ -29,7 +29,7 @@ class BackendOverrideTest extends FundamentalsTestCase
 
     public function testFeaturesAreEnabledByDefaultAndCanBeSwitchedOff(): void
     {
-        foreach (['switch_column_icons', 'pages_viewbag_primary_tabs', 'assets'] as $feature) {
+        foreach (['switch_column_icons', 'pages_viewbag_primary_tabs', 'pages_deep_links', 'assets'] as $feature) {
             $this->assertTrue(BackendOverride::enabled($feature));
         }
 
@@ -78,6 +78,52 @@ class BackendOverrideTest extends FundamentalsTestCase
         $this->assertSame('extra', $form->tabs['fields']['viewBag[title]']['cssClass']);
         $this->assertArrayNotHasKey('viewBag[title]', $form->secondaryTabs['fields']);
         $this->assertArrayHasKey('markup', $form->secondaryTabs['fields']);
+    }
+
+    /**
+     * Creates the Pages editor controller with the plugin's extensions, fires its page.beforeDisplay event and
+     * returns the rendered script tags.
+     */
+    protected function pagesEditorScripts(string $action = 'index'): string
+    {
+        if (!class_exists(\Winter\Pages\Controllers\Index::class)) {
+            $this->markTestSkipped('Winter.Pages is not installed.');
+        }
+
+        $this->instantiatePlugin('Winter.Pages');
+
+        \Winter\Pages\Controllers\Index::clearExtendedClasses();
+        (new BackendOverride())->init();
+
+        $controller = new \Winter\Pages\Controllers\Index();
+        $controller->fireEvent('page.beforeDisplay', [$action, []]);
+
+        return (string) $controller->makeAssets('js');
+    }
+
+    public function testPagesEditorGetsTheDeepLinksScript(): void
+    {
+        $scripts = $this->pagesEditorScripts();
+
+        $this->assertStringContainsString(BackendOverride::PAGES_DEEP_LINKS_JS, $scripts);
+        $this->assertStringContainsString('id="numencode-pages-deep-links"', $scripts);
+        $this->assertStringContainsString(
+            'data-unauthorized-message="' . e(trans('winter.pages::lang.object.unauthorized_type')) . '"',
+            $scripts
+        );
+        $this->assertStringContainsString(':type', $scripts);
+    }
+
+    public function testDeepLinksScriptIsOnlyAddedToTheEditorPage(): void
+    {
+        $this->assertStringNotContainsString(BackendOverride::PAGES_DEEP_LINKS_JS, $this->pagesEditorScripts('other'));
+    }
+
+    public function testDeepLinksCanBeSwitchedOff(): void
+    {
+        config(['numencode.fundamentals::backend.pages_deep_links' => false]);
+
+        $this->assertStringNotContainsString(BackendOverride::PAGES_DEEP_LINKS_JS, $this->pagesEditorScripts());
     }
 
     public function testOtherFormsAreNotChanged(): void

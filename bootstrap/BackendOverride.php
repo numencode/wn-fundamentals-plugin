@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NumenCode\Fundamentals\Bootstrap;
 
 use Backend\Classes\Controller;
+use Backend\Models\Preference as BackendPreference;
 use Backend\Widgets\Form;
 use Backend\Widgets\Lists;
 use Config;
@@ -24,6 +25,8 @@ class BackendOverride
 
     public const ASSETS_JS = 'plugins/numencode/fundamentals/assets/js/general.js';
 
+    public const PAGES_DEEP_LINKS_JS = '/plugins/numencode/fundamentals/assets/js/pages-deep-links.js';
+
     public function init(): void
     {
         if (static::enabled('assets')) {
@@ -36,6 +39,10 @@ class BackendOverride
 
         if (static::enabled('pages_viewbag_primary_tabs')) {
             $this->initPagesViewBagTabs();
+        }
+
+        if (static::enabled('pages_deep_links') && plugin_exists('Winter.Pages')) {
+            $this->initPagesDeepLinks();
         }
     }
 
@@ -98,5 +105,29 @@ class BackendOverride
                 $form->tabs['fields'][$name] = $config;
             }
         }, 1000);
+    }
+
+    /**
+     * Winter.Pages: keeps the editor URL in sync with the active tab (?type=page|menu|content&path=...), so it can be
+     * refreshed, bookmarked or shared. The script switches itself off when Winter.Pages has the feature natively.
+     */
+    protected function initPagesDeepLinks(): void
+    {
+        \Winter\Pages\Controllers\Index::extend(function (Controller $controller) {
+            $controller->bindEvent('page.beforeDisplay', function (string $action) use ($controller) {
+                if ($action !== 'index') {
+                    return;
+                }
+
+                // Core sets the backend user's locale only after this event
+                BackendPreference::setAppLocale();
+
+                $controller->addJs(static::PAGES_DEEP_LINKS_JS, [
+                    'build'                     => 'NumenCode.Fundamentals',
+                    'id'                        => 'numencode-pages-deep-links',
+                    'data-unauthorized-message' => Lang::get('winter.pages::lang.object.unauthorized_type'),
+                ]);
+            });
+        });
     }
 }

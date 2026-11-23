@@ -20,6 +20,10 @@ return [
         // Winter.Pages: show the page settings (viewBag fields) in the primary tabs instead of the sidebar
         'pages_viewbag_primary_tabs' => true,
 
+        // Winter.Pages: keep the editor URL in sync with the active tab (?type=page&path=...), so it can be refreshed,
+        // bookmarked or shared. Switches itself off when Winter.Pages has the feature natively.
+        'pages_deep_links' => true,
+
         // Load the plugin's backend JS/CSS: dynamic section titles (data-set-from) and the Translate language selector
         'assets' => true,
 

@@ -24,7 +24,7 @@
         "winter/storm": "^1.2"
     },
     "suggest": {
-        "winter/wn-pages-plugin": "Enables the static page settings in the main tabs and, with Winter.Translate, clearing its caches of all locales.",
+        "winter/wn-pages-plugin": "Enables the static page settings in the main tabs, deep links to editor tabs and, with Winter.Translate, clearing its caches of all locales.",
         "winter/wn-translate-plugin": "Enables translations of fields inside relation repeaters, the language selector in backend forms and clearing the Winter.Pages caches of all locales."
     },
     "autoload": {

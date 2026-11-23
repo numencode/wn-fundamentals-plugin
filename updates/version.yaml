@@ -16,3 +16,5 @@
     - 'Relation repeater item actions: copy/paste, duplicate, publish/unpublish (option itemActions)'
 2.4.0:
     - 'Whitespace-only translations are saved empty, so they fall back to the default language (config translate.clear_blank_translations)'
+2.5.0:
+    - 'Winter.Pages deep links: the editor URL follows the active tab (config backend.pages_deep_links); switches itself off when Winter.Pages has the feature'

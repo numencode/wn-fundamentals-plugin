@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-11-24
+
+### Added
+
+- Winter.Pages deep links: the Pages editor (static pages, menus, content) keeps the browser URL in sync with the active
+  tab (`?type=page|menu|content&path=...`), so the URL can be refreshed, bookmarked or shared and reopens the same
+  object, with collapsed parent pages and content folders expanded. Works with an unmodified Winter.Pages, can be
+  switched off with the config option `backend.pages_deep_links`. A stopgap until
+  [wintercms/wn-pages-plugin#64](https://github.com/wintercms/wn-pages-plugin/pull/64) is released: the script switches
+  itself off when Winter.Pages has the feature natively.
+
 ## [2.4.0] - 2026-11-21
 
 ### Fixed
@@ -209,7 +220,8 @@ see [Upgrading from 1.x](#upgrading-from-1x).
 - Core functionality for Winter CMS projects, compatible with Winter CMS `1.2.7`.
 - Prerequisite for the other NumenCode plugins.
 
-[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.2...v2.3.0
 [2.2.2]: https://github.com/numencode/wn-fundamentals-plugin/compare/v2.2.1...v2.2.2
